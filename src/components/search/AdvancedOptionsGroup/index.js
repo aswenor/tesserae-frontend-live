@@ -1,14 +1,15 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 import LabeledSelect from '../../common/LabeledSelect';
 
-const useStyles = makeStyles(theme => ({
-  select: {
-    marginTop: 10,
-    marginLeft: '5%',
-    width: '90%'
-  }
-});
+// const useStyles = makeStyles( theme => ({
+//     select: {
+//       marginTop: 10,
+//       marginLeft: '5%',
+//       width: '90%'
+//     }
+// }));
 
 
 function prepListItem(item) {
@@ -51,17 +52,17 @@ class AdvancedOptionsGroup extends React.Component {
     const { unitType, feature, stoplist, stoplistBasis,
             scoreBasis, frequencyBasis, maxDistance,
             distanceMetric, dropScoresBelow } = this.state;
-    const classes = useStyles();
+    // const classes = useStyles();
 
     const unitTypesList = dummyUnitTypes.map(prepListItem);
-    const featuresList = dummyFeatures.map();
-    const stoplistList = dummyStoplist.map();
-    const stoplistBasisList = dummyStoplistBasis.map();
-    const scoreBasisList = dummyScoreBasis.map();
-    const frequencyBasisList = dummyFrequencyBasis.map();
-    const maxDistanceList = dummyMaxDistance.map();
-    const distanceMetricList = dummyDistanceMetric.map();
-    const dropScoresBelowList = dummyDropScoresBelow.map();
+    const featuresList = dummyFeatures.map(prepListItem);
+    const stoplistList = dummyStoplist.map(prepListItem);
+    const stoplistBasisList = dummyStoplistBasis.map(prepListItem);
+    const scoreBasisList = dummyScoreBasis.map(prepListItem);
+    const frequencyBasisList = dummyFrequencyBasis.map(prepListItem);
+    const maxDistanceList = dummyMaxDistance.map(prepListItem);
+    const distanceMetricList = dummyDistanceMetric.map(prepListItem);
+    const dropScoresBelowList = dummyDropScoresBelow.map(prepListItem);
 
     return (
       <div>

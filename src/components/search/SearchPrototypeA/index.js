@@ -1,4 +1,5 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -8,12 +9,15 @@ import Typography from '@material-ui/core/Typography';
 
 import SearchParametersForm from '../SearchParametersForm';
 
-import getAvailableLanguages from '../../../api/corpus';
+import { getAvailableLanguages } from '../../../api/corpus';
 
 
-function TabPanel(props) {
+export function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
+  console.log(children)
+  console.log(value)
+  console.log(index)
+  console.log(other)
   return (
     <Typography
       component="div"
@@ -23,7 +27,7 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      <Box p={3}>{children}</Box>
+      {children}
     </Typography>
   );
 }
@@ -37,12 +41,12 @@ const a11yProps = (index) => {
 }
 
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     flexGrow: 1,
+//     backgroundColor: theme.palette.background.paper,
+//   },
+// }));
 
 
 class SearchPrototypeA extends React.Component {
@@ -53,12 +57,12 @@ class SearchPrototypeA extends React.Component {
   }
 
   handleChangeTab = (language) => {
-    this.setState({ language })
+    this.setState({ language });
   }
 
   render() {
-    const { language, languages } = this.state;
-    const classes = useStyles();
+    const { currentTab, language, languages } = this.state;
+    // const classes = useStyles();
 
     const tabs = languages.map((item, idx) => {
       return <Tab label={item} { ...a11yProps(idx) } />
@@ -72,14 +76,16 @@ class SearchPrototypeA extends React.Component {
       );
     });
 
-    <main className={classes.root}>
-      <AppBar position="static">
-        <Tabs>
-          {tabs}
-        </Tabs>
-      </AppBar>
-      {forms}
-    </main>
+    return ( 
+      <main>
+        <AppBar position="static">
+          <Tabs>
+            {tabs}
+          </Tabs>
+        </AppBar>
+        {forms}
+      </main>
+    );
   }
 }
 

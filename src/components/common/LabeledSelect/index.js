@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyle } from '@material-ui/core/styles';
 
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -8,13 +8,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 
-const styles = theme => ({
-  select: {
-    marginTop: 10,
-    marginLeft: '5%',
-    width: '90%'
-  }
-});
+// const styles = theme => ({
+//   select: {
+//     marginTop: 10,
+//     marginLeft: '5%',
+//     width: '90%'
+//   }
+// });
 
 
 function LabeledSelect(props) {
@@ -23,9 +23,8 @@ function LabeledSelect(props) {
   });
 
   return (
-    <FormControl className={props.classes.select} fullWidth>
+    <FormControl fullWidth>
       <Select
-        className={props.classes.select}
         value={props.value}
       >
         {menuItems}

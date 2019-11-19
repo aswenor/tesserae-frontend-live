@@ -1,33 +1,46 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 
 import MenuItem from '@material-ui/core/MenuItem';
 
 import SearchableDropdown from '../../common/SearchableDropdown';
 
+import { loadTextMetadata } from '../../../api/corpus';
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
+
+// const useStyles = makeStyles( (theme) => ({
+//   formControl: {
+//     margin: theme.spacing(1),
+//     minWidth: 120,
+//   },
+//   selectEmpty: {
+//     marginTop: theme.spacing(2),
+//   }
+// }));
 
 
 class TextSelectGroup extends React.Component {
-  render() {
-    const classes = useStyles();
+  state = {
+    author: '',
+    text: '',
+    texts: []
+  }
 
-    const authorList = authors.map(author => {
-      return <MenuItem value={author}>{author}</MenuItem>
+  componentDidMount() {
+    const texts = loadTextMetadata(this.props.language);
+    this.setState({ texts: [ ...texts ] });
+  }
+
+  render() {
+    const { author, text, texts } = this.state;
+    // const classes = useStyles();
+
+    const authorList = texts.map(text => {
+      return <MenuItem value={text.author}>{text.author}</MenuItem>
     });
 
     const textList = texts.map(text => {
-      return <MenuItem value={text}>{text}</MenuItem>
+      return <MenuItem value={text.title}>{text.title}</MenuItem>
     });
 
     return (
@@ -36,17 +49,17 @@ class TextSelectGroup extends React.Component {
           isClearable
           onChange={this.props.onChange}
           placeholder="Select an Author"
-          value={this.props.authors[this.props.position]}
+          value={author}
         >
-          { ...authorList }
+          ...authorList
         </SearchableDropdown>
         <SearchableDropdown
           isClearable
           onChange={this.props.onChange}
           placeholder="Select a Text"
-          value={this.props.texts[this.props.position]}
+          value={text}
         >
-          { ...textList }
+          ...textList
         </SearchableDropdown>
       </div>
     );
@@ -54,4 +67,4 @@ class TextSelectGroup extends React.Component {
 }
 
 
-export default TextSelectGoup;
+export default TextSelectGroup;

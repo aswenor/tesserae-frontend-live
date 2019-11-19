@@ -1,8 +1,8 @@
-function getAvailableLanguages() {
-  return ['English', 'Greek', 'Latin']
+export function getAvailableLanguages() {
+  return ['Greek', 'Latin']
 }
 
-function loadTextMetadata(language) {
+export function loadTextMetadata(language) {
   if ( language.toLowerCase() === 'greek' ) {
     return [
       {

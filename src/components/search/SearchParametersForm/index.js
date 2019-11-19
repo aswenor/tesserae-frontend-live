@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -9,23 +8,23 @@ import Typography from '@material-ui/core/Typography';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import AdvancedOptionsGroup from '../AdvancesOptionsGroup'
+import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
 
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
+// const useStyles = makeStyles(theme => ({
+//   formControl: {
+//     margin: theme.spacing(1),
+//     minWidth: 120,
+//   },
+//   selectEmpty: {
+//     marginTop: theme.spacing(2),
+//   },
+// }));
 
 
 function SearchParametersForm(props) {
-  const classes = useStyles();
+  // const classes = useStyles();
 
   return (
     <section>
@@ -35,13 +34,13 @@ function SearchParametersForm(props) {
           expandIcon={<ExpandMoreIcon />}
           id="select-text-header"
         >
-          <Typography className={classes.heading}>
+          <Typography>
             Select Texts to Search
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <TextSelectGroup />
-          <TextSelectGroup />
+          <TextSelectGroup language={props.language} />
+          <TextSelectGroup language={props.language} />
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel>
@@ -50,8 +49,8 @@ function SearchParametersForm(props) {
           expandIcon={<ExpandMoreIcon />}
           id="advanced-options-header"
         >
-          <Typography className={classes.heading}>
-            Select Texts to Search
+          <Typography>
+            Advanced Options
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
@@ -63,12 +62,4 @@ function SearchParametersForm(props) {
 }
 
 
-function mapStateToProps(state) {
-  return {
-    language: state.searchParameters.language,
-    author: state.searchParameters.author
-  };
-}
-
-
-export default connect(mapStateToProps)(Counter);
+export default SearchParametersForm;
