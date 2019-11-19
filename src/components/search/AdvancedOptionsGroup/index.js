@@ -68,13 +68,13 @@ class AdvancedOptionsGroup extends React.Component {
       <div>
         <LabeledSelect
           handleChange={this.handleChange('unitType')}
-          helperText={''}
+          helperText={'Compare lines of text or complete thoughts.'}
           options={unitTypesList}
           value={unitType}
         />
         <LabeledSelect
           handleChange={this.handleChange('feature')}
-          helperText={''}
+          helperText={'Select the feature to compare on.'}
           options={featuresList}
           value={feature}
         />
@@ -86,37 +86,37 @@ class AdvancedOptionsGroup extends React.Component {
         />
         <LabeledSelect
           handleChange={this.handleChange('stoplistBasis')}
-          helperText={''}
+          helperText={'Specify the source of stoplist frequencies.'}
           options={stoplistBasisList}
           value={stoplistBasis}
         />
         <LabeledSelect
           handleChange={this.handleChange('scoreBasis')}
-          helperText={''}
+          helperText={'Specify whether to measure scoring frequency by word or stem.'}
           options={scoreBasisList}
           value={scoreBasis}
         />
         <LabeledSelect
           handleChange={this.handleChange('frequencyBasis')}
-          helperText={''}
+          helperText={'Specify the source of scoring frequencies.'}
           options={frequencyBasisList}
           value={frequencyBasis}
         />
         <LabeledSelect
           handleChange={this.handleChange('maxDistance')}
-          helperText={''}
+          helperText={'Specify the maximum number of words between bigram tokens.'}
           options={maxDistanceList}
           value={maxDistance}
         />
         <LabeledSelect
           handleChange={this.handleChange('distanceMetric')}
-          helperText={''}
+          helperText={'Specify whether to base distance on porition or frequency.'}
           options={distanceMetricList}
           value={distanceMetric}
         />
         <LabeledSelect
           handleChange={this.handleChange('dropScoresBelow')}
-          helperText={''}
+          helperText={'Specify the minimum score to show.'}
           options={dropScoresBelowList}
           value={dropScoresBelow}
         />

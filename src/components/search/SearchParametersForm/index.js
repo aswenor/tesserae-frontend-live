@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -28,19 +29,29 @@ function SearchParametersForm(props) {
 
   return (
     <section>
-      <ExpansionPanel>
+      <ExpansionPanel
+        expanded="true"
+      >
         <ExpansionPanelSummary
           aria-controls="select-text-form"
-          expandIcon={<ExpandMoreIcon />}
           id="select-text-header"
         >
-          <Typography>
+          <Typography
+            align="left"
+            variant="h4"
+          >
             Select Texts to Search
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <TextSelectGroup language={props.language} />
-          <TextSelectGroup language={props.language} />
+          <Grid container spaceing={2}>
+            <Grid item xs={12}>
+              <TextSelectGroup title="Source Text" language={props.language} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextSelectGroup title="Target Text" language={props.language} />
+            </Grid>
+          </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel>
@@ -49,7 +60,10 @@ function SearchParametersForm(props) {
           expandIcon={<ExpandMoreIcon />}
           id="advanced-options-header"
         >
-          <Typography>
+          <Typography
+            align="left"
+            variant="h4"
+          >
             Advanced Options
           </Typography>
         </ExpansionPanelSummary>

@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
 
 import SearchableDropdown from '../../common/SearchableDropdown';
 
@@ -45,6 +46,12 @@ class TextSelectGroup extends React.Component {
 
     return (
       <div>
+        <Typography
+          align="left"
+          variant="h5"
+        >
+          {this.props.title}
+        </Typography>
         <SearchableDropdown
           isClearable
           onChange={this.props.onChange}

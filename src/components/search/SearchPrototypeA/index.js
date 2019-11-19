@@ -52,12 +52,14 @@ const a11yProps = (index) => {
 class SearchPrototypeA extends React.Component {
   state = {
     currentTab: 0,
-    language: "Latin",
+    language: 'Latin',
     languages: getAvailableLanguages()
   }
 
-  handleChangeTab = (language) => {
-    this.setState({ language });
+  handleChangeTab = (event) => {
+    const newTab = event.target.value;
+    const newLang = this.state.languages[newTab];
+    this.setState({ language: newLang, currentTab: newTab });
   }
 
   render() {
@@ -65,7 +67,14 @@ class SearchPrototypeA extends React.Component {
     // const classes = useStyles();
 
     const tabs = languages.map((item, idx) => {
-      return <Tab label={item} { ...a11yProps(idx) } />
+      return (
+        <Tab
+          label={item}
+          value={item}
+          onClick={this.handleChangeTab}
+          { ...a11yProps(idx) }
+        />
+      )
     });
 
     const forms = languages.map((item, idx) => {
@@ -76,14 +85,14 @@ class SearchPrototypeA extends React.Component {
       );
     });
 
-    return ( 
+    return (
       <main>
         <AppBar position="static">
-          <Tabs>
+          <Tabs value={language}>
             {tabs}
           </Tabs>
         </AppBar>
-        {forms}
+        <SearchParametersForm language={language} />
       </main>
     );
   }
