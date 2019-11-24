@@ -36,31 +36,31 @@ const ACTIONS = {
  * @param {Object} newParameters - New search parameters.
  * @returns
  */
-export const updateSearchParameters = (newParameters = DEFAULTS.searchParameters) => {
+export const updateSearchParameters = (newParameters = DEFAULTS.searchParameters) => ({
   type: 'UPDATESEARCHPARAMETERS',
   payload: { ...newParameters }
-};
+});
 
 
 /**
  *
  */
-const changePage = (newPage = DEFAULTS.currentPage) => {
+const changePage = (newPage = DEFAULTS.currentPage) => ({
   type: 'CHANGEPAGE',
   payload: { newPage }
-};
+});
 
 
-const changeResultsPerPage = (resultsPerPage = DEFAULTS.resultsPerPage) => {
+const changeResultsPerPage = (resultsPerPage = DEFAULTS.resultsPerPage) => ({
   type: 'CHANGERESULTSPERPAGE',
   payload: { resultsPerPage }
-};
+});
 
 
-const updateCurrentResults = (newResults = DEFAULTS.results) => {
+const updateCurrentResults = (newResults = DEFAULTS.results) => ({
   type: 'UPDATECURRENTRESULTS',
   payload: { newResults }
-};
+});
 
 
 /**
@@ -82,14 +82,14 @@ export function searchReducer(state = DEFAULTS, action) {
  * @param {Object} state - Application state with search metadata.
  * @param {Object} payload -
  */
-function setSearchParametersReducer(state, payload) {
+function updateSearchParametersReducer(state, payload) {
   const newState = {
     ...state,
-    loadResults: true
     search_parameters: {
       ...state.search_parameters,
       ...payload.newParameters
-    }
+    },
+    loadResults: true
   };
   return newState;
 }
@@ -115,7 +115,7 @@ function changePageReducer(state, payload) {
 }
 
 
-function updateResultsPerPageReducer(state, payload) {
+function changeResultsPerPageReducer(state, payload) {
   const newState = {
     ...state,
     resultsPerPage: payload.resultsPerPage,
@@ -129,7 +129,6 @@ function updateCurrentResultsReducer(state, payload) {
   const newState = {
     ...state,
     results: [ ...payload.newResults ],
-
     loadResults: false
   };
   return newState;
