@@ -1,4 +1,7 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+
 import { makeStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -10,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import SearchParametersForm from '../SearchParametersForm';
 
 import { getAvailableLanguages } from '../../../api/corpus';
+import { searchReducer } from '../../../state_management/search';
 
 
 export function TabPanel(props) {
@@ -47,6 +51,9 @@ const a11yProps = (index) => {
 //     backgroundColor: theme.palette.background.paper,
 //   },
 // }));
+
+
+const store = createStore(searchReducer);
 
 
 class SearchPrototypeA extends React.Component {
@@ -87,12 +94,14 @@ class SearchPrototypeA extends React.Component {
 
     return (
       <main>
-        <AppBar position="static">
-          <Tabs value={language}>
-            {tabs}
-          </Tabs>
-        </AppBar>
-        <SearchParametersForm language={language} />
+        <Provider store={store}>
+          <AppBar position="static">
+            <Tabs value={language}>
+              {tabs}
+            </Tabs>
+          </AppBar>
+          <SearchParametersForm language={language} />
+        </Provider>
       </main>
     );
   }
