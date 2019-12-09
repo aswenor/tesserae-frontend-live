@@ -10,7 +10,22 @@
  */
 const DEFAULTS = {
   matchSet: null,
-  searchParameters: {},
+  searchParameters: {
+    language: 'latin',
+    texts: [
+      {}, // source
+      {}  // target
+    ],
+    unitType: 'phrase',
+    feature: 'lemma',
+    stoplist: 10,
+    stoplistBasis: 'corpus',
+    scoreBasis: 'word',
+    frequencyBasis: 'corpus',
+    maxDistance: 10,
+    distanceMetric: 'frequency',
+    dropScoresBelow: 6
+  },
   results: [],
   resultCount: 0,
   currentPage: 0,

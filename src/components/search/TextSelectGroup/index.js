@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -21,56 +22,69 @@ import { loadTextMetadata } from '../../../api/corpus';
 
 
 class TextSelectGroup extends React.Component {
-  state = {
-    author: '',
-    text: '',
-    texts: []
+  constructor(props) {
+    super(props);
+    this.state = {
+      textList: [],
+      selectedAuthor: '',
+      selectedText: ''
+    };
   }
 
   componentDidMount() {
-    const texts = loadTextMetadata(this.props.language);
-    this.setState({ texts: [ ...texts ] });
+    const { language } = this.props;
+    this.setState({ textList: loadTextMetadata(language) });
+  }
+
+  handleAuthorChange = value => {
+    this.setState({ selectedAuthor: value.value });
+  }
+
+  handleTextChange = value => {
+    this.setState({ selectedText: value.value });
   }
 
   render() {
-    const { author, text, texts } = this.state;
-    // const classes = useStyles();
+    const { title } = this.props;
+    const { selectedAuthor, selectedText, textList } = this.state;
 
-    const authorList = texts.map(text => {
-      return <MenuItem value={text.author}>{text.author}</MenuItem>
-    });
-
-    const textList = texts.map(text => {
-      return <MenuItem value={text.title}>{text.title}</MenuItem>
-    });
-
+    const authorItems = textList.map(t => t.author)
+                                .filter((v, i, self) => self.indexOf(v) === i)
+                                .map(v => {return {label: v, value: v}});
+  
+    const textItems = textList.filter(t => t.author === selectedAuthor)
+                              .map(t => { return {label: t.title, value: t.title}});
+    
     return (
       <div>
         <Typography
           align="left"
           variant="h5"
         >
-          {this.props.title}
+          {title}
         </Typography>
         <SearchableDropdown
           isClearable
-          onChange={this.props.onChange}
+          onChange={this.handleAuthorChange}
+          options={authorItems}
           placeholder="Select an Author"
-          value={author}
-        >
-          ...authorList
-        </SearchableDropdown>
+          value={selectedAuthor}
+        />
         <SearchableDropdown
           isClearable
-          onChange={this.props.onChange}
+          onChange={this.handleTextChange}
+          options={textItems}
           placeholder="Select a Text"
-          value={text}
-        >
-          ...textList
-        </SearchableDropdown>
+          value={selectedText}
+        />
       </div>
     );
   }
+}
+
+
+TextSelectGroup.propTypes = {
+  title: PropTypes.string
 }
 
 

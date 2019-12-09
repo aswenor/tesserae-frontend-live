@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from 'react-select';
-import NoSsr from '@material-ui/core/NoSsr';
+import TextField from '@material-ui/core/TextField';
 
 
 // const useStyles = makeStyles(theme => ({
@@ -18,26 +18,27 @@ import NoSsr from '@material-ui/core/NoSsr';
 
 
 function SearchableDropdown(props) {
+  const { onChange, helperText, options, placeholder } = props;
+
   return (
       <FormControl fullWidth>
-        <NoSsr>
-          <Select
-            value={props.value}
-            onChange={props.handleChange}
-            placeholder={props.placeholder}
-            isClearable
-          >
-            ...props.children
-          </Select>
-        </NoSsr>
-        <FormHelperText>{props.helperText}</FormHelperText>
+        <Autocomplete
+          getOptionLabel={option => option.label}
+          onChange={onChange}
+          options={options}
+          placeholder={placeholder}
+          renderInput={params => (
+            <TextField {...params} label={placeholder} variant="outlined" fullWidth />
+          )}
+        />
+        <FormHelperText>{helperText}</FormHelperText>
       </FormControl>
   );
 };
 
 
 SearchableDropdown.propTypes = {
-  handleChange: PropTypes.func,
+  onChange: PropTypes.func,
   helperText: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string,

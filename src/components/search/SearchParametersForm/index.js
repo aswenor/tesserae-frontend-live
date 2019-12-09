@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import { makeStyles } from '@material-ui/core/styles';
 
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -11,6 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
+import { stat } from 'fs';
 
 
 // const useStyles = makeStyles(theme => ({
@@ -25,8 +28,6 @@ import TextSelectGroup from '../TextSelectGroup';
 
 
 function SearchParametersForm(props) {
-  // const classes = useStyles();
-
   return (
     <section>
       <ExpansionPanel
@@ -75,5 +76,12 @@ function SearchParametersForm(props) {
   );
 }
 
+const mapStateToProps = (state) => {
+  return {
+    language: state.searchParameters.language,
+    texts: state.searchParameters.texts
+  };
+};
 
-export default SearchParametersForm;
+
+export default connect(mapStateToProps)(SearchParametersForm);
