@@ -11,6 +11,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 import SearchParametersForm from '../SearchParametersForm';
+import ResultsTable from '../ResultsTable';
 
 import { getAvailableLanguages } from '../../../api/corpus';
 import { searchReducer } from '../../../state_management/search';
@@ -43,6 +44,13 @@ const a11yProps = (index) => {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
+
+
+// const dummyResults = [
+//   {
+//     sourceLocus:
+//   }
+// ]
 
 
 // const useStyles = makeStyles(theme => ({
