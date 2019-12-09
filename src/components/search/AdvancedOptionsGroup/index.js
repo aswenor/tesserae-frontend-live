@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Grid from '@material-ui/core/Grid';
+
 import LabeledSelect from '../../common/LabeledSelect';
 
 // const useStyles = makeStyles( theme => ({
@@ -66,60 +68,111 @@ class AdvancedOptionsGroup extends React.Component {
 
     return (
       <div>
-        <LabeledSelect
-          handleChange={this.handleChange('unitType')}
-          helperText={'Compare lines of text or complete thoughts.'}
-          options={unitTypesList}
-          value={unitType}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('feature')}
-          helperText={'Select the feature to compare on.'}
-          options={featuresList}
-          value={feature}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('stoplist')}
-          helperText={'Set the size of the stoplist'}
-          options={stoplistList}
-          value={stoplist}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('stoplistBasis')}
-          helperText={'Specify the source of stoplist frequencies.'}
-          options={stoplistBasisList}
-          value={stoplistBasis}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('scoreBasis')}
-          helperText={'Specify whether to measure scoring frequency by word or stem.'}
-          options={scoreBasisList}
-          value={scoreBasis}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('frequencyBasis')}
-          helperText={'Specify the source of scoring frequencies.'}
-          options={frequencyBasisList}
-          value={frequencyBasis}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('maxDistance')}
-          helperText={'Specify the maximum number of words between bigram tokens.'}
-          options={maxDistanceList}
-          value={maxDistance}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('distanceMetric')}
-          helperText={'Specify whether to base distance on porition or frequency.'}
-          options={distanceMetricList}
-          value={distanceMetric}
-        />
-        <LabeledSelect
-          handleChange={this.handleChange('dropScoresBelow')}
-          helperText={'Specify the minimum score to show.'}
-          options={dropScoresBelowList}
-          value={dropScoresBelow}
-        />
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item md={1} xs={0}></Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('unitType')}
+                  helperText={'Compare lines of text or complete thoughts.'}
+                  options={unitTypesList}
+                  value={unitType}
+                />
+              </Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('feature')}
+                  helperText={'Select the feature to compare on.'}
+                  options={featuresList}
+                  value={feature}
+                />
+              </Grid>
+              <Grid item md={1} xs={0}></Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item md={1} xs={0}></Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('stoplist')}
+                  helperText={'Set the size of the stoplist'}
+                  options={stoplistList}
+                  value={stoplist}
+                />
+              </Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('stoplistBasis')}
+                  helperText={'Specify the source of stoplist frequencies.'}
+                  options={stoplistBasisList}
+                  value={stoplistBasis}
+                />
+              </Grid>
+              <Grid item md={1} xs={0}></Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item md={1} xs={0}></Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('scoreBasis')}
+                  helperText={'Specify whether to measure scoring frequency by word or stem.'}
+                  options={scoreBasisList}
+                  value={scoreBasis}
+                />
+              </Grid>
+
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('frequencyBasis')}
+                  helperText={'Specify the source of scoring frequencies.'}
+                  options={frequencyBasisList}
+                  value={frequencyBasis}
+                />
+              </Grid>
+              <Grid item md={1} xs={0}></Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item md={1} xs={0}></Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('maxDistance')}
+                  helperText={'Specify the maximum number of words between bigram tokens.'}
+                  options={maxDistanceList}
+                  value={maxDistance}
+                />
+              </Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('distanceMetric')}
+                  helperText={'Specify whether to base distance on porition or frequency.'}
+                  options={distanceMetricList}
+                  value={distanceMetric}
+                />
+              </Grid>
+              <Grid item md={1} xs={0}></Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item md={1} xs={0}></Grid>
+              <Grid item md={5} xs={12}>
+                <LabeledSelect
+                  handleChange={this.handleChange('dropScoresBelow')}
+                  helperText={'Specify the minimum score to show.'}
+                  options={dropScoresBelowList}
+                  value={dropScoresBelow}
+                />
+              </Grid>
+              <Grid item md={1} xs={0}></Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </div>
     );
   }

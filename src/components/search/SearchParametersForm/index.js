@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import Button from '@material-ui/core/Button';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -37,20 +38,34 @@ function SearchParametersForm(props) {
           aria-controls="select-text-form"
           id="select-text-header"
         >
-          <Typography
+          {/* <Typography
             align="left"
-            variant="h4"
-          >
+            variant="h5"
+            >
             Select Texts to Search
-          </Typography>
+          </Typography> */}
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Grid container spaceing={2}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextSelectGroup title="Source Text" language={props.language} />
+              <Grid container spacing={2}>
+                <Grid item md={1} xs={0}></Grid>
+                <Grid item md={5} xs={12}>
+                  <TextSelectGroup title="Source Text" language={props.language} />
+                </Grid>
+                <Grid item md={5} xs={12}>
+                  <TextSelectGroup title="Target Text" language={props.language} />
+                </Grid>
+                <Grid item md={1} xs={0}></Grid>
+              </Grid>
             </Grid>
             <Grid item xs={12}>
-              <TextSelectGroup title="Target Text" language={props.language} />
+              <Button
+                color="primary"
+                variant="contained"
+              >
+                Search
+              </Button>
             </Grid>
           </Grid>
         </ExpansionPanelDetails>
@@ -62,8 +77,8 @@ function SearchParametersForm(props) {
           id="advanced-options-header"
         >
           <Typography
-            align="left"
-            variant="h4"
+            align="center"
+            variant="h5"
           >
             Advanced Options
           </Typography>
