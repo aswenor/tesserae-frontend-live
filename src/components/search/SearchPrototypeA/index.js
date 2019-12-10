@@ -6,8 +6,10 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import Tabs from '@material-ui/core/Tabs';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 
 import SearchParametersForm from '../SearchParametersForm';
@@ -19,10 +21,6 @@ import { searchReducer } from '../../../state_management/search';
 
 export function TabPanel(props) {
   const { children, value, index, ...other } = props;
-  console.log(children)
-  console.log(value)
-  console.log(index)
-  console.log(other)
   return (
     <Typography
       component="div"
@@ -65,14 +63,18 @@ const store = createStore(searchReducer);
 
 
 class SearchPrototypeA extends React.Component {
-  state = {
-    currentTab: 0,
-    language: 'Latin',
-    languages: getAvailableLanguages()
+  constructor(props) {
+    super(props);
+    const languages = getAvailableLanguages().sort();
+    this.state = {
+      currentTab: languages.indexOf('latin'),
+      language: languages[languages.indexOf('latin')],
+      languages: languages
+    };
   }
 
-  handleChangeTab = (event) => {
-    const newTab = event.target.value;
+  handleChangeTab = (tabIdx) => {
+    const newTab = tabIdx;
     const newLang = this.state.languages[newTab];
     this.setState({ language: newLang, currentTab: newTab });
   }
@@ -85,30 +87,36 @@ class SearchPrototypeA extends React.Component {
       return (
         <Tab
           label={item}
-          value={item}
-          onClick={this.handleChangeTab}
+          value={idx}
+          onClick={() => this.handleChangeTab(idx)}
           { ...a11yProps(idx) }
         />
       )
-    });
-
-    const forms = languages.map((item, idx) => {
-      return (
-        <TabPanel value={currentTab} index={idx}>
-          <SearchParametersForm language={item} />
-        </TabPanel>
-      );
     });
 
     return (
       <main>
         <Provider store={store}>
           <AppBar position="static">
-            <Tabs value={language}>
+            <Tabs value={currentTab}>
               {tabs}
             </Tabs>
           </AppBar>
-          <SearchParametersForm language={language} />
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <Paper>
+                <SearchParametersForm language={language} />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Paper>
+                <Typography variant="h5">
+                  Results
+                </Typography>
+                <ResultsTable />
+              </Paper>
+            </Grid>
+          </Grid>
         </Provider>
       </main>
     );

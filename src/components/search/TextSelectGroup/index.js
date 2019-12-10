@@ -36,25 +36,33 @@ class TextSelectGroup extends React.Component {
     this.setState({ textList: loadTextMetadata(language) });
   }
 
-  handleAuthorChange = value => {
-    this.setState({ selectedAuthor: value.value });
+  handleAuthorChange = event => {
+    this.setState({ selectedAuthor: event.target.innerText });
   }
 
-  handleTextChange = value => {
-    this.setState({ selectedText: value.value });
+  handleTextChange = event => {
+    const textName = event.target.innerText.toLowerCase()
+    const text = this.state.textList.filter(t => t.title.toLowerCase() === textName);
+    console.log(text[0].author)
+    this.setState({
+      selectedAuthor: {label: text[0].author, value: text[0].author},
+      selectedText: {label: textName, value: textName}
+    });
   }
 
   render() {
     const { title } = this.props;
     const { selectedAuthor, selectedText, textList } = this.state;
 
-    const authorItems = textList.map(t => t.author)
+    const authorItems = textList.map(t => t.author.toLowerCase())
                                 .filter((v, i, self) => self.indexOf(v) === i)
-                                .map(v => {return {label: v, value: v}});
-  
-    const textItems = textList.filter(t => t.author === selectedAuthor)
-                              .map(t => { return {label: t.title, value: t.title}});
-    
+                                .map(v => {return {label: v, value: v}})
+                                .sort((a, b) => b.label < a.label);
+
+    const textItems = textList.filter(t => selectedAuthor === '' || t.author.toLowerCase() === selectedAuthor)
+                              .map(t => { return {label: t.title, value: t.title}})
+                              .sort((a, b) => b.label < a.label);
+
     return (
       <div>
         <Typography

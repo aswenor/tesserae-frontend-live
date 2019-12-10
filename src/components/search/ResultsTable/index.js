@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
@@ -18,7 +19,8 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 
 function ResultsTableHeader(props) {
-  const { labels, sortHeader, sortOrder } = props;
+  const { handleSortUpdate, labels, sortHeader, sortOrder } = props;
+  const sortDirection = sortOrder === 1 ? 'asc' : 'desc';
 
   const headCells = labels.map(item => {
       const itemNorm = item.toLowerCase();
@@ -26,11 +28,13 @@ function ResultsTableHeader(props) {
         <TableCell
           key={itemNorm}
           align="center"
-          sortDirection={sortHeader === itemNorm ? sortOrder : false}
+          onClick={() => handleSortUpdate(itemNorm)}
+          sortDirection={sortHeader === itemNorm ? sortDirection : false}
         >
           <TableSortLabel
+            key={itemNorm}
             active={sortHeader === itemNorm}
-            direction={sortOrder}
+            direction={sortDirection}
           >
             {item}
           </TableSortLabel>
@@ -57,12 +61,12 @@ function ResultsTableBody(props) {
       <TableRow
         hover
         tabIndex={-1}
-        key={item.source + item.target + item.matches.join()}
+        key={item.source + item.target + item.matches}
       >
-        <TableCell>{idx}</TableCell>
-        <TableCell>{item.source_locus}{item.source}</TableCell>
-        <TableCell>{item.target_locus}{item.target}</TableCell>
-        <TableCell>{item.matches.join()}</TableCell>
+        <TableCell>{idx + 1}</TableCell>
+        <TableCell>{item.source} {item.sourceText}</TableCell>
+        <TableCell>{item.target} {item.targetText}</TableCell>
+        <TableCell>{item.matchedOn}</TableCell>
         <TableCell>{item.score}</TableCell>
       </TableRow>
     );
@@ -76,6 +80,58 @@ function ResultsTableBody(props) {
 }
 
 
+const resultsList = [
+  {
+    target: 'luc. 1.51',
+    targetText: "Cedetur, iurique tuo natura relinquet,",
+    source: 'verg. aen. 11.359',
+    sourceText: 'cedat, ius proprium regi patriaeque remittat.',
+    matchedOn: 'cedo, ius',
+    score: 10
+  },
+  {
+    target: 'luc. 1.635',
+    targetText: 'Sed venient maiora metu. Di visa secundent, ',
+    source: 'verg. aen. 3.36',
+    sourceText: 'rite secundarent visus omenque levarent.',
+    matchedOn: 'secundo, uideo-uiso',
+    score: 10
+  },
+  {
+    target: 'luc. 1.638',
+    targetText: 'Involvens multaque tegens ambage canebat. ',
+    source: 'verg. aen. 6.29',
+    sourceText: 'Daedalus ipse dolos tecti ambagesque resolvit,',
+    matchedOn: 'ambages-ambago, tego',
+    score: 10
+  },
+  {
+    target: 'luc. 1.558',
+    targetText: 'Dona suis, dirasque diem foedasse volucres',
+    source: 'verg. aen. 3.241',
+    sourceText: 'obscenas pelagi ferro foedare volucres:',
+    matchedOn: 'foedo, uolucer-uolucris',
+    score: 9
+  },
+  {
+    target: 'luc. 1.549',
+    targetText: 'Latravere canes. Vestali raptus ab ara',
+    source: 'verg. aen. 5.257',
+    sourceText: 'custodes, saevitque canum latratus in auras.',
+    matchedOn: 'canis, latro',
+    score: 9
+  },
+  {
+    target: 'luc. 1.645',
+    targetText: 'Humano matura lues. Terraene dehiscent,',
+    source: 'verg. aen. 8.243',
+    sourceText: 'non secus ac siqua penitus vi terra dehiscens',
+    matchedOn: 'terra, dehisco',
+    score: 8
+  },
+]
+
+
 class ResultsTable extends React.Component {
   constructor(props) {
     super(props);
@@ -83,7 +139,7 @@ class ResultsTable extends React.Component {
       page: 0,
       resultsPerPage: 100,
       sortHeader: 'score',
-      sortOrder: -1
+      sortOrder: 1
     }
   }
 
@@ -95,11 +151,21 @@ class ResultsTable extends React.Component {
 
   handleChangeRowsPerPage = event => {
     const value = parseInt(event.target.value, 10);
-    const resultsPerPage = Math.min(Math.max(value, 0), this.props.results.length)
+    const resultsPerPage = Math.min(Math.max(value, 0), 500);
     this.setState({
       resultsPerPage: resultsPerPage,
       page: 0
     })
+  }
+
+  handleSortUpdate = header =>{
+    const { sortHeader, sortOrder } = this.state
+    const newSortHeader = header.toLowerCase();
+    const newSortOrder = newSortHeader === sortHeader ? -sortOrder : -1;
+    this.setState({
+      sortHeader: newSortHeader,
+      sortOrder: newSortOrder
+    });
   }
 
   render() {
@@ -128,6 +194,7 @@ class ResultsTable extends React.Component {
         <div>
           <Table>
             <ResultsTableHeader
+              handleSortUpdate={this.handleSortUpdate}
               labels={headerLabels}
               sortHeader={sortHeader}
               sortOrder={sortOrder}
@@ -150,4 +217,11 @@ class ResultsTable extends React.Component {
 }
 
 
-export default ResultsTable;
+function mapStateToProps(state) {
+  return {
+    results: resultsList
+  }
+}
+
+
+export default connect(mapStateToProps)(ResultsTable);
