@@ -1,5 +1,5 @@
 export function getAvailableLanguages() {
-  return ['Greek', 'Latin']
+  return ['greek', 'latin']
 }
 
 export function loadTextMetadata(language) {
