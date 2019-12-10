@@ -18,7 +18,7 @@ import TextField from '@material-ui/core/TextField';
 
 
 function SearchableDropdown(props) {
-  const { onChange, helperText, options, placeholder } = props;
+  const { onChange, helperText, options, placeholder, value } = props;
 
   return (
       <FormControl fullWidth>

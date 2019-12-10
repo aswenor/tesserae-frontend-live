@@ -26,7 +26,7 @@ function LabeledSelect(props) {
     <FormControl fullWidth>
       <Select
         variant="outlined"
-        value={props.value}
+        value={props.value.value}
       >
         {menuItems}
       </Select>
