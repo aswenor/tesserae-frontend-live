@@ -28,10 +28,14 @@ const styles = theme => ({
   root: {
     display: 'flex'
   },
-  parameterForm: {
-    height: '89vh',
+  parametersPanel: {
+    height: '88vh',
     borderRight: '3px solid black',
-    overflowY: 'scroll'
+    overflowY: 'scroll',
+  },
+  tablePanel: {
+    height: '88vh',
+    overflorwY: 'scroll' 
   },
   tabs: {
     width: '100%'
@@ -126,12 +130,12 @@ class SearchPrototypeB extends React.Component {
               </Tabs>
             </AppBar>
             <Grid item sm={4} xs={12}>
-              <Paper className={classes.parameterForm}>
+              <Paper className={classes.parametersPanel}>
                 <SearchParametersForm />
               </Paper>
             </Grid>
             <Grid item sm={8} xs={12}>
-              <Paper>
+              <Paper className={classes.tablePanel}>
                 <ResultsTable />
               </Paper>
             </Grid>
