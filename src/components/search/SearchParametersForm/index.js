@@ -28,7 +28,7 @@ function SearchParametersForm(props) {
   return (
     <section>
       <ExpansionPanel
-        expanded="true"
+        expanded={true}
       >
         {/* <ExpansionPanelSummary
           aria-controls="select-text-form"

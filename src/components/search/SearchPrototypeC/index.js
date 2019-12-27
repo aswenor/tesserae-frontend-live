@@ -90,6 +90,7 @@ class SearchPrototypeC extends React.Component {
     const tabs = languages.map((item, idx) => {
       return (
         <Tab
+          key={item}
           label={item}
           value={idx}
           onClick={() => this.handleChangeTab(idx)}
@@ -122,16 +123,16 @@ class SearchPrototypeC extends React.Component {
         </Provider> */}
         <Provider store={store}>
           <Grid container>
-            <Grid item xs={12} direction="column">
+            <Grid item xs={12}>
               <AppBar position="static">
                 <Grid container spacing={2}>
-                  <Grid item xs={0.5}>
+                  <Grid item xs={1}>
                     <PanelOpenIcon
                       onClick={this.handleTogglePanel}
                       open={panelOpen}
                     />
                   </Grid>
-                  <Grid item xs={11.5}>
+                  <Grid item xs={10}>
                     <Tabs
                       className={classes.tabs}
                       value={currentTab}

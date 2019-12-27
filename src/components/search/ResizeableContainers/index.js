@@ -30,8 +30,6 @@ class ResizeableContainers extends React.Component {
   constructor(props) {
     super(props);
 
-    this.totalWidth = window.innerWidth !== null ? window.innerWidth : window.document.documentElement.clientWidth;
-
     this.state = {
       leftWidth: props.leftMinWidth,
       moving: false,
@@ -39,6 +37,11 @@ class ResizeableContainers extends React.Component {
       unit: '%'
     };
   }
+
+  getTotalWidth = () => window.innerWidth !== null
+      ? window.innerWidth
+      : window.document.documentElement.clientWidth;
+
 
   handleClickDivider = event => {
     if (event.stopPropagation) {
@@ -58,9 +61,14 @@ class ResizeableContainers extends React.Component {
       if (event.preventDefault) {
         event.preventDefault();
       }
+      const totalWidth = this.getTotalWidth();
       const mouseX = event.pageX;
-      const rightWidth = Math.max(this.totalWidth - mouseX, this.props.rightMinWidth);
-      const leftWidth = this.totalWidth - rightWidth;
+      const rightMinWidth = this.props.rightMinWidth * totalWidth / 100;
+      const leftMaxWidth = totalWidth - rightMinWidth;
+      const leftMinWidth = this.props.leftMinWidth * totalWidth / 100;
+      const leftWidth = Math.min(Math.max(mouseX, leftMinWidth), leftMaxWidth);
+      const rightWidth = totalWidth - leftWidth;
+
       this.setState({ leftWidth, rightWidth, unit: 'px' });
     }
   }
@@ -79,10 +87,11 @@ class ResizeableContainers extends React.Component {
     const { leftWidth, moving, rightWidth, unit } = this.state;
     const { classes, leftMinWidth, rightMinWidth } = this.props;
 
+    const totalWidth = this.getTotalWidth()
     const leftWidthVal = `${leftWidth}${unit}`;
-    const leftMinWidthVal = this.totalWidth * (leftMinWidth / 100);
+    const leftMinWidthVal = totalWidth * (leftMinWidth / 100);
     const rightWidthVal = `${rightWidth}${unit}`;
-    const rightMinWidthVal = this.totalWidth * (rightMinWidth / 100);
+    const rightMinWidthVal = totalWidth * (rightMinWidth / 100);
 
     return (
       <Box

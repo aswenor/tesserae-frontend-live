@@ -33,12 +33,4 @@ class NavBar extends React.Component {
 }
 
 
-NavBar.propTypes = {
-  routes: PropTypes.arrayOf(
-    PropTypes.shape({
-      link: PropTypes.string,
-      name: PropTypes.string
-    }))
-};
-
 export default NavBar;

@@ -37,19 +37,4 @@ function SearchableDropdown(props) {
 };
 
 
-SearchableDropdown.propTypes = {
-  onChange: PropTypes.func,
-  helperText: PropTypes.string,
-  options: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.string
-  })),
-  placeholder: PropTypes.string,
-  value: PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.string
-  })
-};
-
-
 export default SearchableDropdown;
