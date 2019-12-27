@@ -1,21 +1,27 @@
 import React from 'react';
 
+import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import ResizeBox from '../../common/ResizeBox';
+import ResultsTable from '../ResultsTable';
+import SearchParametersForm from '../SearchParametersForm';
+
 
 const styles = theme => ({
-  leftPanel: {
-    height: '88vh'
+  root: {
+    display: 'flex',
+    width: '100vw',
+    height: '88.5vh'
   },
   divider: {
-    '&:hover': { 
+    width: '10px',
+    '&:hover': {
       cursor: 'col-resize'
     }
-  },
-  rightPanel: {
-    height: '88vh'
   }
 });
 
@@ -23,55 +29,89 @@ const styles = theme => ({
 class ResizeableContainers extends React.Component {
   constructor(props) {
     super(props);
+
+    this.totalWidth = window.innerWidth !== null ? window.innerWidth : window.document.documentElement.clientWidth;
+
     this.state = {
-      leftWidth: '50vh',
+      leftWidth: props.leftMinWidth,
       moving: false,
-      rightWidth: '50vh',
+      rightWidth: 100 - props.leftMinWidth,
+      unit: '%'
     };
   }
 
   handleClickDivider = event => {
+    if (event.stopPropagation) {
+      event.stopPropagation();
+    }
+    if (event.preventDefault) {
+      event.preventDefault();
+    }
     this.setState({moving: true});
   }
 
   handleMoveDivider = event => {
-    
+    if (this.state.moving) {
+      if (event.stopPropagation) {
+        event.stopPropagation();
+      }
+      if (event.preventDefault) {
+        event.preventDefault();
+      }
+      const mouseX = event.pageX;
+      const rightWidth = Math.max(this.totalWidth - mouseX, this.props.rightMinWidth);
+      const leftWidth = this.totalWidth - rightWidth;
+      this.setState({ leftWidth, rightWidth, unit: 'px' });
+    }
   }
 
   handleReleaseDivider = event => {
+    if (event.stopPropagation) {
+      event.stopPropagation();
+    }
+    if (event.preventDefault) {
+      event.preventDefault();
+    }
     this.setState({moving: false});
   }
-  
+
   render() {
-    const { leftWidth, moving, rightWidth } = this.state;
-    const { classes } = this.props;
+    const { leftWidth, moving, rightWidth, unit } = this.state;
+    const { classes, leftMinWidth, rightMinWidth } = this.props;
 
-    const leftStyles = {
-      ...classes.leftStyles,
-      width: leftWidth
-    };
-
-    const rightStyles = {
-      ...classes.rightStyles,
-      width: rightWidth
-    };
+    const leftWidthVal = `${leftWidth}${unit}`;
+    const leftMinWidthVal = this.totalWidth * (leftMinWidth / 100);
+    const rightWidthVal = `${rightWidth}${unit}`;
+    const rightMinWidthVal = this.totalWidth * (rightMinWidth / 100);
 
     return (
-      <div>
-        <div className={leftStyles}>
-
-        </div>
+      <Box
+        component="div"
+        id="resizeable-outerbox"
+        className={classes.root}
+        onMouseMove={this.handleMoveDivider}
+        onMouseUp={this.handleReleaseDivider}
+      >
+        <ResizeBox
+          component="div"
+          width={leftWidthVal}
+          minWidth={leftMinWidthVal}
+        >
+          <SearchParametersForm width={leftWidthVal}/>
+        </ResizeBox>
         <Divider
           className={classes.divider}
           onMouseDown={this.handleClickDivider}
-          onMouseMove={this.handleMoveDivider}
-          onMouseUp={this.handleReleaseDivider}
-          orientation='vertical'  
+          orientation='vertical'
         />
-        <div className={leftStyles}>
-
-        </div>
-      </div>
+        <ResizeBox
+          component="div"
+          width={rightWidthVal}
+          minWidth={rightMinWidthVal}
+        >
+          <ResultsTable />
+        </ResizeBox>
+      </Box>
     );
   }
 }

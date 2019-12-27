@@ -17,15 +17,11 @@ import TextSelectGroup from '../TextSelectGroup';
 import { stat } from 'fs';
 
 
-// const useStyles = makeStyles(theme => ({
-//   formControl: {
-//     margin: theme.spacing(1),
-//     minWidth: 120,
-//   },
-//   selectEmpty: {
-//     marginTop: theme.spacing(2),
-//   },
-// }));
+const useStyles = makeStyles({
+  formControl: {
+    minWidth: 120,
+  }
+});
 
 
 function SearchParametersForm(props) {
@@ -34,30 +30,28 @@ function SearchParametersForm(props) {
       <ExpansionPanel
         expanded="true"
       >
-        <ExpansionPanelSummary
+        {/* <ExpansionPanelSummary
           aria-controls="select-text-form"
           id="select-text-header"
-        >
-          {/* <Typography
+          >
+          <Typography
             align="left"
             variant="h5"
             >
             Select Texts to Search
-          </Typography> */}
-        </ExpansionPanelSummary>
+          </Typography>
+        </ExpansionPanelSummary> */}
         <ExpansionPanelDetails>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Grid container spacing={2}>
-                <Grid item md={1} xs={0}></Grid>
-                <Grid item md={5} xs={12}>
-                  <TextSelectGroup title="Source Text" language={props.language} />
-                </Grid>
-                <Grid item md={5} xs={12}>
-                  <TextSelectGroup title="Target Text" language={props.language} />
-                </Grid>
-                <Grid item md={1} xs={0}></Grid>
-              </Grid>
+          <Grid
+            container
+            spacing={2}
+            justify="space-evenly"
+          >
+            <Grid item md={12} xs={12}>
+              <TextSelectGroup title="Source Text" language={props.language} />
+            </Grid>
+            <Grid item md={12} xs={12}>
+              <TextSelectGroup title="Target Text" language={props.language} />
             </Grid>
             <Grid item xs={12}>
               <Button

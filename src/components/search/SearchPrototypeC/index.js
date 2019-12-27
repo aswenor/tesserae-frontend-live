@@ -5,9 +5,14 @@ import { createStore } from 'redux';
 import AppBar from '@material-ui/core/AppBar';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -43,6 +48,19 @@ const a11yProps = (index) => {
 }
 
 
+function PanelOpenIcon(props) {
+  const { onClick, open } = props;
+  return (
+    <IconButton
+      aria-label={open ? "open panel" : "close panel"}
+      onClick={onClick}
+    >
+      {open ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+    </IconButton>
+  );
+}
+
+
 class SearchPrototypeC extends React.Component {
   constructor(props) {
     super(props);
@@ -50,7 +68,8 @@ class SearchPrototypeC extends React.Component {
     this.state = {
       currentTab: languages.indexOf('latin'),
       language: languages[languages.indexOf('latin')],
-      languages: languages
+      languages: languages,
+      panelOpen: true
     };
   }
 
@@ -60,9 +79,13 @@ class SearchPrototypeC extends React.Component {
     this.setState({ language: newLang, currentTab: newTab });
   }
 
+  handleTogglePanel = () => {
+    this.setState({ panelOpen: !this.state.panelOpen });
+  }
+
   render() {
     const { classes } = this.props;
-    const { currentTab, language, languages } = this.state;
+    const { currentTab, language, languages, panelOpen } = this.state;
 
     const tabs = languages.map((item, idx) => {
       return (
@@ -80,24 +103,53 @@ class SearchPrototypeC extends React.Component {
         {/* <Provider store={store}>
           <Grid container>
             <Grid item xs={12}>
-              <AppBar position="static">
-                <Tabs
-                  className={classes.tabs}
-                  value={currentTab}
-                >
-                  {tabs}
-                </Tabs>
-              </AppBar>
+          <AppBar position="static">
+          <Tabs
+          className={classes.tabs}
+          value={currentTab}
+          >
+          {tabs}
+          </Tabs>
+          </AppBar>
             </Grid>
             <Grid item>
-              <SearchParametersForm />             
+          <SearchParametersForm />
             </Grid>
             <Grid item>
-              <ResultsTable />             
+          <ResultsTable />
             </Grid>
           </Grid>
         </Provider> */}
-        <ResizeableContainers />
+        <Provider store={store}>
+          <Grid container>
+            <Grid item xs={12} direction="column">
+              <AppBar position="static">
+                <Grid container spacing={2}>
+                  <Grid item xs={0.5}>
+                    <PanelOpenIcon
+                      onClick={this.handleTogglePanel}
+                      open={panelOpen}
+                    />
+                  </Grid>
+                  <Grid item xs={11.5}>
+                    <Tabs
+                      className={classes.tabs}
+                      value={currentTab}
+                    >
+                      {tabs}
+                    </Tabs>
+                  </Grid>
+                </Grid>
+              </AppBar>
+            </Grid>
+            <Grid item xs={12}>
+              <ResizeableContainers
+                leftMinWidth={panelOpen ? 25 : 0}
+                rightMinWidth={40}
+              />
+            </Grid>
+        </Grid>
+      </Provider>
       </main>
     );
   }

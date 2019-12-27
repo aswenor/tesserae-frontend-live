@@ -10,15 +10,13 @@ import SearchableDropdown from '../../common/SearchableDropdown';
 import { loadTextMetadata } from '../../../api/corpus';
 
 
-// const useStyles = makeStyles( (theme) => ({
-//   formControl: {
-//     margin: theme.spacing(1),
-//     minWidth: 120,
-//   },
-//   selectEmpty: {
-//     marginTop: theme.spacing(2),
-//   }
-// }));
+const useStyles = makeStyles({
+  formControl: {
+    minWidth: 120,
+  },
+  selectEmpty: {
+  }
+});
 
 
 class TextSelectGroup extends React.Component {
