@@ -1,17 +1,21 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+
+import { withStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
 
 import LabeledSelect from '../../common/LabeledSelect';
 
-// const useStyles = makeStyles( theme => ({
-//     select: {
-//       marginTop: 10,
-//       marginLeft: '5%',
-//       width: '90%'
-//     }
-// }));
+import { updateSearchParameters } from '../../../state_management/search';
+
+const styles = {
+  select: {
+    marginTop: 10,
+    marginLeft: '5%',
+    width: '90%'
+  }
+};
 
 
 function prepListItem(item) {
@@ -34,27 +38,14 @@ const dummyDropScoresBelow = ['No Cutoff', '3', '4', '5', '6', '7', '8', '9'];
 
 
 class AdvancedOptionsGroup extends React.Component {
-  state = {
-    unitType: {label: 'phrase', value: 'phrase'},
-    feature: {label: 'lemma', value: 'lemma'},
-    stoplist: {label: '10', value: '10'},
-    stoplistBasis: {label: 'corpus', value: 'corpus'},
-    scoreBasis: {label: 'word', value: 'word'},
-    frequencyBasis: {label: 'corpus', value: 'corpus'},
-    maxDistance: {label: '10 words', value: '10 words'},
-    distanceMetric: {label: 'frequency', value: 'frequency'},
-    dropScoresBelow: {label: '6', value: '6'}
-  }
-
   handleChange = parameter => event => {
-    this.setState({ [parameter]: event.target.value })
+    this.props.dispatch(updateSearchParameters({ [parameter]: event.target.value }))
   }
 
   render() {
     const { unitType, feature, stoplist, stoplistBasis,
             scoreBasis, frequencyBasis, maxDistance,
-            distanceMetric, dropScoresBelow } = this.state;
-    // const classes = useStyles();
+            distanceMetric, dropScoresBelow, classes } = this.props;
 
     const unitTypesList = dummyUnitTypes.map(prepListItem);
     const featuresList = dummyFeatures.map(prepListItem);
@@ -160,4 +151,14 @@ class AdvancedOptionsGroup extends React.Component {
 }
 
 
-export default AdvancedOptionsGroup;
+function mapStateToProps(state) {
+  const { unitType, feature, stoplist, stoplistBasis,
+          scoreBasis, frequencyBasis, maxDistance,
+          distanceMetric, dropScoresBelow } = state.searchParameters;
+  return { unitType, feature, stoplist, stoplistBasis,
+           scoreBasis, frequencyBasis, maxDistance,
+           distanceMetric, dropScoresBelow };
+}
+
+
+export default connect(mapStateToProps)(withStyles(styles)(AdvancedOptionsGroup));

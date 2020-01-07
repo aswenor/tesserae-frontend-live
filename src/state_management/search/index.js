@@ -5,6 +5,7 @@
  * @author Jeff Kinnison <jkinniso@nd.edu>
  */
 
+
 /**
  * Default state for Tesserae searches.
  */
@@ -18,13 +19,13 @@ const DEFAULTS = {
     ],
     unitType: 'phrase',
     feature: 'lemma',
-    stoplist: 10,
+    stoplist: '10',
     stoplistBasis: 'corpus',
     scoreBasis: 'word',
     frequencyBasis: 'corpus',
-    maxDistance: 10,
+    maxDistance: '10 words',
     distanceMetric: 'frequency',
-    dropScoresBelow: 6
+    dropScoresBelow: '6'
   },
   results: [],
   resultCount: 0,
@@ -46,10 +47,10 @@ const ACTIONS = {
 
 
 /**
- * Update the current Tesserae REST API search parameters.
+ * Prep an action to ipdate the current Tesserae REST API search parameters.
  *
  * @param {Object} newParameters - New search parameters.
- * @returns
+ * @returns {Object} A Redux-style action object.
  */
 export const updateSearchParameters = (newParameters = DEFAULTS.searchParameters) => ({
   type: 'UPDATESEARCHPARAMETERS',
@@ -58,7 +59,10 @@ export const updateSearchParameters = (newParameters = DEFAULTS.searchParameters
 
 
 /**
- *
+ * Prep an action to update the results page number.
+ * 
+ * @param {number} newPage - Index of the new page.
+ * @returns {Object} A Redux-style action object.
  */
 const changePage = (newPage = DEFAULTS.currentPage) => ({
   type: 'CHANGEPAGE',
@@ -66,12 +70,24 @@ const changePage = (newPage = DEFAULTS.currentPage) => ({
 });
 
 
+/**
+ * Prep an action to update the number of results displayed on a page.
+ *
+ * @param {number} newResultsPerPage - New search parameters.
+ * @returns {Object} A Redux-style action object.
+ */
 const changeResultsPerPage = (resultsPerPage = DEFAULTS.resultsPerPage) => ({
   type: 'CHANGERESULTSPERPAGE',
   payload: { resultsPerPage }
 });
 
 
+/**
+ * Prep an action to update search results through the Tesserae REST API.
+ *
+ * @param {Array} newResults - New search results to display.
+ * @returns {Object} A Redux-style action object.
+ */
 const updateCurrentResults = (newResults = DEFAULTS.results) => ({
   type: 'UPDATECURRENTRESULTS',
   payload: { newResults }
@@ -94,15 +110,15 @@ export function searchReducer(state = DEFAULTS, action) {
 /**
  * Update parameters governing a Tesserae search.
  *
- * @param {Object} state - Application state with search metadata.
- * @param {Object} payload -
+ * @param {Object} state - Application state with current search parameters.
+ * @param {Object} payload - New search parameters to apply.
  */
 function updateSearchParametersReducer(state, payload) {
   const newState = {
     ...state,
-    search_parameters: {
-      ...state.search_parameters,
-      ...payload.newParameters
+    searchParameters: {
+      ...state.searchParameters,
+      ...payload
     },
     loadResults: true
   };
@@ -110,6 +126,12 @@ function updateSearchParametersReducer(state, payload) {
 }
 
 
+/**
+ * Update the loaded results page.
+ *
+ * @param {Object} state - Application state with current results page.
+ * @param {Object} payload - New results page to load.
+ */
 function changePageReducer(state, payload) {
   const maxPage = Math.floor(state.result_count / state.results_per_page);
   let newPage = Math.min(Math.max(payload.newPage, 0), maxPage);
@@ -130,6 +152,12 @@ function changePageReducer(state, payload) {
 }
 
 
+/**
+ * Update the number of search results per page.
+ *
+ * @param {Object} state - Application state with current results page.
+ * @param {Object} payload - New results table state.
+ */
 function changeResultsPerPageReducer(state, payload) {
   const newState = {
     ...state,
@@ -140,6 +168,12 @@ function changeResultsPerPageReducer(state, payload) {
 }
 
 
+/**
+ * Update Tesserae search results table state.
+ *
+ * @param {Object} state - Application state with current results.
+ * @param {Object} payload - New results to load.
+ */
 function updateCurrentResultsReducer(state, payload) {
   const newState = {
     ...state,

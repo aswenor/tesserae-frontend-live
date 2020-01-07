@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
@@ -17,6 +18,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { withStyles } from '@material-ui/core/styles';
 
 import ResizeableContainers from '../ResizeableContainers';
+import StackedPanels from '../StackedPanels';
 import ResultsTable from '../ResultsTable';
 import SearchParametersForm from '../SearchParametersForm';
 
@@ -73,6 +75,10 @@ class SearchPrototypeC extends React.Component {
     };
   }
 
+  getTotalWidth = () => window.innerWidth !== null
+      ? window.innerWidth
+      : window.document.documentElement.clientWidth;
+
   handleChangeTab = (tabIdx) => {
     const newTab = tabIdx;
     const newLang = this.state.languages[newTab];
@@ -98,6 +104,10 @@ class SearchPrototypeC extends React.Component {
         />
       )
     });
+
+    // const totalWidth = this.getTotalWidth();
+    const matches = true; //useMediaQuery('(width:700px)');
+    console.log(matches);
 
     return (
       <main className={classes.root}>
@@ -144,10 +154,14 @@ class SearchPrototypeC extends React.Component {
               </AppBar>
             </Grid>
             <Grid item xs={12}>
-              <ResizeableContainers
-                leftMinWidth={panelOpen ? 25 : 0}
-                rightMinWidth={40}
-              />
+              {matches ? (
+                <ResizeableContainers
+                    leftMinWidth={panelOpen ? 25 : 0}
+                    rightMinWidth={40}
+                  />
+              ) : (
+                <StackedPanels />
+              )}
             </Grid>
         </Grid>
       </Provider>

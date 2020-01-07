@@ -14,7 +14,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
-import { stat } from 'fs';
 
 
 const useStyles = makeStyles({
@@ -25,6 +24,8 @@ const useStyles = makeStyles({
 
 
 function SearchParametersForm(props) {
+  const { language } = props;
+
   return (
     <section>
       <ExpansionPanel
@@ -48,10 +49,10 @@ function SearchParametersForm(props) {
             justify="space-evenly"
           >
             <Grid item md={12} xs={12}>
-              <TextSelectGroup title="Source Text" language={props.language} />
+              <TextSelectGroup title="Source Text" language={language} />
             </Grid>
             <Grid item md={12} xs={12}>
-              <TextSelectGroup title="Target Text" language={props.language} />
+              <TextSelectGroup title="Target Text" language={language} />
             </Grid>
             <Grid item xs={12}>
               <Button

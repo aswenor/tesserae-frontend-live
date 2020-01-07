@@ -44,7 +44,7 @@ export function loadTextMetadata(language) {
         },
         {
             "language": "latin",
-            "title": "de bellum civile",
+            "title": "bellum civile",
             "author": "lucan",
             "year": 61,
             "unit_types": ["line", "phrase"],
