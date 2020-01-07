@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import Box from '@material-ui/core/Box';
@@ -8,7 +8,6 @@ import Hidden from '@material-ui/core/Hidden';
 
 import ResultsTable from '../ResultsTable';
 import SearchParametersForm from '../SearchParametersForm';
-import { render } from 'react-dom';
 
 
 const styles = theme => ({
@@ -49,11 +48,12 @@ const panelStyles = makeStyles(theme => ({
     marginLeft: 0,
     marginRight: 0,
     [theme.breakpoints.up('md')]: {
+      display : props => props.width > 0 ? 'auto' : 'hidden',
       float: 'left',
       overflowX: 'auto',
       overflowY: 'auto',
       width: props => props.width,
-      minWidth: props => props.minWidth
+      minWidth: props => props.width > 0 ? props.minWidth : 0
     },
     [theme.breakpoints.down('sm')]: {
       width: '100%',
@@ -89,7 +89,7 @@ class ReactivePanels extends React.Component {
       leftWidth: props.leftMinWidth,
       moving: false,
       rightWidth: 100 - props.leftMinWidth,
-      unit: '%'
+      unit: '%',
     };
   }
 
@@ -136,15 +136,15 @@ class ReactivePanels extends React.Component {
     }
     this.setState({moving: false});
   }
-  
+
   render() {
     const { leftWidth, rightWidth, unit } = this.state;
-    const { classes, leftMinWidth, rightMinWidth } = this.props;
-    
+    const { classes, leftMinWidth, open, rightMinWidth } = this.props;
+
     const totalWidth = this.getTotalWidth()
-    const leftWidthVal = `${leftWidth}${unit}`;
+    const leftWidthVal = open ? `${leftWidth}${unit}` : "0";
     const leftMinWidthVal = totalWidth * (leftMinWidth / 100);
-    const rightWidthVal = `${rightWidth - 2}${unit}`;
+    const rightWidthVal = open ? `${rightWidth - 2}${unit}` : "100%";
     const rightMinWidthVal = totalWidth * (rightMinWidth / 100);
 
     return (
@@ -160,13 +160,15 @@ class ReactivePanels extends React.Component {
         >
           <SearchParametersForm />
         </ReactivePanel>
-        <Hidden only={['xs', 'sm']}>
-          <Divider
-            className={classes.divider}
-            onMouseDown={this.handleClickDivider}
-            orientation='vertical'
-          />
-        </Hidden>
+        {open &&
+          <Hidden only={['xs', 'sm']}>
+            <Divider
+              className={classes.divider}
+              onMouseDown={this.handleClickDivider}
+              orientation='vertical'
+            />
+          </Hidden>
+        }
         <ReactivePanel
           minWidth={rightMinWidthVal}
           width={rightWidthVal}
