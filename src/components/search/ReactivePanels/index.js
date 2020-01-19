@@ -12,16 +12,17 @@ import SearchParametersForm from '../SearchParametersForm';
 
 const styles = theme => ({
   root: {
-    display: 'flex',
     paddingTop: 0,
     paddingmarginBottom: 0,
     paddingmarginLeft: 0,
     paddingRight: 0,
     width: '100%',
     [theme.breakpoints.up('md')]: {
+      display: 'flex',
       height: '86.5vh'
     },
     [theme.breakpoints.down('xs')]: {
+      display: 'inline-block',
       height: '100%'
     }
   },

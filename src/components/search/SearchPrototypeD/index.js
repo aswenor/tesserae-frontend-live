@@ -7,9 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import LanguagesAppBar from '../LanguagesAppBar';
-import ResizeableContainers from '../ResizeableContainers';
 import ReactivePanels from '../ReactivePanels';
-import StackedPanels from '../StackedPanels';
 
 import { searchReducer } from '../../../state_management/search';
 

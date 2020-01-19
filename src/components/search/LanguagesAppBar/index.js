@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
@@ -35,14 +36,16 @@ const a11yProps = (index) => {
 
 function PanelOpenIcon(props) {
   const { onClick, open } = props;
-  console.log(open);
+  const icon = open ? <ArrowBackIcon /> : <ArrowForwardIcon />
   return (
-    <IconButton
-      aria-label={open ? "open panel" : "close panel"}
-      onClick={onClick}
-    >
-      {open ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-    </IconButton>
+    <Hidden only={['xs', 'sm']}>
+      <IconButton
+        aria-label={open ? "open panel" : "close panel"}
+        onClick={onClick}
+      >
+        {icon}
+      </IconButton>
+    </Hidden>
   );
 }
 
@@ -75,13 +78,13 @@ function LanguagesAppBar(props) {
   return (
     <AppBar position="static">
       <Grid container spacing={2}>
-        <Grid item md={1}>
+        <Grid item xs={1}>
           <PanelOpenIcon
             onClick={handlePanelOpen}
             open={open}
           />
         </Grid>
-        <Grid item md={11} xs={12}>
+        <Grid item xs={11}>
           <Tabs
             className={classes.tabs}
             value={currentTab}
