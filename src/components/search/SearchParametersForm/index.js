@@ -49,10 +49,16 @@ function SearchParametersForm(props) {
             justify="space-evenly"
           >
             <Grid item md={12} xs={12}>
-              <TextSelectGroup title="Source Text" language={language} />
+              <TextSelectGroup
+                title="Source Text"
+                language={language}
+              />
             </Grid>
             <Grid item md={12} xs={12}>
-              <TextSelectGroup title="Target Text" language={language} />
+              <TextSelectGroup
+                title="Target Text"
+                language={language}
+              />
             </Grid>
             <Grid item xs={12}>
               <Button
@@ -88,6 +94,7 @@ function SearchParametersForm(props) {
 
 const mapStateToProps = (state) => {
   return {
+    availableTexts: state.searchParameters.availableTexts,
     language: state.searchParameters.language,
     texts: state.searchParameters.texts
   };

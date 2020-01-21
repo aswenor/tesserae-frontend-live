@@ -19,6 +19,47 @@ const useStyles = makeStyles({
 });
 
 
+function TextSelectGroup(props) {
+  const { handleAuthorChange, handleTextChange, index,
+          selectedAuthor, selectedText, textList } = this.props;
+  const classes = useStyles();
+
+  const authorItems = textList.map(t => t.author.toLowerCase())
+                              .filter((v, i, self) => self.indexOf(v) === i)
+                              .map(v => {return {label: v, value: v}})
+                              .sort((a, b) => b.label < a.label);
+
+  const textItems = textList.filter(t => selectedAuthor === '' || t.author.toLowerCase() === selectedAuthor)
+                            .map(t => { return {label: t.title, value: t.title}})
+                            .sort((a, b) => b.label < a.label);
+
+  return (
+    <div>
+      <Typography
+        align="left"
+        variant="h5"
+      >
+        {title}
+      </Typography>
+      <SearchableDropdown
+        isClearable
+        onChange={handleAuthorChange}
+        options={authorItems}
+        placeholder="Select an Author"
+        value={selectedAuthor}
+      />
+      <SearchableDropdown
+        isClearable
+        onChange={handleTextChange}
+        options={textItems}
+        placeholder="Select a Text"
+        value={selectedText}
+      />
+    </div>
+  );
+}
+
+
 class TextSelectGroup extends React.Component {
   constructor(props) {
     super(props);

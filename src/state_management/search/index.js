@@ -11,8 +11,9 @@
  */
 const DEFAULTS = {
   matchSet: null,
+  language: 'latin',
+  availableTexts: [],
   searchParameters: {
-    language: 'latin',
     texts: [
       {}, // source
       {}  // target
@@ -47,7 +48,21 @@ const ACTIONS = {
 
 
 /**
- * Prep an action to ipdate the current Tesserae REST API search parameters.
+ * Prep an action to update the language and available texts.
+ *
+ * @param {string} newLang - The new language to search.
+ * @returns {Object} A Redux-style action object.
+ **/
+export function updateLanguage(newLang = DEFAULTS.language){
+  return {
+    type: 'UPDATELANGUAGE',
+    payload: { }
+  };
+}
+
+
+/**
+ * Prep an action to update the current Tesserae REST API search parameters.
  *
  * @param {Object} newParameters - New search parameters.
  * @returns {Object} A Redux-style action object.
@@ -60,7 +75,7 @@ export const updateSearchParameters = (newParameters = DEFAULTS.searchParameters
 
 /**
  * Prep an action to update the results page number.
- * 
+ *
  * @param {number} newPage - Index of the new page.
  * @returns {Object} A Redux-style action object.
  */

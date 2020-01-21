@@ -23,7 +23,13 @@ const useStyles = makeStyles({
 });
 
 
-const languages = getAvailableLanguages().sort();
+async function getLanguages() {
+  let l = await getAvailableLanguages();
+  return l.sort().map(item => `${item[0].toUpperCase()}${item.slice(1)}`);
+}
+
+
+let languages = getAvailableLanguages().sort();
 
 
 const a11yProps = (index) => {
