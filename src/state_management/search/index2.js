@@ -13,21 +13,17 @@ const DEFAULTS = {
   searchID: null,
   language: 'latin',
   availableTexts: [],
-  searchParameters: {
-    texts: [
-      {}, // source
-      {}  // target
-    ],
-    unitType: 'phrase',
-    feature: 'lemma',
-    stoplist: '10',
-    stoplistBasis: 'corpus',
-    scoreBasis: 'word',
-    frequencyBasis: 'corpus',
-    maxDistance: '10 words',
-    distanceMetric: 'frequency',
-    dropScoresBelow: '6'
-  },
+  sourceText: {},
+  targetText: {},
+  unitType: 'phrase',
+  feature: 'lemma',
+  stoplist: '10',
+  stoplistBasis: 'corpus',
+  scoreBasis: 'word',
+  frequencyBasis: 'corpus',
+  maxDistance: '10 words',
+  distanceMetric: 'frequency',
+  dropScoresBelow: '6',
   results: [],
   resultCount: 0,
   currentPage: 0,
@@ -44,18 +40,17 @@ const DEFAULTS = {
 /**
  * Action types and their associted actions.
  */
-const ACTIONS = {
-  FETCH_TEXTS_PENDING: fetchTextsPending,
-  FETCH_TEXT_SUCCESS: fetchTextsSuccess,
-  FETCH_TEXTS_ERROR: fetchTextsError,
-  UPDATE_SEARCH_PARAMETERS: updateSearchParameters,
-  INITIATE_SEARCH_PENDING: initiateSearchPending,
-  INITIATE_SEARCH_SUCCESS: initiateSearchSuccess,
-  INITIATE_SEARCH_ERROR: initiateSearchError,
-  FETCH_RESULTS_PENDING: fetchResultsPending,
-  FETCH_RESULTS_SUCCESS: fetchResultsSuccess,
-  FETCH_RESULTS_ERROR: fetchResultsError
-};
+const FETCH_TEXTS_PENDING = 'FETCH_TEXTS_PENDING';
+const FETCH_TEXTS_SUCCESS = 'FETCH_TEXTS_SUCCESS';
+const FETCH_TEXTS_ERROR = 'FETCH_TEXTS_ERROR';
+const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
+const INITIATE_SEARCH_PENDING = 'INITIATE_SEARCH_PENDING';
+const INITIATE_SEARCH_SUCCESS = 'INITIATE_SEARCH_SUCCESS';
+const INITIATE_SEARCH_ERROR = 'INITIATE_SEARCH_ERROR';
+const FETCH_RESULTS_PENDING = 'FETCH_RESULTS_PENDING';
+const FETCH_RESULTS_SUCCESS = 'FETCH_RESULTS_SUCCESS';
+const FETCH_RESULTS_ERROR = 'FETCH_RESULTS_ERROR';
+
 
 
 /**
@@ -70,7 +65,7 @@ const ACTIONS = {
  **/
 export function fetchTextsPending(language = DEFAULTS.language) {
   return {
-    type: 'FETCH_TEXTS_PENDING',
+    type: FETCH_TEXTS_PENDING,
     payload: {
       language: language,
       fetchTextsPending: true
@@ -87,7 +82,7 @@ export function fetchTextsPending(language = DEFAULTS.language) {
  **/
 export function fetchTextsSuccess(availableTexts) {
   return {
-    type: 'FETCH_TEXTS_SUCCESS',
+    type: FETCH_TEXTS_SUCCESS,
     payload: {
       availableTexts: availableTexts,
       fetchTextsPending: false
@@ -104,7 +99,7 @@ export function fetchTextsSuccess(availableTexts) {
  **/
 export function fetchTextsError(error) {
   return {
-    type: 'FETCH_TEXTS_ERROR',
+    type: FETCH_TEXTS_ERROR,
     payload: {
       fetchTextsError: error,
       fetchTextsPending: false
@@ -120,7 +115,7 @@ export function fetchTextsError(error) {
  **/
 export function initiateSearchPending() {
   return {
-    type: 'INITIATE_SEARCH_PENDING',
+    type: INITIATE_SEARCH_PENDING,
     payload: {
       initiateSearchPending: true
     }
@@ -136,7 +131,7 @@ export function initiateSearchPending() {
  **/
 export function initiateSearchSuccess(searchID) {
   return {
-    type: 'INITIATE_SEARCH_SUCCESS',
+    type: INITIATE_SEARCH_SUCCESS,
     payload: {
       searchID: searchID,
       initiateSearchPending: false
@@ -153,7 +148,7 @@ export function initiateSearchSuccess(searchID) {
  **/
 export function initiateSearchError(error) {
   return {
-    type: 'INITIATE_SEARCH_ERROR',
+    type: INITIATE_SEARCH_ERROR,
     payload: {
       initiateSearchError: error,
       initiateSearchPending: false
@@ -169,7 +164,7 @@ export function initiateSearchError(error) {
  **/
 export function fetchResultsPending() {
   return {
-    type: 'FETCH_RESULTS_PENDING',
+    type: FETCH_RESULTS_PENDING,
     payload: {
       fetchResultsPending: true
     }
@@ -185,7 +180,7 @@ export function fetchResultsPending() {
  **/
 export function fetchResultsSuccess(results) {
   return {
-    type: 'FETCH_RESULTS_SUCCESS',
+    type: FETCH_RESULTS_SUCCESS,
     payload: {
       results: results,
       fetchResultsPending: false
@@ -202,10 +197,84 @@ export function fetchResultsSuccess(results) {
  **/
 export function fetchResultsError(error) {
   return {
-    type: 'FETCH_RESULTS_ERROR',
+    type: FETCH_RESULTS_ERROR,
     payload: {
       fetchResultsError: error,
       fetchResultsPending: false
     }
   };
+}
+
+
+/**
+ * Reducer
+ **/
+
+
+/**
+ * Update the application state.
+ * 
+ * Application state must be updated without mutating the current state. This
+ * function applies updates by unrolling the state object, then unrolling the
+ * action update to create a deep copy.
+ * 
+ * @param {Object} state - the current application state
+ * @param {Object} action - a redux-style action object
+ * @returns {Object} The object with updated state.
+ **/
+export function searchReducer(state = DEFAULTS, action = {}) {
+  switch (action.type) {
+    case FETCH_TEXTS_PENDING:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case FETCH_TEXTS_SUCCESS:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case FETCH_TEXTS_ERROR:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case UPDATE_SEARCH_PARAMETERS:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case INITIATE_SEARCH_PENDING:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case INITIATE_SEARCH_SUCCESS:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case INITIATE_SEARCH_ERROR:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case FETCH_RESULTS_PENDING:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case FETCH_RESULTS_SUCCESS:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case FETCH_RESULTS_ERROR:
+      return {
+        ...state,
+        ...action.payload
+      };
+    default:
+      return state;
+  }
 }

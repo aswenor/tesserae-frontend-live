@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -15,6 +16,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
 
+import { fetchTextsPending, fetchTextsSuccess, fetchTextsError } from '../../../state_management/search/index2.js';
 
 const useStyles = makeStyles({
   formControl: {
@@ -23,25 +25,39 @@ const useStyles = makeStyles({
 });
 
 
+function fetchTexts(language) {
+  return dispatch => {
+    dispatch(fetchTextsPending());
+    axios({
+      method: 'get',
+      url: 'https://tess-new.caset.buffalo.edu/api/texts',
+      responseType: 'json',
+      params: {
+        language: language
+      }
+    })
+    .then(response => {
+      dispatch(fetchTextsSuccess(response.data.texts));
+      return response.data.texts;
+    })
+    .catch(error => {
+      dispatch(fetchTextsError(error));
+    });
+  }
+}
+
+
 function SearchParametersForm(props) {
-  const { language } = props;
+  const { availableTexts, language, sourceText, targetText } = props;
+  const classes = useStyles();
+
+
 
   return (
     <section>
       <ExpansionPanel
         expanded={true}
       >
-        {/* <ExpansionPanelSummary
-          aria-controls="select-text-form"
-          id="select-text-header"
-          >
-          <Typography
-            align="left"
-            variant="h5"
-            >
-            Select Texts to Search
-          </Typography>
-        </ExpansionPanelSummary> */}
         <ExpansionPanelDetails>
           <Grid
             container
@@ -50,14 +66,16 @@ function SearchParametersForm(props) {
           >
             <Grid item md={12} xs={12}>
               <TextSelectGroup
+                selectedText={sourceText}
+                textList={availableTexts}
                 title="Source Text"
-                language={language}
               />
             </Grid>
             <Grid item md={12} xs={12}>
               <TextSelectGroup
+                selectedText={targetText}
+                textList={availableTexts}
                 title="Target Text"
-                language={language}
               />
             </Grid>
             <Grid item xs={12}>
@@ -94,9 +112,10 @@ function SearchParametersForm(props) {
 
 const mapStateToProps = (state) => {
   return {
-    availableTexts: state.searchParameters.availableTexts,
-    language: state.searchParameters.language,
-    texts: state.searchParameters.texts
+    availableTexts: state.availableTexts,
+    language: state.language,
+    sourceText: state.sourceText,
+    targetText: state.targetText
   };
 };
 
