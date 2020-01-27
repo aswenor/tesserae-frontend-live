@@ -37,7 +37,6 @@ export default function NavBar(props) {
   const routes = props.routes.map((route, i) => {
     return (
       <Grid item
-        alignContent="center"
         className={classes.routeGrid}
         key={route.link}
         sm={2}
