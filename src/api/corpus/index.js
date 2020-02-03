@@ -1,93 +1,145 @@
 import axios from 'axios';
 
+import * as actions from '../../state_management/search';
 
-export function getAvailableLanguages(config={}) {
-  // const url = `${config.APIURL}:${config.APIPort}/languages`;
-  // const languages = axios({
-  //   method: 'get',
-  //   url: url,
-  //   responseType: 'json'
-  // })
-  // .then(
-  //   response => response.data.languages
-  // )
-  // .catch(
-  //   error => error
-  // );
-  //
-  // return languages;
-  return ['greek', 'latin'];
+
+export function fetchLanguagesAction(pending) {
+  return dispatch => {
+    // if (!pending) {
+      console.log('Fetching languages');
+      dispatch(actions.fetchLanguagesSuccess(['greek', 'latin']));
+      return ['greek', 'latin']
+    //   dispatch(actions.fetchLanguagesPending);
+    //   axios({
+    //     method: 'get',
+    //     url: 'http://45.55.219.221:5000/languages',
+    //     crossDomain: true,
+    //     responseType: 'json',
+    //   })
+    //   .then(response => {
+    //     dispatch(actions.fetchLanguagesSuccess(response.data.languages));
+    //     return response.data.languages;
+    //   })
+    //   .catch(error => {
+    //     dispatch(actions.fetchLanguagesError(error));
+    //   });
+    }
+  // }
 }
 
 
-export function loadTextMetadata(language) {
-  const url = `https://tess-new.caset.buffalo.edu/api/texts`;
-  const texts = axios({
-    method: 'get',
-    url: url,
-    responseType: 'json'
-  })
-  .then(
-    response => response.data.texts
-  )
-  .catch(
-    error => error
-  );
+export function updateLanguageAction(language) {
+  return dispatch => {
+    dispatch(actions.updateLanguage(language));
+  }
+}
 
-  return texts;
-  // if ( language.toLowerCase() === 'greek' ) {
-  //   return [
-  //     {
-  //           "language": "greek",
-  //           "title": "iliad",
-  //           "author": "homer",
-  //           "year": -1260,
-  //           "unit_types": ["line", "phrase"],
-  //           "path": "grc/homer.iliad.tess",
-  //           "is_prose": false,
-  //           "hash": "9777e8cf1abacec70a22735131ebed4c",
-  //           "extras": {}
-  //       },
-  //       {
-  //           "language": "greek",
-  //           "title": "gorgias",
-  //           "author": "plato",
-  //           "year": -283,
-  //           "unit_types": ["line", "phrase"],
-  //           "path": "grc/plato.gorgias.tess",
-  //           "is_prose": false,
-  //           "hash": "9777e8cf1abacec70a22735131ebed4c",
-  //           "extras": {}
-  //       }
-  //   ];
-  // }
-  // else if ( language.toLowerCase() === 'latin' ) {
-  //   return [
-  //     {
-  //           "language": "latin",
-  //           "title": "aeneid",
-  //           "author": "vergil",
-  //           "year": -19,
-  //           "unit_types": ["line", "phrase"],
-  //           "path": "la/vergil.aeneid.tess",
-  //           "is_prose": false,
-  //           "hash": "265386d760c39b01f17d640f167d388a",
-  //           "extras": {}
-  //       },
-  //       {
-  //           "language": "latin",
-  //           "title": "bellum civile",
-  //           "author": "lucan",
-  //           "year": 61,
-  //           "unit_types": ["line", "phrase"],
-  //           "path": "la/lucan.bellum_civile.tess",
-  //           "is_prose": false,
-  //           "hash": "9777e8cf1abacec70a22735131ebed4c",
-  //           "extras": {}
-  //       }
-  //   ];
-  // }
-  // else {
-  //   return [];
-  // }
+
+export function fetchTextsAction(language, shouldFetch) {
+  return dispatch => {
+    console.log('In fetch texts');
+    if (shouldFetch) {
+      console.log('Fetching texts')
+      dispatch(actions.fetchTextsPending());
+      axios({
+        method: 'get',
+        url: 'http://45.55.219.221:5000/texts',
+        crossDomain: true,
+        responseType: 'json',
+        params: {
+          language: language
+        }
+      })
+      .then(response => {
+        dispatch(actions.fetchTextsSuccess(response.data.texts));
+        return response.data.texts;
+      })
+      .catch(error => {
+        dispatch(actions.fetchTextsError(error));
+      });
+    }
+  //   else {
+  //     dispatch(actions.fetchTextsSuccess([]))
+  //   }
+  }
+}
+
+
+export function updateSourceTextAction(event, value) {
+  const realval = value ? value : {author: '', title: ''};
+  return dispatch => dispatch(actions.updateSourceText(realval));
+}
+
+
+export function updateTargetTextAction(event, value) {
+  const realval = value ? value : {author: '', title: ''};
+  return dispatch => dispatch(actions.updateTargetText(realval));
+}
+
+
+export function updateSearchParametersAction(params) {
+  return dispatch => dispatch(actions.updateSearchParameters(params))
+}
+
+
+export function initiateSearchAction(source, target, params, pending) {
+  return dispatch => {
+    if (!pending) {
+      dispatch(actions.initiateSearchPending());
+      axios({
+          method: 'post',
+          url: 'http://45.55.219.221:5000/parallels',
+          crossDomain: true,
+          responseType: 'json',
+          data : {
+            source: {
+              object_id: source.object_id,
+              unit: params.unit
+            },
+            target: {
+              object_id: target.object_id,
+              unit: params.unit
+            },
+            method: {
+              name: 'original',
+              feature: params.feature,
+              stopwords: params.stopwords,
+              freq_basis: params.frequencyBasis,
+              max_distance: params.maxDistance,
+              distance_basis: params.distanceBasis
+            }
+          }
+      })
+      .then(response => {
+        const searchID = response.headers.split('/')[1]
+        dispatch(actions.initiateSearchSuccess(searchID));
+        return searchID;
+      })
+      .catch(error => {
+        dispatch(actions.initiateSearchError(error));
+      });
+    }
+  }
+}
+
+
+export function fetchResultsAction(searchID, pending) {
+  return dispatch => {
+    if (!pending) {
+      dispatch(actions.fetchResultsPending());
+      axios({
+          method: 'post',
+          url: `http://45.55.219.221:5000/parallels/${searchID}`,
+          crossDomain: true,
+          responseType: 'json'
+      })
+      .then(response => {
+        dispatch(actions.fetchResultsSuccess(response.data.parallels));
+        return response.data.parallels;
+      })
+      .catch(error => {
+        dispatch(actions.fetchResultsError(error));
+      });
+    }
+  }
 }
