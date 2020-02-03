@@ -11,6 +11,8 @@
  */
 export const DEFAULT_STATE = {
   searchID: null,
+  status: null,
+  availableLanguages: [],
   language: 'latin',
   availableTexts: [],
   sourceText: {author: '', title: ''},
@@ -30,9 +32,12 @@ export const DEFAULT_STATE = {
   resultCount: 0,
   currentPage: 0,
   resultsPerPage: 100,
+  shouldFetchTexts: true,
+  fetchLanguagesPending: false,
   fetchTextsPending: false,
   initiateSearchPending: false,
   fetchResultsPending: false,
+  fetchLanguagesError: null,
   fetchTextsError: null,
   initiateSearchError: null,
   fetchResultsError: null
@@ -42,6 +47,9 @@ export const DEFAULT_STATE = {
 /**
  * Action types and their associted actions.
  */
+const FETCH_LANGUAGES_PENDING = 'FETCH_LANGUAGES_PENDING';
+const FETCH_LANGUAGES_SUCCESS = 'FETCH_LANGUAGES_SUCCESS';
+const FETCH_LANGUAGES_ERROR = 'FETCH_LANGUAGES_ERROR';
 const UPDATE_LANGUAGE = 'UPDATE_LANGUAGE';
 const FETCH_TEXTS_PENDING = 'FETCH_TEXTS_PENDING';
 const FETCH_TEXTS_SUCCESS = 'FETCH_TEXTS_SUCCESS';
@@ -63,6 +71,50 @@ const FETCH_RESULTS_ERROR = 'FETCH_RESULTS_ERROR';
 
 
 /**
+ *  Create an action to fetch available languages from the REST API.
+ *
+ * @returns {Object} A redux-style action.
+ **/
+export function fetchLanguagesPending() {
+  return {
+    type: FETCH_LANGUAGES_PENDING
+  };
+}
+
+
+/**
+ *  Create an action to save languages fetched from the REST API.
+ *
+ * @param {Array} availableLanguages - list of languages to make available for search
+ * @returns {Object} A redux-style action.
+ **/
+export function fetchLanguagesSuccess(availableLanguages) {
+  return {
+    type: FETCH_LANGUAGES_SUCCESS,
+    payload: {
+      availableLanguages: availableLanguages
+    }
+  };
+}
+
+
+/**
+ *  Create an action to report an error fetching languages from the REST API.
+ *
+ * @param {Object} error - error log returned from the request
+ * @returns {Object} A redux-style action.
+ **/
+export function fetchLanguagesError(error = {}) {
+  return {
+    type: FETCH_LANGUAGES_ERROR,
+    payload: {
+      fetchLanguagesError: error
+    }
+  };
+}
+
+
+/**
 *  Create an action to update the language being searched.
 *
 * @param {String} language - language to filter the text list by
@@ -72,6 +124,7 @@ export function updateLanguage(language = DEFAULT_STATE.language) {
   return {
     type: UPDATE_LANGUAGE,
     payload: {
+      availableTexts: [],
       language: language
     }
   };
@@ -85,10 +138,7 @@ export function updateLanguage(language = DEFAULT_STATE.language) {
  **/
 export function fetchTextsPending() {
   return {
-    type: FETCH_TEXTS_PENDING,
-    payload: {
-      fetchTextsPending: true
-    }
+    type: FETCH_TEXTS_PENDING
   };
 }
 
@@ -104,7 +154,6 @@ export function fetchTextsSuccess(availableTexts) {
     type: FETCH_TEXTS_SUCCESS,
     payload: {
       availableTexts: availableTexts,
-      fetchTextsPending: false
     }
   };
 }
@@ -120,8 +169,7 @@ export function fetchTextsError(error = {}) {
   return {
     type: FETCH_TEXTS_ERROR,
     payload: {
-      fetchTextsError: error,
-      fetchTextsPending: false
+      fetchTextsError: error
     }
   };
 }
@@ -182,10 +230,7 @@ export function updateSearchParameters(searchParameters = DEFAULT_STATE.searchPa
  **/
 export function initiateSearchPending() {
   return {
-    type: INITIATE_SEARCH_PENDING,
-    payload: {
-      initiateSearchPending: true
-    }
+    type: INITIATE_SEARCH_PENDING
   };
 }
 
@@ -200,8 +245,7 @@ export function initiateSearchSuccess(searchID = null) {
   return {
     type: INITIATE_SEARCH_SUCCESS,
     payload: {
-      searchID: searchID,
-      initiateSearchPending: false
+      searchID: searchID
     }
   };
 }
@@ -217,8 +261,7 @@ export function initiateSearchError(error = {}) {
   return {
     type: INITIATE_SEARCH_ERROR,
     payload: {
-      initiateSearchError: error,
-      initiateSearchPending: false
+      initiateSearchError: error
     }
   };
 }
@@ -231,10 +274,7 @@ export function initiateSearchError(error = {}) {
  **/
 export function fetchResultsPending() {
   return {
-    type: FETCH_RESULTS_PENDING,
-    payload: {
-      fetchResultsPending: true
-    }
+    type: FETCH_RESULTS_PENDING
   };
 }
 
@@ -249,8 +289,7 @@ export function fetchResultsSuccess(results = []) {
   return {
     type: FETCH_RESULTS_SUCCESS,
     payload: {
-      results: results,
-      fetchResultsPending: false
+      results: results
     }
   };
 }
@@ -266,8 +305,7 @@ export function fetchResultsError(error = {}) {
   return {
     type: FETCH_RESULTS_ERROR,
     payload: {
-      fetchResultsError: error,
-      fetchResultsPending: false
+      fetchResultsError: error
     }
   };
 }
@@ -291,34 +329,56 @@ export function fetchResultsError(error = {}) {
  **/
 export function searchReducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
+    case FETCH_LANGUAGES_PENDING:
+      return {
+        ...state,
+        fetchLanguagesPending: true
+      };
+    case FETCH_LANGUAGES_SUCCESS:
+      return {
+        ...state,
+        availableLanguages: action.payload.availableLanguages,
+        fetchLanguagesPending: false
+      };
+    case FETCH_LANGUAGES_ERROR:
+      return {
+        ...state,
+        fetchLanguagesError: action.payload.error,
+        fetchLanguagesPending: false
+      };
     case UPDATE_LANGUAGE:
       return {
         ...state,
-        language: action.payload.language
+        availableTexts: action.payload.availableTexts,
+        language: action.payload.language,
+        shouldFetchTexts: true
       };
     case FETCH_TEXTS_PENDING:
       return {
         ...state,
-        fetchTextsPending: true
+        fetchTextsPending: true,
+        shouldFetchTexts: false
       };
     case FETCH_TEXTS_SUCCESS:
       return {
         ...state,
         availableTexts: action.payload.availableTexts,
-        fetchTextsPending: false
+        fetchTextsPending: false,
+        shouldFetchTexts: false
       };
     case FETCH_TEXTS_ERROR:
       return {
         ...state,
         fetchTextsError: action.payload.error,
-        fetchTextsPending: false
+        fetchTextsPending: false,
+        shouldFetchTexts: true
       };
     case UPDATE_SOURCE_TEXT:
       return {
         ...state,
         sourceText: action.payload.sourceText
       };
-    case UPDATE_SOURCE_TEXT:
+    case UPDATE_TARGET_TEXT:
       return {
         ...state,
         targetText: action.payload.targetText
