@@ -56,7 +56,7 @@ export default function NavBar(props) {
     <AppBar className={classes.root} position="static">
       <Toolbar className="">
         <Grid container alignItems="flex-start">
-          <Grid item xs={3} alignContent="flex-start">
+          <Grid item xs={3}>
             <img
               className={classes.logo}
               src={"/TesseraeLogo.png"}

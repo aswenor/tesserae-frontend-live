@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
@@ -12,24 +13,12 @@ import Tabs from '@material-ui/core/Tabs';
 import ArrowBackIcon from '@material-ui/icons/ArrowForward';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
-
-
-import { getAvailableLanguages } from '../../../api/corpus';
-import { updateSearchParameters } from '../../../state_management/search';
+import { fetchLanguagesAction, updateLanguageAction } from '../../../api/corpus';
 
 
 const useStyles = makeStyles({
 
 });
-
-
-async function getLanguages() {
-  let l = await getAvailableLanguages();
-  return l.sort().map(item => `${item[0].toUpperCase()}${item.slice(1)}`);
-}
-
-
-let languages = getAvailableLanguages().sort();
 
 
 const a11yProps = (index) => {
@@ -57,29 +46,36 @@ function PanelOpenIcon(props) {
 
 
 function LanguagesAppBar(props) {
-  const { dispatch, open, handlePanelOpen } = props;
+  const { dispatch, availableLanguages, fetchLanguages, handlePanelOpen,
+          open, pending, updateLanguage } = props;
   const [currentTab, setCurrentTab] = useState(1);
   const classes = useStyles();
 
-  console.log(open);
+  if (!availableLanguages || availableLanguages.length === 0) {
+    fetchLanguages(pending);
+  }
 
   function handleChangeTab(tabIdx) {
-    const language = languages[tabIdx];
-    dispatch(updateSearchParameters({ language }));
+    const language = availableLanguages[tabIdx];
+    dispatch(updateLanguage(language));
     setCurrentTab(tabIdx);
   }
 
-  const tabs = languages.map((item, idx) => {
-    return (
-      <Tab
-        key={item}
-        label={item}
-        value={idx}
-        onClick={() => handleChangeTab(idx)}
-        { ...a11yProps(idx) }
-      />
-    )
-  });
+  let tabs = [];
+
+  if (availableLanguages && availableLanguages.length > 0) {
+    tabs = availableLanguages.map((item, idx) => {
+      return (
+        <Tab
+          key={item}
+          label={item}
+          value={idx}
+          onClick={() => handleChangeTab(idx)}
+          { ...a11yProps(idx) }
+        />
+      )
+    });
+  }
 
   return (
     <AppBar position="static">
@@ -106,8 +102,15 @@ function LanguagesAppBar(props) {
 
 function mapStateToProps(state) {
   return {
-    language: state.language
+    availableLanguages: state.availableLanguages,
+    language: state.language,
+    pending: state.fetchLanguagesPending || state.fetchTextsPending
   };
 }
 
-export default connect(mapStateToProps)(LanguagesAppBar);
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchLanguages: fetchLanguagesAction,
+  updateLanguage: updateLanguageAction
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(LanguagesAppBar);

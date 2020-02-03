@@ -18,8 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
 
-import { updateLanguage, fetchTextsPending, fetchTextsSuccess,
-         fetchTextsError, updateSourceText, updateTargetText } from '../../../state_management/search';
+import { fetchTextsAction, updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';
 
 const useStyles = makeStyles({
   formControl: {
@@ -28,54 +27,15 @@ const useStyles = makeStyles({
 });
 
 
-function fetchTextsAction(language) {
-  console.log('fetching texts');
-  return dispatch => {
-    dispatch(updateLanguage(language))
-    dispatch(fetchTextsPending());
-    axios({
-      method: 'get',
-      url: 'http://45.55.219.221:5000/texts',
-      crossDomain: true,
-      responseType: 'json',
-      params: {
-        language: language
-      }
-    })
-    .then(response => {
-      console.log(response);
-      dispatch(fetchTextsSuccess(response.data.texts));
-      return response.data.texts;
-    })
-    .catch(error => {
-      dispatch(fetchTextsError(error));
-    });
-  }
-}
-
-
-function updateSourceTextAction(event, value, reason) {
-  console.log(event);
-  return dispatch => dispatch(updateSourceText(event.target.value));
-}
-
-
-function updateTargetTextAction(event, value, reason) {
-  return dispatch => dispatch(updateTargetText(event.target.value));
-}
-
-
 function SearchParametersForm(props) {
-  const { availableTexts, fetchTexts, fetchTextsPending, language,
-          searchParameters, sourceText, targetText,
+  const { availableTexts, fetchTexts, language, pending,
+          shouldFetch, sourceText, targetText,
           updateSource, updateTarget } = props;
   const classes = useStyles();
 
-  if (availableTexts.length === 0) {
-    fetchTexts(language);
-  }
-
-  console.log(availableTexts);
+  // if (availableTexts.length === 0) {
+  //   fetchTexts(language, pending);
+  // }
 
   return (
     <section>
@@ -91,8 +51,9 @@ function SearchParametersForm(props) {
             <Grid item md={12} xs={12}>
               <TextSelectGroup
                 handleTextChange={updateSource}
-                loading={fetchTextsPending}
+                loading={pending}
                 loadingText={`Loading ${language} corpus`}
+                onOpen={() => fetchTexts(language, shouldFetch)}
                 selection={sourceText}
                 textList={availableTexts}
                 title="Source Text"
@@ -101,8 +62,9 @@ function SearchParametersForm(props) {
             <Grid item md={12} xs={12}>
               <TextSelectGroup
                 handleTextChange={updateTarget}
-                loading={fetchTextsPending}
+                loading={pending}
                 loadingText={`Loading ${language} corpus`}
+                onOpen={() => fetchTexts(language, shouldFetch)}
                 selection={targetText}
                 textList={availableTexts}
                 title="Target Text"
@@ -147,7 +109,9 @@ const mapStateToProps = (state) => {
     availableTexts: state.availableTexts,
     searchParameters: state.searchParameters,
     sourceText: state.sourceText,
-    targetText: state.targetText
+    targetText: state.targetText,
+    shouldFetch: state.shouldFetchTexts,
+    pending: state.fetchTextsPending
   };
 };
 

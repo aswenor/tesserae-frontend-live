@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import uniqBy from 'lodash/uniqBy';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import MenuItem from '@material-ui/core/MenuItem';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -13,38 +13,50 @@ import SearchableDropdown from '../../common/SearchableDropdown';
 import { loadTextMetadata } from '../../../api/corpus';
 
 
-const useStyles = makeStyles({
-  formControl: {
-    minWidth: 120,
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
   },
-  selectEmpty: {
+  heading: {
+    marginBottom: '10px'
+  },
+  select: {
+    marginBottom: '10px',
+    [theme.breakpoints.up('md')]: {
+
+    },
+    [theme.breakpoints.down('sm')]: {
+
+    }
   }
-});
+}));
 
 
 function TextSelectGroup(props) {
-  const { handleTextChange, index,
-          loading, selection, textList, title } = props;
+  const { handleTextChange, index, loading, onOpen,
+          selection, textList, title } = props;
   const classes = useStyles();
 
-  const selectedAuthor = selection.author ? selection.author : '';
-  const selectedText = selection.title ? selection.title : '';
-
   const authorItems = uniqBy(textList, 'author');
-
-  const textItems = textList.filter(t => selectedAuthor === '' || t.author.toLowerCase() === selectedAuthor);
+  console.log(authorItems);
+  const textItems = textList.filter(t => selection.author === '' || t.author.toLowerCase() === selection.author);
 
   return (
     <div>
       <Typography
         align="left"
+        className={classes.heading}
         variant="h5"
       >
         {title}
       </Typography>
       <Autocomplete
-        getOptionLabel={option => {console.log(option); return option.author;}}
-        onInputChange={handleTextChange}
+        className={classes.select}
+        defaultValue={{author: '', title: ''}}
+        getOptionLabel={option => option.author !== undefined ? option.author : option}
+        loading={loading}
+        onChange={handleTextChange}
+        onOpen={onOpen}
         options={authorItems}
         renderInput={params => (
           <TextField {...params}
@@ -56,8 +68,12 @@ function TextSelectGroup(props) {
         value={selection}
       />
       <Autocomplete
-        getOptionLabel={option => option.title}
+        className={classes.select}
+        defaultValue={{author: '', title: ''}}
+        getOptionLabel={option => option.title !== undefined ? option.title : option}
+        loading={loading}
         onChange={handleTextChange}
+        onOpen={onOpen}
         options={textItems}
         renderInput={params => (
           <TextField {...params}
@@ -68,22 +84,6 @@ function TextSelectGroup(props) {
         )}
         value={selection}
       />
-      {/* <SearchableDropdown
-        getOptionLabel={option => option.author}
-        isClearable
-        onChange={handleTextChange}
-        options={authorItems}
-        placeholder="Select an Author"
-        value={selectedAuthor}
-        />
-        <SearchableDropdown
-        getOptionLabel={option => option.title}
-        isClearable
-        onChange={handleTextChange}
-        options={textItems}
-        placeholder="Select a Text"
-        value={selectedText}
-      /> */}
     </div>
   );
 }

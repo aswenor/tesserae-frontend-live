@@ -18,13 +18,14 @@ const useStyles = makeStyles(theme => ({
 
 
 function SearchableDropdown(props) {
-  const { getOptionLabel, helperText, onChange, options,
+  const { defaultValue, getOptionLabel, helperText, onChange, options,
           placeholder, value } = props;
   const classes = useStyles();
 
   return (
       <FormControl fullWidth>
         <Autocomplete
+          defaultValue={defaultValue}
           getOptionLabel={getOptionLabel}
           onChange={onChange}
           options={options}
