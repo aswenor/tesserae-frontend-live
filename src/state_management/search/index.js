@@ -20,7 +20,7 @@ export const DEFAULT_STATE = {
   stopwords: [],
   searchParameters: {
     unitType: 'phrase',
-    feature: 'lemma',
+    feature: 'lemmata',
     stoplist: '10',
     stoplistBasis: 'corpus',
     scoreBasis: 'word',
@@ -34,6 +34,7 @@ export const DEFAULT_STATE = {
   currentPage: 0,
   resultsPerPage: 100,
   shouldFetchTexts: true,
+  shouldFetchStoplist: false,
   shouldFetchResults: false,
   disableSearch: false,
   asyncPending: false,
@@ -186,7 +187,7 @@ export function fetchTextsError(error = {}) {
 * @param {Object} sourceText - the new source text to search
 * @returns {Object} A redux-style action.
 **/
-export function updateSourceText(sourceText = DEFAULT_STATE.sourceText) {
+export function updateSourceText(sourceText) {
   return {
     type: UPDATE_SOURCE_TEXT,
     payload: {
@@ -202,7 +203,7 @@ export function updateSourceText(sourceText = DEFAULT_STATE.sourceText) {
 * @param {Object} targetText - the new target text to search
 * @returns {Object} A redux-style action.
 **/
-export function updateTargetText(targetText = DEFAULT_STATE.sourceText) {
+export function updateTargetText(targetText = DEFAULT_STATE.targetText) {
   return {
     type: UPDATE_TARGET_TEXT,
     payload: {
@@ -399,7 +400,6 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
     !state.sourceText.object_id &&
     !state.targetText.object_id &&
     state.stopwords.length === 0);
-  //let shouldFetchStoplist = false;
   switch (action.type) {
     case FETCH_LANGUAGES_PENDING:
       return {
@@ -456,9 +456,8 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
       };
     case UPDATE_SOURCE_TEXT:
       shouldFetchStoplist = (
-        state.sourceText.object_id
-        && state.targetText.object_id);
-      console.log(shouldFetchStoplist);
+        action.payload.sourceText.object_id !== undefined
+        && state.targetText.object_id !== undefined);
       return {
         ...state,
         disableSearch: disableSearch,
@@ -466,24 +465,25 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
         sourceText: action.payload.sourceText
       };
     case UPDATE_TARGET_TEXT:
-
       shouldFetchStoplist = (
-          state.sourceText.object_id
-          && state.targetText.object_id);
+          state.sourceText.object_id !== undefined
+          && action.payload.targetText.object_id !== undefined);
       return {
         ...state,
         disableSearch: disableSearch,
+        shouldFetchStoplist: shouldFetchStoplist,
         targetText: action.payload.targetText
       };
     case UPDATE_SEARCH_PARAMETERS:
       shouldFetchStoplist = (
-        state.sourceText.object_id
-        && state.targetText.object_id
-        && action.payload.stoplist
-        && action.payload.stoplistBasis);
+        state.sourceText.object_id !== undefined
+        && state.targetText.object_id !== undefined
+        && action.payload.stoplist !== undefined
+        && action.payload.stoplistBasis !== undefined);
       return {
         ...state,
         disableSearch: disableSearch,
+        shouldFetchStoplist: shouldFetchStoplist,
         searchParameters: {
           ...state.searchParameters,
           ...action.payload
@@ -499,7 +499,7 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
         return {
           ...state,
           disableSearch: disableSearch,
-          stopwords: action.payload.availableTexts,
+          stopwords: action.payload.stopwords,
           asyncPending: false
         };
       case FETCH_STOPLIST_ERROR:

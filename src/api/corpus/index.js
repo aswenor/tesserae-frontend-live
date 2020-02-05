@@ -63,13 +63,13 @@ export function fetchTextsAction(language, shouldFetch) {
 
 
 export function updateSourceTextAction(event, value) {
-  const realval = value ? value : {author: '', title: ''};
+  const realval = value.object_id !== undefined ? value : {author: '', title: ''};
   return dispatch => dispatch(actions.updateSourceText(realval));
 }
 
 
 export function updateTargetTextAction(event, value) {
-  const realval = value ? value : {author: '', title: ''};
+  const realval = value.object_id !== undefined ? value : {author: '', title: ''};
   return dispatch => dispatch(actions.updateTargetText(realval));
 }
 
@@ -79,38 +79,42 @@ export function updateSearchParametersAction(params) {
 }
 
 
-export function fetchStoplistAction(feature, stopwords, stoplistBasis) {
+export function fetchStoplistAction(feature, stopwords, stoplistBasis, pending) {
+  console.log('fetching stoplist');
   return dispatch => {
-    console.log('fetching stoplist');
-    dispatch(actions.fetchStoplistPending());
+    if (!pending) {
+      console.log('truly fetching stoplist');
+      dispatch(actions.fetchStoplistPending());
 
-    let params = {
-      feature: feature,
-      list_size: stopwords,
-    };
+      let params = {
+        feature: feature,
+        list_size: stopwords,
+      };
 
-    if (stoplistBasis instanceof String) {
-      params.language = stoplistBasis;
+      if (stoplistBasis instanceof String) {
+        params.language = stoplistBasis;
+      }
+      else {
+        params.works = stoplistBasis;
+      }
+
+      axios({
+        method: 'get',
+        url: 'http://45.55.219.221:5000/stopwords',
+        crossDomain: true,
+        responseType: 'json',
+        params: params
+      })
+      .then(response => {
+        console.log(response.data.stopwords);
+        dispatch(actions.fetchStoplistSuccess(response.data.stopwords))
+        return response.data.stopwords
+      })
+      .catch(error => {
+        console.log(error.response.data);
+        dispatch(actions.fetchStoplistError(error))
+      });
     }
-    else {
-      params.works = stoplistBasis;
-    }
-
-    axios({
-      method: 'get',
-      url: 'http://45.55.219.221:5000/stopwords',
-      crossDomain: true,
-      responseType: 'json',
-      params: params
-    })
-    .then(response => {
-      console.log(response.data.stopwords);
-      dispatch(actions.fetchStoplistSuccess(response.data.stopwords))
-      return response.data.stopwords
-    })
-    .catch(error => {
-      dispatch(actions.fetchStoplistError(error))
-    });
   }
 }
 

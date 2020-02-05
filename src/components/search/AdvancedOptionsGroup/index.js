@@ -26,7 +26,7 @@ function prepListItem(item) {
 
 
 const dummyUnitTypes = ['line', 'phrase'];
-const dummyFeatures = ['exact word', 'lemma', 'semantic', 'lemma + semantic', 'sound'];
+const dummyFeatures = ['form', 'lemmata', 'semantic', 'lemma + semantic', 'sound'];
 const dummyStoplist = ['0', '10', '20', '30', '40', '50', '100', '150', '200'];
 const dummyStoplistBasis = ['corpus', 'target', 'source', 'target + source'];
 const dummyScoreBasis = ['stem', 'word'];

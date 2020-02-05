@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import axios from 'axios';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -29,18 +28,23 @@ const useStyles = makeStyles({
 
 
 function SearchParametersForm(props) {
-  const { availableTexts, disableSearch, fetchTexts, language, pending,
+  const { availableTexts, disableSearch, fetchTexts, fetchStoplist, language, pending,
           searchParameters, shouldFetchStoplist, shouldFetchTexts, sourceText,
-          targetText, updateSource, updateTarget } = props;
+          stopwords, targetText, updateSource, updateTarget } = props;
   const classes = useStyles();
 
+  console.log(shouldFetchStoplist, pending, stopwords);
+  
   if (shouldFetchStoplist) {
+    console.log(searchParameters.stoplistBasis);
     const basis = (searchParameters.stoplistBasis === 'corpus'
                    ? language
                    : [sourceText.object_id, targetText.object_id]);
-    fetchStoplistAction(searchParameters.feature,
-                        searchParameters.stoplist,
-                        basis);
+    console.log(language, searchParameters.feature);
+    fetchStoplist(searchParameters.feature,
+                  parseInt(searchParameters.stoplist, 10),
+                  basis,
+                  pending);
   }
 
   return (
@@ -128,6 +132,7 @@ const mapStateToProps = (state) => {
     shouldFetchStoplist: state.shouldFetchStoplist,
     shouldFetchTexts: state.shouldFetchTexts,
     sourceText: state.sourceText,
+    stopwords: state.stopwords,
     targetText: state.targetText,
   };
 };
@@ -135,6 +140,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchTexts: fetchTextsAction,
+  fetchStoplist: fetchStoplistAction,
   updateSource: updateSourceTextAction,
   updateTarget: updateTargetTextAction
 }, dispatch);
