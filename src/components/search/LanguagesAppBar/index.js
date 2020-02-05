@@ -48,7 +48,7 @@ function PanelOpenIcon(props) {
 function LanguagesAppBar(props) {
   const { dispatch, availableLanguages, fetchLanguages, handlePanelOpen,
           open, pending, updateLanguage } = props;
-  const [currentTab, setCurrentTab] = useState(1);
+  const [currentTab, setCurrentTab] = useState(0);
   const classes = useStyles();
 
   if (!availableLanguages || availableLanguages.length === 0) {
@@ -104,7 +104,7 @@ function mapStateToProps(state) {
   return {
     availableLanguages: state.availableLanguages,
     language: state.language,
-    pending: state.fetchLanguagesPending || state.fetchTextsPending
+    pending: state.asyncPending
   };
 }
 

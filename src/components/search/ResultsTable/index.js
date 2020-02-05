@@ -1,4 +1,5 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -11,6 +12,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+
+import { fetchResultsAction } from '../../../api/corpus';
 
 // import FirstPageIcon from '@material-ui/core/FirstPageIcon';
 // import KeyboardArrowLeft from '@material-ui/core/KeyboardArrowLeft';
@@ -169,12 +172,12 @@ class ResultsTable extends React.Component {
   }
 
   render() {
-    const { results } = this.props;
-    const { page, resultsPerPage, sortHeader, sortOrder } = this.state;
+    const { currentPage, resultCount, results, resultsPerPage } = this.props;
+    const { page, sortHeader, sortOrder } = this.state;
 
     const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
 
-    const start = page * resultsPerPage;
+    const start = currentPage * resultsPerPage;
     const end = Math.min(start + resultsPerPage, results.length);
 
     const displayResults = results.sort((a, b) => {
@@ -208,7 +211,7 @@ class ResultsTable extends React.Component {
           labelRowsPerPage="Results per page:"
           onChangePage={this.handleChangePage}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
-          page={page}
+          page={currentPage}
           rowsPerPage={resultsPerPage}
           rowsPerPageOptions={[50, 100, 200, 500]}
         />
@@ -218,11 +221,19 @@ class ResultsTable extends React.Component {
 }
 
 
-function mapStateToProps(state) {
-  return {
-    results: resultsList
-  }
-}
+const mapStateToProps = state => ({
+    currentPage: state.currentPage,
+    pending: state.asyncPending,
+    resultCount: state.resultCount,
+    results: state.results,
+    resultsPerPage: state.resultsPerPage
+  });
+
+
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchResults: fetchResultsAction,
+}, dispatch);
 
 
 export default connect(mapStateToProps)(ResultsTable);

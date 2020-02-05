@@ -8,8 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import SearchableDropdown from '../../common/SearchableDropdown';
-
 import { loadTextMetadata } from '../../../api/corpus';
 
 
@@ -33,12 +31,11 @@ const useStyles = makeStyles(theme => ({
 
 
 function TextSelectGroup(props) {
-  const { handleTextChange, index, loading, onOpen,
+  const { handleTextChange, index, loading, loadingText, onOpen,
           selection, textList, title } = props;
   const classes = useStyles();
 
   const authorItems = uniqBy(textList, 'author');
-  console.log(authorItems);
   const textItems = textList.filter(t => selection.author === '' || t.author.toLowerCase() === selection.author);
 
   return (
@@ -55,6 +52,7 @@ function TextSelectGroup(props) {
         defaultValue={{author: '', title: ''}}
         getOptionLabel={option => option.author !== undefined ? option.author : option}
         loading={loading}
+        loadingText={loadingText}
         onChange={handleTextChange}
         onOpen={onOpen}
         options={authorItems}
@@ -72,6 +70,7 @@ function TextSelectGroup(props) {
         defaultValue={{author: '', title: ''}}
         getOptionLabel={option => option.title !== undefined ? option.title : option}
         loading={loading}
+        loadingText={loadingText}
         onChange={handleTextChange}
         onOpen={onOpen}
         options={textItems}

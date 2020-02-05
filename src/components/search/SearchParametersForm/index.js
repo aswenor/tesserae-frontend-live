@@ -18,7 +18,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
 
-import { fetchTextsAction, updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';
+import { fetchStoplistAction, fetchTextsAction,
+         updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';
 
 const useStyles = makeStyles({
   formControl: {
@@ -28,14 +29,19 @@ const useStyles = makeStyles({
 
 
 function SearchParametersForm(props) {
-  const { availableTexts, fetchTexts, language, pending,
-          shouldFetch, sourceText, targetText,
-          updateSource, updateTarget } = props;
+  const { availableTexts, disableSearch, fetchTexts, language, pending,
+          searchParameters, shouldFetchStoplist, shouldFetchTexts, sourceText,
+          targetText, updateSource, updateTarget } = props;
   const classes = useStyles();
 
-  // if (availableTexts.length === 0) {
-  //   fetchTexts(language, pending);
-  // }
+  if (shouldFetchStoplist) {
+    const basis = (searchParameters.stoplistBasis === 'corpus'
+                   ? language
+                   : [sourceText.object_id, targetText.object_id]);
+    fetchStoplistAction(searchParameters.feature,
+                        searchParameters.stoplist,
+                        basis);
+  }
 
   return (
     <section>
@@ -52,8 +58,12 @@ function SearchParametersForm(props) {
               <TextSelectGroup
                 handleTextChange={updateSource}
                 loading={pending}
-                loadingText={`Loading ${language} corpus`}
-                onOpen={() => fetchTexts(language, shouldFetch)}
+                loadingText={
+                  <Typography variant="h6">
+                    <CircularProgress />{`Loading ${language} corpus`}
+                  </Typography>
+                }
+                onOpen={() => fetchTexts(language, shouldFetchTexts)}
                 selection={sourceText}
                 textList={availableTexts}
                 title="Source Text"
@@ -63,8 +73,12 @@ function SearchParametersForm(props) {
               <TextSelectGroup
                 handleTextChange={updateTarget}
                 loading={pending}
-                loadingText={`Loading ${language} corpus`}
-                onOpen={() => fetchTexts(language, shouldFetch)}
+                loadingText={
+                  <Typography variant="p">
+                    <CircularProgress />{`Loading ${language} corpus`}
+                  </Typography>
+                }
+                onOpen={() => fetchTexts(language, shouldFetchTexts)}
                 selection={targetText}
                 textList={availableTexts}
                 title="Target Text"
@@ -74,6 +88,7 @@ function SearchParametersForm(props) {
               <Button
                 color="primary"
                 variant="contained"
+                disabled={disableSearch}
               >
                 Search
               </Button>
@@ -105,13 +120,15 @@ function SearchParametersForm(props) {
 
 const mapStateToProps = (state) => {
   return {
-    language: state.language,
     availableTexts: state.availableTexts,
+    disableSearch: state.disableSearch,
+    language: state.language,
+    pending: state.asyncPending,
     searchParameters: state.searchParameters,
+    shouldFetchStoplist: state.shouldFetchStoplist,
+    shouldFetchTexts: state.shouldFetchTexts,
     sourceText: state.sourceText,
     targetText: state.targetText,
-    shouldFetch: state.shouldFetchTexts,
-    pending: state.fetchTextsPending
   };
 };
 
