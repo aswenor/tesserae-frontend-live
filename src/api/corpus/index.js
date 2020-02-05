@@ -5,26 +5,25 @@ import * as actions from '../../state_management/search';
 
 export function fetchLanguagesAction(pending) {
   return dispatch => {
-    // if (!pending) {
-      console.log('Fetching languages');
-      dispatch(actions.fetchLanguagesSuccess(['greek', 'latin']));
-      return ['greek', 'latin']
-    //   dispatch(actions.fetchLanguagesPending);
-    //   axios({
-    //     method: 'get',
-    //     url: 'http://45.55.219.221:5000/languages',
-    //     crossDomain: true,
-    //     responseType: 'json',
-    //   })
-    //   .then(response => {
-    //     dispatch(actions.fetchLanguagesSuccess(response.data.languages));
-    //     return response.data.languages;
-    //   })
-    //   .catch(error => {
-    //     dispatch(actions.fetchLanguagesError(error));
-    //   });
+    if (!pending) {
+    console.log('fetching languages')
+      dispatch(actions.fetchLanguagesPending);
+      axios({
+        method: 'get',
+        url: 'http://45.55.219.221:5000/languages',
+        crossDomain: true,
+        responseType: 'json',
+      })
+      .then(response => {
+        dispatch(actions.fetchLanguagesSuccess(response.data.languages));
+        return response.data.languages;
+      })
+      .catch(error => {
+        console.log(error)
+        dispatch(actions.fetchLanguagesError(error));
+      });
     }
-  // }
+  }
 }
 
 
@@ -37,9 +36,7 @@ export function updateLanguageAction(language) {
 
 export function fetchTextsAction(language, shouldFetch) {
   return dispatch => {
-    console.log('In fetch texts');
     if (shouldFetch) {
-      console.log('Fetching texts')
       dispatch(actions.fetchTextsPending());
       axios({
         method: 'get',
@@ -79,6 +76,42 @@ export function updateTargetTextAction(event, value) {
 
 export function updateSearchParametersAction(params) {
   return dispatch => dispatch(actions.updateSearchParameters(params))
+}
+
+
+export function fetchStoplistAction(feature, stopwords, stoplistBasis) {
+  return dispatch => {
+    console.log('fetching stoplist');
+    dispatch(actions.fetchStoplistPending());
+
+    let params = {
+      feature: feature,
+      list_size: stopwords,
+    };
+
+    if (stoplistBasis instanceof String) {
+      params.language = stoplistBasis;
+    }
+    else {
+      params.works = stoplistBasis;
+    }
+
+    axios({
+      method: 'get',
+      url: 'http://45.55.219.221:5000/stopwords',
+      crossDomain: true,
+      responseType: 'json',
+      params: params
+    })
+    .then(response => {
+      console.log(response.data.stopwords);
+      dispatch(actions.fetchStoplistSuccess(response.data.stopwords))
+      return response.data.stopwords
+    })
+    .catch(error => {
+      dispatch(actions.fetchStoplistError(error))
+    });
+  }
 }
 
 

@@ -17,6 +17,7 @@ export const DEFAULT_STATE = {
   availableTexts: [],
   sourceText: {author: '', title: ''},
   targetText: {author: '', title: ''},
+  stopwords: [],
   searchParameters: {
     unitType: 'phrase',
     feature: 'lemma',
@@ -33,12 +34,12 @@ export const DEFAULT_STATE = {
   currentPage: 0,
   resultsPerPage: 100,
   shouldFetchTexts: true,
-  fetchLanguagesPending: false,
-  fetchTextsPending: false,
-  initiateSearchPending: false,
-  fetchResultsPending: false,
+  shouldFetchResults: false,
+  disableSearch: false,
+  asyncPending: false,
   fetchLanguagesError: null,
   fetchTextsError: null,
+  fetchStoplistError: null,
   initiateSearchError: null,
   fetchResultsError: null
 };
@@ -57,12 +58,16 @@ const FETCH_TEXTS_ERROR = 'FETCH_TEXTS_ERROR';
 const UPDATE_SOURCE_TEXT = 'UPDATE_SOURCE_TEXT';
 const UPDATE_TARGET_TEXT = 'UPDATE_TARGET_TEXT';
 const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
+const FETCH_STOPLIST_PENDING = 'FETCH_STOPLIST_PENDING';
+const FETCH_STOPLIST_SUCCESS = 'FETCH_STOPLIST_SUCCESS';
+const FETCH_STOPLIST_ERROR = 'FETCH_STOPLIST_ERROR';
 const INITIATE_SEARCH_PENDING = 'INITIATE_SEARCH_PENDING';
 const INITIATE_SEARCH_SUCCESS = 'INITIATE_SEARCH_SUCCESS';
 const INITIATE_SEARCH_ERROR = 'INITIATE_SEARCH_ERROR';
 const FETCH_RESULTS_PENDING = 'FETCH_RESULTS_PENDING';
 const FETCH_RESULTS_SUCCESS = 'FETCH_RESULTS_SUCCESS';
 const FETCH_RESULTS_ERROR = 'FETCH_RESULTS_ERROR';
+const UPDATE_RESULTS_TABLE = 'UPDATE_RESULTS_TABLE';
 
 
 /**
@@ -224,6 +229,50 @@ export function updateSearchParameters(searchParameters = DEFAULT_STATE.searchPa
 
 
 /**
+ *  Create an action to fetch a stoplist from the REST API.
+ *
+ * @returns {Object} A redux-style action.
+ **/
+export function fetchStoplistPending() {
+  return {
+    type: FETCH_STOPLIST_PENDING
+  };
+}
+
+
+/**
+ *  Create an action to save a stoplist fetched from the REST API.
+ *
+ * @param {Array} stoplist - list of words to ignore in a search
+ * @returns {Object} A redux-style action.
+ **/
+export function fetchStoplistSuccess(stopwords) {
+  return {
+    type: FETCH_STOPLIST_SUCCESS,
+    payload: {
+      stopwords: stopwords,
+    }
+  };
+}
+
+
+/**
+ *  Create an action to report an error fetching a stoplist from the REST API.
+ *
+ * @param {Object} error - error log returned from the request
+ * @returns {Object} A redux-style action.
+ **/
+export function fetchStoplistError(error = {}) {
+  return {
+    type: FETCH_STOPLIST_ERROR,
+    payload: {
+      fetchTextsError: error
+    }
+  };
+}
+
+
+/**
  *  Create an action to initiate a search through the REST API.
  *
  * @returns {Object} A redux-style action.
@@ -312,6 +361,24 @@ export function fetchResultsError(error = {}) {
 
 
 /**
+ *  Create an action to update the parameters of the search results table.
+ *
+ * @param {Number} currentPage - the page of results to show
+ * @param {Number} resultsPerPage - the number of rows to display on a page
+ * @returns {Object} A redux-style action.
+ **/
+export function updateResultsTable(currentPage = DEFAULT_STATE.currentPage, resultsPerPage = DEFAULT_STATE.resultsPerPage) {
+  return {
+    type: UPDATE_RESULTS_TABLE,
+    payload: {
+      currentPage: currentPage,
+      resultsPerPage: resultsPerPage
+    }
+  };
+}
+
+
+/**
  * Reducer
  **/
 
@@ -328,103 +395,168 @@ export function fetchResultsError(error = {}) {
  * @returns {Object} The object with updated state.
  **/
 export function searchReducer(state = DEFAULT_STATE, action = {}) {
+  const disableSearch = (
+    !state.sourceText.object_id &&
+    !state.targetText.object_id &&
+    state.stopwords.length === 0);
+  //let shouldFetchStoplist = false;
   switch (action.type) {
     case FETCH_LANGUAGES_PENDING:
       return {
         ...state,
-        fetchLanguagesPending: true
+        asyncPending: true,
+        disableSearch: disableSearch,
       };
     case FETCH_LANGUAGES_SUCCESS:
       return {
         ...state,
         availableLanguages: action.payload.availableLanguages,
-        fetchLanguagesPending: false
+        asyncPending: false,
+        disableSearch: disableSearch,
       };
     case FETCH_LANGUAGES_ERROR:
       return {
         ...state,
+        disableSearch: disableSearch,
         fetchLanguagesError: action.payload.error,
-        fetchLanguagesPending: false
+        asyncPending: false
       };
     case UPDATE_LANGUAGE:
+      let shouldFetchStoplist = state.searchParameters.stoplistBasis === 'corpus';
       return {
         ...state,
         availableTexts: action.payload.availableTexts,
+        disableSearch: disableSearch,
         language: action.payload.language,
-        shouldFetchTexts: true
+        shouldFetchStoplist: shouldFetchStoplist,
+        shouldFetchTexts: true,
       };
     case FETCH_TEXTS_PENDING:
       return {
         ...state,
-        fetchTextsPending: true,
-        shouldFetchTexts: false
+        asyncPending: true,
+        disableSearch: disableSearch,
+        shouldFetchTexts: false,
       };
     case FETCH_TEXTS_SUCCESS:
       return {
         ...state,
         availableTexts: action.payload.availableTexts,
-        fetchTextsPending: false,
-        shouldFetchTexts: false
+        asyncPending: false,
+        disableSearch: disableSearch,
+        shouldFetchTexts: false,
       };
     case FETCH_TEXTS_ERROR:
       return {
         ...state,
         fetchTextsError: action.payload.error,
-        fetchTextsPending: false,
-        shouldFetchTexts: true
+        asyncPending: false,
+        disableSearch: disableSearch,
+        shouldFetchTexts: true,
       };
     case UPDATE_SOURCE_TEXT:
+      shouldFetchStoplist = (
+        state.sourceText.object_id
+        && state.targetText.object_id);
+      console.log(shouldFetchStoplist);
       return {
         ...state,
+        disableSearch: disableSearch,
+        shouldFetchStoplist: shouldFetchStoplist,
         sourceText: action.payload.sourceText
       };
     case UPDATE_TARGET_TEXT:
+
+      shouldFetchStoplist = (
+          state.sourceText.object_id
+          && state.targetText.object_id);
       return {
         ...state,
+        disableSearch: disableSearch,
         targetText: action.payload.targetText
       };
     case UPDATE_SEARCH_PARAMETERS:
+      shouldFetchStoplist = (
+        state.sourceText.object_id
+        && state.targetText.object_id
+        && action.payload.stoplist
+        && action.payload.stoplistBasis);
       return {
         ...state,
+        disableSearch: disableSearch,
         searchParameters: {
           ...state.searchParameters,
           ...action.payload
         }
       };
+      case FETCH_STOPLIST_PENDING:
+        return {
+          ...state,
+          asyncPending: true,
+          disableSearch: disableSearch,
+        };
+      case FETCH_STOPLIST_SUCCESS:
+        return {
+          ...state,
+          disableSearch: disableSearch,
+          stopwords: action.payload.availableTexts,
+          asyncPending: false
+        };
+      case FETCH_STOPLIST_ERROR:
+        return {
+          ...state,
+          disableSearch: disableSearch,
+          fetchStoplistError: action.payload.error,
+          asyncPending: false
+        };
     case INITIATE_SEARCH_PENDING:
       return {
         ...state,
-        initiateSearchPending: true
+        asyncPending: true,
+        disableSearch: disableSearch,
       };
     case INITIATE_SEARCH_SUCCESS:
       return {
         ...state,
+        disableSearch: disableSearch,
         searchID: action.payload.searchID,
-        initiateSearchPending: true
+        asyncPending: false
       };
     case INITIATE_SEARCH_ERROR:
       return {
         ...state,
+        disableSearch: disableSearch,
         initiateSearchError: action.payload.error,
-        initiateSearchPending: true
+        asyncPending: false
       };
     case FETCH_RESULTS_PENDING:
       return {
         ...state,
-        fetchResultsPending: true,
+        asyncPending: true,
+        disableSearch: disableSearch,
       };
     case FETCH_RESULTS_SUCCESS:
       return {
         ...state,
+        disableSearch: disableSearch,
         results: action.payload.results,
-        fetchResultsPending: true
+        asyncPending: false
       };
     case FETCH_RESULTS_ERROR:
       return {
         ...state,
+        disableSearch: disableSearch,
         fetchResultsError: action.payload.error,
-        fetchResultsPending: true
+        asyncPending: false
       };
+    case UPDATE_RESULTS_TABLE:
+      return {
+        ...state,
+        currentPage: action.payload.currentPage,
+        disableSearch: disableSearch,
+        resultsPerPage: action.payload.resultsPerPage,
+        shouldFetchResults: true
+      }
     default:
       return state;
   }
