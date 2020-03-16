@@ -31,21 +31,12 @@ function SearchParametersForm(props) {
   const { availableTexts, disableSearch, fetchTexts, fetchStoplist, language, pending,
           searchParameters, shouldFetchStoplist, shouldFetchTexts, sourceText,
           stopwords, targetText, updateSource, updateTarget } = props;
-  const classes = useStyles();
-
-  console.log(shouldFetchStoplist, pending, stopwords);
   
-  if (shouldFetchStoplist) {
-    console.log(searchParameters.stoplistBasis);
-    const basis = (searchParameters.stoplistBasis === 'corpus'
-                   ? language
-                   : [sourceText.object_id, targetText.object_id]);
-    console.log(language, searchParameters.feature);
-    fetchStoplist(searchParameters.feature,
-                  parseInt(searchParameters.stoplist, 10),
-                  basis,
-                  pending);
-  }
+  const classes = useStyles();
+  
+  const basis = (searchParameters !== undefined && searchParameters.stoplistBasis === 'corpus'
+                 ? language
+                 : [sourceText.object_id, targetText.object_id]);
 
   return (
     <section>
@@ -91,8 +82,9 @@ function SearchParametersForm(props) {
             <Grid item xs={12}>
               <Button
                 color="primary"
-                variant="contained"
                 disabled={disableSearch}
+                onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, pending)}
+                variant="contained"
               >
                 Search
               </Button>

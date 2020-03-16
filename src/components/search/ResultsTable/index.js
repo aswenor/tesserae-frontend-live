@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -12,18 +13,35 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import { Typography } from '@material-ui/core';
 
-import { fetchResultsAction } from '../../../api/corpus';
+import { fetchResultsAction,
+         getSearchStatusAction,
+         updateCurrentPageAction,
+         updateRowsPerPageAction, 
+         initiateSearchAction} from '../../../api/corpus';
+import ResultsPlaceholder from '../ResultsPlaceholder';
 
-// import FirstPageIcon from '@material-ui/core/FirstPageIcon';
-// import KeyboardArrowLeft from '@material-ui/core/KeyboardArrowLeft';
-// import KeyboardArrowRight from '@material-ui/core/KeyboardArrowRight';
-// import LastPageIcon from '@material-ui/core/LastPageIcon';
+const useStyles = makeStyles(props => theme => ({
+  root: {
+    display: 'flex',
+    height: '100%',
+    width: '100%'
+  }
+}));
 
 
 function ResultsTableHeader(props) {
-  const { handleSortUpdate, labels, sortHeader, sortOrder } = props;
+  const { labels, sortHeader, sortOrder,
+          updateSortHeader, updateSortOrder } = props;
   const sortDirection = sortOrder === 1 ? 'asc' : 'desc';
+
+  const handleSortUpdate = header => {
+    const newSortHeader = header.toLowerCase();
+    const newSortOrder = sortHeader === newSortHeader ? -sortOrder : -1;
+    updateSortHeader(newSortHeader);
+    updateSortOrder(newSortOrder);
+  }
 
   const headCells = labels.map(item => {
       const itemNorm = item.toLowerCase();
@@ -33,6 +51,7 @@ function ResultsTableHeader(props) {
           align="center"
           onClick={() => handleSortUpdate(itemNorm)}
           sortDirection={sortHeader === itemNorm ? sortDirection : false}
+          variant="head"
         >
           <TableSortLabel
             key={itemNorm}
@@ -64,13 +83,45 @@ function ResultsTableBody(props) {
       <TableRow
         hover
         tabIndex={-1}
-        key={item.source + item.target + item.matches}
+        key={item.source_tag + item.target_tag + item.matched_features.join(', ')}
       >
-        <TableCell>{idx + 1}</TableCell>
-        <TableCell>{item.source} {item.sourceText}</TableCell>
-        <TableCell>{item.target} {item.targetText}</TableCell>
-        <TableCell>{item.matchedOn}</TableCell>
-        <TableCell>{item.score}</TableCell>
+        <TableCell variant="body">
+          <Typography
+            align="left"
+          >
+            {idx + 1}
+          </Typography>
+        </TableCell>
+        <TableCell
+          align="left"
+          variant="body"
+        >
+          <Typography><b>{item.source_tag}</b>:</Typography>
+          <Typography>{item.source_snippet}</Typography>
+        </TableCell>
+        <TableCell
+          align="left"
+          variant="body"
+        >
+          <Typography><b>{item.target_tag}</b>:</Typography>
+          <Typography>{item.target_snippet}</Typography>
+        </TableCell>
+        <TableCell
+          align="center"
+          variant="body"
+        >
+          <Typography>
+            {item.matched_features.join(', ')}
+            </Typography>
+        </TableCell>
+        <TableCell
+          align="right"
+          variant="body"
+        >
+          <Typography>
+            {Math.round(item.score)}
+          </Typography>
+        </TableCell>
       </TableRow>
     );
   });
@@ -83,157 +134,104 @@ function ResultsTableBody(props) {
 }
 
 
-const resultsList = [
-  {
-    target: 'luc. 1.51',
-    targetText: "Cedetur, iurique tuo natura relinquet,",
-    source: 'verg. aen. 11.359',
-    sourceText: 'cedat, ius proprium regi patriaeque remittat.',
-    matchedOn: 'cedo, ius',
-    score: 10
-  },
-  {
-    target: 'luc. 1.635',
-    targetText: 'Sed venient maiora metu. Di visa secundent, ',
-    source: 'verg. aen. 3.36',
-    sourceText: 'rite secundarent visus omenque levarent.',
-    matchedOn: 'secundo, uideo-uiso',
-    score: 10
-  },
-  {
-    target: 'luc. 1.638',
-    targetText: 'Involvens multaque tegens ambage canebat. ',
-    source: 'verg. aen. 6.29',
-    sourceText: 'Daedalus ipse dolos tecti ambagesque resolvit,',
-    matchedOn: 'ambages-ambago, tego',
-    score: 10
-  },
-  {
-    target: 'luc. 1.558',
-    targetText: 'Dona suis, dirasque diem foedasse volucres',
-    source: 'verg. aen. 3.241',
-    sourceText: 'obscenas pelagi ferro foedare volucres:',
-    matchedOn: 'foedo, uolucer-uolucris',
-    score: 9
-  },
-  {
-    target: 'luc. 1.549',
-    targetText: 'Latravere canes. Vestali raptus ab ara',
-    source: 'verg. aen. 5.257',
-    sourceText: 'custodes, saevitque canum latratus in auras.',
-    matchedOn: 'canis, latro',
-    score: 9
-  },
-  {
-    target: 'luc. 1.645',
-    targetText: 'Humano matura lues. Terraene dehiscent,',
-    source: 'verg. aen. 8.243',
-    sourceText: 'non secus ac siqua penitus vi terra dehiscens',
-    matchedOn: 'terra, dehisco',
-    score: 8
-  },
-]
+function ResultsTable(props) {
+  const { asyncPending, currentPage, fetchResults, getSearchStatus, initiateSearch, resultCount, results,
+          rowsPerPage, searchID, searchParams, shouldFetchResults, shouldInitiateSearch,
+          sourceText, status, stopwords, targetText, updateCurrentPage, updateRowsPerPage } = props;
+  
+  const [ sortHeader, setSortHeader ] = useState('Score');
+  const [ sortOrder, setSortOrder ] = useState(0);
 
+  const classes = useStyles(props);
 
-class ResultsTable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      page: 0,
-      resultsPerPage: 100,
-      sortHeader: 'score',
-      sortOrder: 1
+  const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
+
+  console.log(results)
+;
+  if (shouldInitiateSearch) {
+    initiateSearch(sourceText, targetText, searchParams, stopwords, asyncPending);
+  }
+
+  // if (searchID !== null && (status === null || status.toLowerCase() !== 'done')) {
+  //   setTimeout(() => getSearchStatus(searchID, asyncPending), 2000);
+  // }
+
+  // if (shouldFetchResults && results.length === 0) {
+  //   fetchResults(searchID, asyncPending)
+  // }
+
+  const start = currentPage * rowsPerPage;
+  const end = Math.min(start + rowsPerPage, results.length);
+
+  const displayResults = results.sort((a, b) => {
+    if (b[sortHeader] < a[sortHeader]) {
+      return -1 * sortOrder;
     }
-  }
+    else if (b[sortHeader] > a[sortHeader]) {
+      return 1 * sortOrder;
+    }
+    else {
+      return 0;
+    }
+  }).slice(start, end);
 
-  handleChangePage = (event, newPage) => {
-    const nPages = Math.ceil(this.props.results.length / this.state.resultsPerPage);
-    const page = Math.min(Math.max(page, 0), nPages);
-    this.setState({ page });
-  }
-
-  handleChangeRowsPerPage = event => {
-    const value = parseInt(event.target.value, 10);
-    const resultsPerPage = Math.min(Math.max(value, 0), 500);
-    this.setState({
-      resultsPerPage: resultsPerPage,
-      page: 0
-    })
-  }
-
-  handleSortUpdate = header =>{
-    const { sortHeader, sortOrder } = this.state
-    const newSortHeader = header.toLowerCase();
-    const newSortOrder = newSortHeader === sortHeader ? -sortOrder : -1;
-    this.setState({
-      sortHeader: newSortHeader,
-      sortOrder: newSortOrder
-    });
-  }
-
-  render() {
-    const { currentPage, resultCount, results, resultsPerPage } = this.props;
-    const { page, sortHeader, sortOrder } = this.state;
-
-    const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
-
-    const start = currentPage * resultsPerPage;
-    const end = Math.min(start + resultsPerPage, results.length);
-
-    const displayResults = results.sort((a, b) => {
-      if (b[sortHeader] < a[sortHeader]) {
-        return -1 * sortOrder;
-      }
-      else if (b[sortHeader] > a[sortHeader]) {
-        return 1 * sortOrder;
-      }
-      else {
-        return 0;
-      }
-    }).slice(start, end);
-
-    return (
-      <Paper>
-        <div>
-          <Table>
-            <ResultsTableHeader
-              handleSortUpdate={this.handleSortUpdate}
-              labels={headerLabels}
-              sortHeader={sortHeader}
-              sortOrder={sortOrder}
+  return (
+    <div className={classes.root}>
+      { results.length === 0
+        ? <ResultsPlaceholder />
+        : <div>
+            <Table>
+              <ResultsTableHeader
+                labels={headerLabels}
+                sortHeader={sortHeader}
+                sortOrder={sortOrder}
+                updateSortHeader={setSortHeader}
+                updateSortOrder={setSortOrder}
+              />
+              <ResultsTableBody results={displayResults} />
+            </Table>
+            <TablePagination
+              component="div"
+              count={results.length}
+              labelRowsPerPage="Results per page:"
+              onChangePage={updateCurrentPage}
+              onChangeRowsPerPage={updateRowsPerPage}
+              page={currentPage}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[50, 100, 200, 500]}
             />
-            <ResultsTableBody results={displayResults} />
-          </Table>
-        </div>
-        <TablePagination
-          component="div"
-          count={results.length}
-          labelRowsPerPage="Results per page:"
-          onChangePage={this.handleChangePage}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}
-          page={currentPage}
-          rowsPerPage={resultsPerPage}
-          rowsPerPageOptions={[50, 100, 200, 500]}
-        />
-      </Paper>
-    );
-  }
+          </div>
+      }
+    </div>
+  )
 }
 
 
 const mapStateToProps = state => ({
-    currentPage: state.currentPage,
-    pending: state.asyncPending,
-    resultCount: state.resultCount,
-    results: state.results,
-    resultsPerPage: state.resultsPerPage
-  });
-
+  asyncPending: state.asyncPending,
+  currentPage: state.currentPage,
+  pending: state.asyncPending,
+  resultCount: state.resultCount,
+  results: state.results,
+  rowsPerPage: state.rowsPerPage,
+  searchID: state.searchID,
+  searchParams: state.searchParameters,
+  shouldFetchResults: state.shouldFetchResults,
+  shouldInitiateSearch: state.shouldInitiateSearch,
+  sourceText: state.sourceText,
+  stopwords: state.stopwords,
+  status: state.status,
+  targetText: state.targetText,
+});
 
 
 const mapDispatchToProps = dispatch => bindActionCreators({
+  initiateSearch: initiateSearchAction,
   fetchResults: fetchResultsAction,
+  getSearchStatus: getSearchStatusAction,
+  updateCurrentPage: updateCurrentPageAction,
+  updateRowsPerPage: updateRowsPerPageAction
 }, dispatch);
 
 
-export default connect(mapStateToProps)(ResultsTable);
+export default connect(mapStateToProps, mapDispatchToProps)(ResultsTable);

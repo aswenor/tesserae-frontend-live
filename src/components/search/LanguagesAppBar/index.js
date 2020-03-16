@@ -57,7 +57,7 @@ function LanguagesAppBar(props) {
 
   function handleChangeTab(tabIdx) {
     const language = availableLanguages[tabIdx];
-    dispatch(updateLanguage(language));
+    updateLanguage(language);
     setCurrentTab(tabIdx);
   }
 

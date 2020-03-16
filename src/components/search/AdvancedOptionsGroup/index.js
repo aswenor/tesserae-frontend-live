@@ -39,7 +39,7 @@ const dummyDropScoresBelow = ['No Cutoff', '3', '4', '5', '6', '7', '8', '9'];
 function AdvancedOptionsGroup(props) {
   const { dispatch, unitType, feature, stoplist, stoplistBasis,
           scoreBasis, frequencyBasis, maxDistance,
-          distanceMetric, dropScoresBelow } = props;
+          distanceBasis, dropScoresBelow } = props;
 
   const classes = useStyles();
 
@@ -54,7 +54,7 @@ function AdvancedOptionsGroup(props) {
   const scoreBasisList = dummyScoreBasis.map(prepListItem);
   const frequencyBasisList = dummyFrequencyBasis.map(prepListItem);
   const maxDistanceList = dummyMaxDistance.map(prepListItem);
-  const distanceMetricList = dummyDistanceMetric.map(prepListItem);
+  const distanceBasisList = dummyDistanceMetric.map(prepListItem);
   const dropScoresBelowList = dummyDropScoresBelow.map(prepListItem);
 
   return (
@@ -131,8 +131,8 @@ function AdvancedOptionsGroup(props) {
           <LabeledSelect
             handleChange={handleChange('distanceMetric')}
             helperText={'Specify whether to base distance on porition or frequency.'}
-            options={distanceMetricList}
-            value={distanceMetric}
+            options={distanceBasisList}
+            value={distanceBasis}
           />
         </Grid>
 
@@ -153,10 +153,10 @@ function AdvancedOptionsGroup(props) {
 function mapStateToProps(state) {
   const { unitType, feature, stoplist, stoplistBasis,
           scoreBasis, frequencyBasis, maxDistance,
-          distanceMetric, dropScoresBelow } = state.searchParameters;
+          distanceBasis, dropScoresBelow } = state.searchParameters;
   return { unitType, feature, stoplist, stoplistBasis,
            scoreBasis, frequencyBasis, maxDistance,
-           distanceMetric, dropScoresBelow };
+           distanceBasis, dropScoresBelow };
 }
 
 
