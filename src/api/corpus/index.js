@@ -55,9 +55,6 @@ export function fetchTextsAction(language, shouldFetch) {
         dispatch(actions.fetchTextsError(error));
       });
     }
-  //   else {
-  //     dispatch(actions.fetchTextsSuccess([]))
-  //   }
   }
 }
 
@@ -80,10 +77,8 @@ export function updateSearchParametersAction(params) {
 
 
 export function fetchStoplistAction(feature, stopwords, stoplistBasis, pending) {
-  console.log('fetching stoplist');
   return dispatch => {
     if (!pending) {
-      console.log('truly fetching stoplist');
       dispatch(actions.fetchStoplistPending());
 
       let params = {
@@ -91,11 +86,11 @@ export function fetchStoplistAction(feature, stopwords, stoplistBasis, pending) 
         list_size: stopwords,
       };
 
-      if (stoplistBasis instanceof String) {
-        params.language = stoplistBasis;
+      if (stoplistBasis instanceof Array) {
+        params.works = stoplistBasis;
       }
       else {
-        params.works = stoplistBasis;
+        params.language = stoplistBasis;
       }
 
       axios({
@@ -106,12 +101,12 @@ export function fetchStoplistAction(feature, stopwords, stoplistBasis, pending) 
         params: params
       })
       .then(response => {
-        console.log(response.data.stopwords);
+        console.log("success", response.data.stopwords);
         dispatch(actions.fetchStoplistSuccess(response.data.stopwords))
         return response.data.stopwords
       })
       .catch(error => {
-        console.log(error.response.data);
+        console.log("error", error.response.data);
         dispatch(actions.fetchStoplistError(error))
       });
     }
@@ -119,40 +114,57 @@ export function fetchStoplistAction(feature, stopwords, stoplistBasis, pending) 
 }
 
 
-export function initiateSearchAction(source, target, params, pending) {
+export function initiateSearchAction(source, target, params, stopwords, pending) {
+  console.log('initiating search', params);
   return dispatch => {
     if (!pending) {
       dispatch(actions.initiateSearchPending());
       axios({
           method: 'post',
-          url: 'http://45.55.219.221:5000/parallels',
+          url: 'http://45.55.219.221:5000/parallels/',
           crossDomain: true,
+          headers: {
+            contentType: 'x-www-form-urlencoded'
+          },
           responseType: 'json',
           data : {
             source: {
               object_id: source.object_id,
-              unit: params.unit
+              units: params.unitType
             },
             target: {
               object_id: target.object_id,
-              unit: params.unit
+              units: params.unitType
             },
             method: {
               name: 'original',
               feature: params.feature,
-              stopwords: params.stopwords,
+              stopwords: stopwords,
               freq_basis: params.frequencyBasis,
-              max_distance: params.maxDistance,
+              max_distance: parseInt(params.maxDistance, 10),
               distance_basis: params.distanceBasis
             }
           }
       })
       .then(response => {
-        const searchID = response.headers.split('/')[1]
-        dispatch(actions.initiateSearchSuccess(searchID));
-        return searchID;
+        console.log(response)
+        if (response.headers.location !== undefined) {
+          const searchID = response.headers.location.split('/')[4];
+          console.log('got id', searchID);
+          dispatch(actions.initiateSearchSuccess(searchID));
+          return searchID;
+        }
+
+        if (response.data.parallels !== undefined) {
+          console.log('initiate got results', response.data.parallels)
+
+          dispatch(actions.fetchResultsSuccess(response.data.parallels));
+        }
+        
+        return undefined;
       })
       .catch(error => {
+        console.log(error);
         dispatch(actions.initiateSearchError(error));
       });
     }
@@ -160,17 +172,43 @@ export function initiateSearchAction(source, target, params, pending) {
 }
 
 
+export function getSearchStatusAction(searchID, pending) {
+  console.log('Getting search status');
+  return dispatch => {
+    if (!pending) {
+      dispatch(actions.getSearchStatusPending);
+      axios({
+        method: 'get',
+        url: `http://45.55.219.221:5000/parallels/${searchID}/status/`,
+        crossDomain: true,
+        responseType: 'json'
+      })
+      .then(response => {
+        console.log('got status', response.data.status);
+        const done = response.data.status === 'Done';
+        dispatch(actions.getSearchStatusSuccess(response.data.status, done));
+      })
+      .catch(error => {
+        dispatch(actions.getSearchStatusError(error));
+      })
+    }
+  }
+}
+
+
 export function fetchResultsAction(searchID, pending) {
+  console.log('Fetching results')
   return dispatch => {
     if (!pending) {
       dispatch(actions.fetchResultsPending());
       axios({
-          method: 'post',
+          method: 'get',
           url: `http://45.55.219.221:5000/parallels/${searchID}`,
           crossDomain: true,
           responseType: 'json'
       })
       .then(response => {
+        console.log('Got results', response.data.parallels.length)
         dispatch(actions.fetchResultsSuccess(response.data.parallels));
         return response.data.parallels;
       })
@@ -179,4 +217,14 @@ export function fetchResultsAction(searchID, pending) {
       });
     }
   }
+}
+
+
+export function updateCurrentPageAction(event, value) {
+  return dispatch => dispatch(actions.updateCurrentPage());
+}
+
+
+export function updateRowsPerPageAction(event, value) {
+  return dispatch => dispatch(actions.updateRowsPerPage());
 }
