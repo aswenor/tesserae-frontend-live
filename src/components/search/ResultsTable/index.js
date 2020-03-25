@@ -3,12 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
@@ -22,18 +19,19 @@ import { fetchResultsAction,
          initiateSearchAction} from '../../../api/corpus';
 import ResultsPlaceholder from '../ResultsPlaceholder';
 
-const useStyles = makeStyles(props => theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     height: '100%',
-    width: '100%'
+    width: '100%',
+    padding: 0,
+    margin: 0
   }
 }));
 
 
 function ResultsTableHeader(props) {
-  const { labels, sortHeader, sortOrder,
-          updateSortHeader, updateSortOrder } = props;
+  const { sortHeader, sortOrder, updateSortHeader, updateSortOrder } = props;
   const sortDirection = sortOrder === 1 ? 'asc' : 'desc';
 
   const handleSortUpdate = header => {
@@ -43,32 +41,64 @@ function ResultsTableHeader(props) {
     updateSortOrder(newSortOrder);
   }
 
-  const headCells = labels.map(item => {
-      const itemNorm = item.toLowerCase();
-      return (
-        <TableCell
-          key={itemNorm}
-          align="center"
-          onClick={() => handleSortUpdate(itemNorm)}
-          sortDirection={sortHeader === itemNorm ? sortDirection : false}
-          variant="head"
-        >
-          <TableSortLabel
-            key={itemNorm}
-            active={sortHeader === itemNorm}
-            direction={sortDirection}
-          >
-            {item}
-          </TableSortLabel>
-        </TableCell>
-      );
-    }
-  );
-
   return (
     <TableHead>
       <TableRow>
-        {headCells}
+        <TableCell
+          align="center"
+          key="number"
+          variant="head"
+        >
+        </TableCell>
+        <TableCell
+          align="center"
+          key="source"
+          onClick={() => handleSortUpdate('source_tag')}
+          sortDirection={sortHeader === 'source_tag' ? sortDirection : false}
+          variant="head"
+        >
+          <TableSortLabel
+            active={sortHeader === 'source_tag'}
+            direction={sortDirection}
+          >
+            Source
+          </TableSortLabel>
+        </TableCell>
+        <TableCell
+          align="center"
+          key="target"
+          onClick={() => handleSortUpdate('target_tag')}
+          sortDirection={sortHeader === 'target_tag' ? sortDirection : false}
+          variant="head"
+        >
+          <TableSortLabel
+            active={sortHeader === 'target_tag'}
+            direction={sortDirection}
+          >
+            Target
+          </TableSortLabel>
+        </TableCell>
+        <TableCell
+          align="center"
+          key="matches"
+          variant="head"
+        >
+          Matched On
+        </TableCell>
+        <TableCell
+          align="center"
+          key="score"
+          onClick={() => handleSortUpdate('score')}
+          sortDirection={sortHeader === 'score' ? sortDirection : false}
+          variant="head"
+        >
+          <TableSortLabel
+            active={sortHeader === 'score'}
+            direction={sortDirection}
+          >
+            Score
+          </TableSortLabel>
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -139,26 +169,16 @@ function ResultsTable(props) {
           rowsPerPage, searchID, searchParams, shouldFetchResults, shouldInitiateSearch,
           sourceText, status, stopwords, targetText, updateCurrentPage, updateRowsPerPage } = props;
   
-  const [ sortHeader, setSortHeader ] = useState('Score');
-  const [ sortOrder, setSortOrder ] = useState(0);
+  const [ sortHeader, setSortHeader ] = useState('score');
+  const [ sortOrder, setSortOrder ] = useState(1);
 
   const classes = useStyles(props);
 
   const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
 
-  console.log(results)
-;
   if (shouldInitiateSearch) {
     initiateSearch(sourceText, targetText, searchParams, stopwords, asyncPending);
   }
-
-  // if (searchID !== null && (status === null || status.toLowerCase() !== 'done')) {
-  //   setTimeout(() => getSearchStatus(searchID, asyncPending), 2000);
-  // }
-
-  // if (shouldFetchResults && results.length === 0) {
-  //   fetchResults(searchID, asyncPending)
-  // }
 
   const start = currentPage * rowsPerPage;
   const end = Math.min(start + rowsPerPage, results.length);

@@ -46,7 +46,7 @@ function PanelOpenIcon(props) {
 
 
 function LanguagesAppBar(props) {
-  const { dispatch, availableLanguages, fetchLanguages, handlePanelOpen,
+  const { availableLanguages, fetchLanguages, handlePanelOpen,
           open, pending, updateLanguage } = props;
   const [currentTab, setCurrentTab] = useState(0);
   const classes = useStyles();
@@ -57,6 +57,7 @@ function LanguagesAppBar(props) {
 
   function handleChangeTab(tabIdx) {
     const language = availableLanguages[tabIdx];
+    console.log(`Selecting ${language} from ${availableLanguages} at position ${tabIdx}`);
     updateLanguage(language);
     setCurrentTab(tabIdx);
   }

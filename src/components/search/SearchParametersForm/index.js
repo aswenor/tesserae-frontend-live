@@ -20,20 +20,20 @@ import TextSelectGroup from '../TextSelectGroup';
 import { fetchStoplistAction, fetchTextsAction,
          updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   formControl: {
     minWidth: 120,
   }
-});
+}));
 
 
 function SearchParametersForm(props) {
-  const { availableTexts, disableSearch, fetchTexts, fetchStoplist, language, pending,
-          searchParameters, shouldFetchStoplist, shouldFetchTexts, sourceText,
-          stopwords, targetText, updateSource, updateTarget } = props;
-  
+  const { availableTexts, disableSearch, fetchTexts, fetchStoplist, language,
+          pending, searchParameters, shouldFetchTexts, sourceText, targetText,
+          updateSource, updateTarget } = props;
+
   const classes = useStyles();
-  
+
   const basis = (searchParameters !== undefined && searchParameters.stoplistBasis === 'corpus'
                  ? language
                  : [sourceText.object_id, targetText.object_id]);

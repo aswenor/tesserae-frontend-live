@@ -3,8 +3,8 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
+import Slide from '@material-ui/core/Slide';
 
 import ResultsTable from '../ResultsTable';
 import SearchParametersForm from '../SearchParametersForm';
@@ -48,6 +48,10 @@ const panelStyles = makeStyles(theme => ({
     marginBottom: 0,
     marginLeft: 0,
     marginRight: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
     [theme.breakpoints.up('md')]: {
       display : props => props.width > 0 ? 'auto' : 'hidden',
       float: 'left',

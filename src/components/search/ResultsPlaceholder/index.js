@@ -3,11 +3,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -15,22 +18,33 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { getSearchStatusAction, fetchResultsAction } from '../../../api/corpus';
 
 
-const useStyles = makeStyles(props => theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
-        height: 100,
+        height: '100vh',
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
+        paddingTop: '30%'
     },
     spacer: {
         height: '30vh'
+    },
+    content: {
+    },
+    card: {
+        height: '30vh'
+    },
+    icon: {
+        height: '20vh',
+        width: '20vh'
     }
 }));
 
 
 function AwaitingSearchCard(props) {
+    const { classes } = props;
     return (
-        <Card>
+        <Card className={classes.card}>
             <CardMedia>
                 <ArrowBackIcon />
             </CardMedia>
@@ -45,8 +59,9 @@ function AwaitingSearchCard(props) {
 
 
 function SearchInProgressCard(props) {
+    const { classes } = props;
     return (
-        <Card>
+        <Card className={classes.card}>
             <CardMedia>
                 <CircularProgress />
             </CardMedia>
@@ -75,12 +90,17 @@ function ResultsPlaceholder(props) {
         }
     }
 
-    const card = !searchInProgress ? <AwaitingSearchCard /> : <SearchInProgressCard />;
+    const card = !searchInProgress ? <AwaitingSearchCard classes={classes} /> : <SearchInProgressCard classes={classes} />;
 
     return (
-        <div className={classes.root}>
+        <Box
+            alignItems="center"
+            className={classes.content}
+            justifyContent="center"
+            width="100%"
+        >
             {card}
-        </div>
+        </Box>
     );
 }
 

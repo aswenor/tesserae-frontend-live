@@ -7,13 +7,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   select: {
     marginTop: 10,
     marginLeft: '5%',
     width: '90%'
   }
-});
+}));
 
 
 function LabeledSelect(props) {

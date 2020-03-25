@@ -4,11 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import uniqBy from 'lodash/uniqBy';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-
-import { loadTextMetadata } from '../../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +28,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function TextSelectGroup(props) {
-  const { handleTextChange, index, loading, loadingText, onOpen,
+  const { handleTextChange, loading, loadingText, onOpen,
           selection, textList, title } = props;
   const classes = useStyles();
 
