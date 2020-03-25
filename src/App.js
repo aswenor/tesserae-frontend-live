@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { BrowserRouter as Router, Route, Link } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import NavBar from './components/common/NavBar';
-import SearchPrototypeD from './components/search/SearchPrototypeD';
-
-const Index = () => <h2>Home</h2>;
+import Search from './components/search/';
 
 class App extends Component {
   render() {
@@ -16,12 +15,16 @@ class App extends Component {
     ]
 
     return (
-      <Router>
-        <div className="App">
+      <React.Fragment>
+        <CssBaseline />
+        <Router>
           <NavBar routes={routes} />
-          <Route path="/" exact component={SearchPrototypeD} />
-        </div>
-      </Router>
+
+          <Switch>
+            <Route path="/" exact component={Search} />
+          </Switch>
+        </Router>
+      </React.Fragment>
     );
   }
 }
