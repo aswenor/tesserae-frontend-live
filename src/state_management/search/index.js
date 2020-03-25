@@ -108,7 +108,8 @@ export function fetchLanguagesSuccess(availableLanguages) {
     payload: {
       asyncPending: false,
       availableLanguages: availableLanguages,
-      language: availableLanguages[0]
+      language: availableLanguages[0],
+      shouldFetchTexts: true,
     }
   };
 }
@@ -141,12 +142,29 @@ export function updateLanguage(language = DEFAULT_STATE.language) {
   return {
     type: UPDATE_LANGUAGE,
     payload: {
-      availableTexts: DEFAULT_STATE.availableTexts,
+      searchID: DEFAULT_STATE.searchID,
+      status: DEFAULT_STATE.status,
       language: language,
-      searchParameters: {
-        ...DEFAULT_STATE.searchParameters
-      },
-      shouldFetchTexts: true
+      availableTexts: DEFAULT_STATE.availableTexts,
+      sourceText: {...DEFAULT_STATE.sourceText},
+      targetText: {...DEFAULT_STATE.targetText},
+      stopwords: [...DEFAULT_STATE.stopwords],
+      searchParameters: {...DEFAULT_STATE.searchParameters},
+      results: [...DEFAULT_STATE.results],
+      resultCount: DEFAULT_STATE.resultCount,
+      currentPage: DEFAULT_STATE.currentPage,
+      rowsPerPage: DEFAULT_STATE.rowsPerPage,
+      shouldFetchTexts: true,
+      shouldInitiateSearch: DEFAULT_STATE.shouldInitiateSearch,
+      shouldFetchResults: DEFAULT_STATE.shouldFetchResults,
+      disableSearch: DEFAULT_STATE.disableSearch,
+      asyncPending: DEFAULT_STATE.asyncPending,
+      searchInProgress: DEFAULT_STATE.searchInProgress,
+      fetchLanguagesError: DEFAULT_STATE.fetchLanguagesError,
+      fetchTextsError: DEFAULT_STATE.fetchTextsError,
+      fetchStoplistError: DEFAULT_STATE.fetchStoplistError,
+      initiateSearchError: DEFAULT_STATE.initiateSearchError,
+      fetchResultsError: DEFAULT_STATE.fetchResultsError,
     }
   };
 }
@@ -311,7 +329,10 @@ export function initiateSearchPending() {
     payload: {
       asyncPending: true,
       shouldInitiateSearch: false,
-      searchInProgress: true
+      searchInProgress: true,
+      results: DEFAULT_STATE.results,
+      resultCount: DEFAULT_STATE.resultCount,
+      currentPage: DEFAULT_STATE.currentPage
     }
   };
 }
@@ -527,7 +548,8 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
         availableLanguages: action.payload.availableLanguages,
         asyncPending: action.payload.asyncPending,
         disableSearch: disableSearch,
-        language: action.payload.language
+        language: action.payload.language,
+        shouldFetchTexts: action.payload.shouldFetchTexts
       };
     case FETCH_LANGUAGES_ERROR:
       return {
@@ -539,11 +561,13 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
     case UPDATE_LANGUAGE:
       return {
         ...state,
-        availableTexts: action.payload.availableTexts,
-        disableSearch: disableSearch,
+        ...action.payload,
+        searchParameters: {
+          ...state.searchParameters,
+          ...action.payload.searchParameters
+        },
         language: action.payload.language,
-        stoplist: action.payload.stoplist,
-        searchParameters: action.payload.searchParameters,
+        disableSearch: disableSearch,
         shouldFetchTexts: action.payload.shouldFetchTexts,
       };
     case FETCH_TEXTS_PENDING:
@@ -617,8 +641,11 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
         ...state,
         asyncPending: action.payload.asyncPending,
         disableSearch: disableSearch,
+        results: action.payload.results,
+        resultCount: action.payload.resultCount,
+        currentPage: action.payload.currentPage,
         searchInProgress: action.payload.searchInProgress,
-        shouldInitiateSearch: action.payload.shouldInitiateSearch
+        shouldInitiateSearch: action.payload.shouldInitiateSearch,
       };
     case INITIATE_SEARCH_SUCCESS:
       return {
