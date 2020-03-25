@@ -61,7 +61,7 @@ function ResultsTableHeader(props) {
             active={sortHeader === 'source_tag'}
             direction={sortDirection}
           >
-            Source
+            <Typography variant="h6"><b>Source</b></Typography>
           </TableSortLabel>
         </TableCell>
         <TableCell
@@ -75,7 +75,7 @@ function ResultsTableHeader(props) {
             active={sortHeader === 'target_tag'}
             direction={sortDirection}
           >
-            Target
+            <Typography variant="h6"><b>Target</b></Typography>
           </TableSortLabel>
         </TableCell>
         <TableCell
@@ -83,7 +83,7 @@ function ResultsTableHeader(props) {
           key="matches"
           variant="head"
         >
-          Matched On
+          <Typography variant="h6"><b>Match Features</b></Typography>
         </TableCell>
         <TableCell
           align="center"
@@ -96,7 +96,7 @@ function ResultsTableHeader(props) {
             active={sortHeader === 'score'}
             direction={sortDirection}
           >
-            Score
+            <Typography variant="h6"><b>Score</b></Typography>
           </TableSortLabel>
         </TableCell>
       </TableRow>
