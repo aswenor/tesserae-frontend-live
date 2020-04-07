@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import CssBaseline from '@material-ui/core/CssBaseline';
+import Box from '@material-ui/core/Box';
 
 import NavBar from './components/common/NavBar';
 import Search from './components/search/';
+import theme from './theme';
 
 class App extends Component {
   render() {
@@ -15,16 +15,13 @@ class App extends Component {
     ]
 
     return (
-      <React.Fragment>
-        <CssBaseline />
-        <Router>
-          <NavBar routes={routes} />
+      <Router>
+        <NavBar routes={routes} />
 
-          <Switch>
-            <Route path="/" exact component={Search} />
-          </Switch>
-        </Router>
-      </React.Fragment>
+        <Switch>
+          <Route path="/" exact component={Search} />
+        </Switch>
+      </Router>
     );
   }
 }
