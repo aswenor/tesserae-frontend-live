@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
 
 
@@ -19,15 +19,6 @@ const useStyles = makeStyles(theme => ({
     width: 'auto',
     margin: 0,
     padding: 0
-  },
-  routeGrid: {
-    display: 'flex',
-    height: '100%',
-    verticalAlign: 'middle'
-  },
-  route: {
-    height: '100%',
-    verticalAlign: 'middle'
   }
 }));
 
@@ -36,39 +27,29 @@ export default function NavBar(props) {
   const classes = useStyles();
   const routes = props.routes.map((route, i) => {
     return (
-      <Grid item
-        className={classes.routeGrid}
+      <Button
+        component={Link}
         key={route.link}
-        sm={2}
+        to={route.link}
       >
-        <Button
-          className={classes.route}
-          component={Link}
-          to={route.link}
-        >
-          {route.name}
-        </Button>
-      </Grid>
+        {route.name}
+      </Button>
     );
   });
 
   return (
     <AppBar className={classes.root} position="static">
-      <Toolbar className="">
-        <Grid container alignItems="flex-start">
-          <Grid item xs={3}>
-            <img
-              className={classes.logo}
-              src={"/TesseraeLogo.png"}
-              alt="Tesserae"
-            />
-          </Grid>
-          <Grid item xs={9}>
-            <Grid container alignItems="flex-end" spacing={2}>
-              {routes}
-            </Grid>
-          </Grid>
-        </Grid>
+      <Toolbar>
+        <Box
+          flexGrow={1}
+        >
+          <img
+            className={classes.logo}
+            src={"/TesseraeLogo.png"}
+            alt="Tesserae"
+          />
+        </Box>
+        {routes}
       </Toolbar>
     </AppBar>
   );
