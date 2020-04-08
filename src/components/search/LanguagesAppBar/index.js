@@ -31,7 +31,7 @@ const a11yProps = (index) => {
 
 function PanelOpenIcon(props) {
   const { onClick, open } = props;
-  const icon = open ? <ArrowBackIcon /> : <ArrowForwardIcon />
+  const icon = open ? <ArrowForwardIcon /> : <ArrowBackIcon />
   return (
     <Hidden only={['xs', 'sm']}>
       <IconButton
@@ -80,7 +80,11 @@ function LanguagesAppBar(props) {
 
   return (
     <AppBar position="static">
-      <Grid container spacing={2}>
+      <Grid container
+        alignContent="center"
+        alignItems="flex-start"
+        justify="flex-start"
+      >
         <Grid item xs={1}>
           <PanelOpenIcon
             onClick={handlePanelOpen}
