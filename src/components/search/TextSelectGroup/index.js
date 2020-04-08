@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import uniqBy from 'lodash/uniqBy';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -32,8 +33,8 @@ function TextSelectGroup(props) {
           selection, textList, title } = props;
   const classes = useStyles();
 
-  const authorItems = uniqBy(textList, 'author');
-  const textItems = textList.filter(t => selection.author === '' || t.author.toLowerCase() === selection.author);
+  const authorItems = uniqBy(textList, 'author').sort((a, b) => a.author > b.author);
+  const textItems = textList.filter(t => selection.author === '' || t.author.toLowerCase() === selection.author).sort((a, b) => a.title > b.title);
 
   return (
     <div>
