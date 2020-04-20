@@ -10,8 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowForward';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import { fetchLanguagesAction, updateLanguageAction } from '../../../api/corpus';
 
@@ -26,22 +25,6 @@ const a11yProps = (index) => {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
-}
-
-
-function PanelOpenIcon(props) {
-  const { onClick, open } = props;
-  const icon = open ? <ArrowForwardIcon /> : <ArrowBackIcon />
-  return (
-    <Hidden only={['xs', 'sm']}>
-      <IconButton
-        aria-label={open ? "open panel" : "close panel"}
-        onClick={onClick}
-      >
-        {icon}
-      </IconButton>
-    </Hidden>
-  );
 }
 
 
@@ -85,13 +68,19 @@ function LanguagesAppBar(props) {
         alignItems="flex-start"
         justify="flex-start"
       >
-        <Grid item xs={1}>
-          <PanelOpenIcon
-            onClick={handlePanelOpen}
-            open={open}
-          />
-        </Grid>
-        <Grid item xs={11}>
+        <Hidden only={['xs', 'sm']}>
+          <Grid item xs={1}>
+            <IconButton
+              ariaLabel={open
+                         ? 'Hide Search Parameters'
+                         : 'View Search Parameters'}
+              onClick={handlePanelOpen}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Grid>
+        </Hidden>
+        <Grid item md={11} xs={12}>
           <Tabs
             className={classes.tabs}
             value={currentTab}
