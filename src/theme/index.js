@@ -1,5 +1,21 @@
+/**
+ * @fileoverview Standard app theming for a unified appearance.
+ *
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ *
+ * @exports theme
+ *
+ * @requires NPM:@material-ui/core
+ */
+
 import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 
+
+/**
+ * [Material UI theme object.](https://material-ui.com/customization/theming/)
+ * 
+ * @readonly
+ */
 const theme = createMuiTheme({
   typography: {
     fontFamily: [
@@ -17,5 +33,6 @@ const theme = createMuiTheme({
   },
   spacing: 8
 });
+
 
 export default responsiveFontSizes(theme);
