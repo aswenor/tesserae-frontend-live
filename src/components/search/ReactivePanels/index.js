@@ -1,16 +1,41 @@
+/**
+ * @fileoverview Content panels that can be horizontally resized.
+ * 
+ * This particular component is relatively complicated and requires more
+ * moving parts than most to maintian the structure and reactive sizes of
+ * the child components. In short, there is a container with two vertical
+ * panels and a divider between them. The divider can be moved horizontally,
+ * and this resizes the two panels in their CSS.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports LanguagesAppBar
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:redux
+ * @requires NPM:react-redux
+ * @requires NPM:@material-ui/core
+ * @requires NPM:@material-ui/icons
+ * @requires ../ResultsTable
+ * @requires ../SearchParametersForm
+ * @requires ../../../utils
+ */
 import React, { useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
-import Slide from '@material-ui/core/Slide';
 
 import ResultsTable from '../ResultsTable';
 import SearchParametersForm from '../SearchParametersForm';
+import { getTotalWidth } from '../../../utils';
 
 
-const styles = theme => ({
+/** CSS styles to apply to the component. */
+const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: 0,
     paddingmarginBottom: 0,
@@ -39,9 +64,9 @@ const styles = theme => ({
       float: 'left'
     }
   }
-});
+}));
 
-
+/** CSS styles to apply to the child components. */
 const panelStyles = makeStyles(theme => ({
   root: {
     marginTop: 0,
@@ -68,13 +93,25 @@ const panelStyles = makeStyles(theme => ({
 }));
 
 
-const getTotalWidth = () => window.innerWidth !== null
-      ? window.innerWidth
-      : window.document.documentElement.clientWidth;
-
-
+/**
+ * Panel with width set based on component props.
+ * 
+ * @component
+ * 
+ * @example
+ *   return (
+ *     <ReactivePanel
+ *       minWidth: '20%',
+ *       width: '40%'
+ *     >
+ *       <p>The width is set by the props.</p>
+ *     </ReactivePanel>
+ *   );
+ */
 function ReactivePanel(props) {
   const { children } = props;
+
+  /** CSS styles and global theme. */
   const classes = panelStyles(props);
 
   return (
@@ -87,103 +124,194 @@ function ReactivePanel(props) {
 }
 
 
-class ReactivePanels extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      leftWidth: props.leftMinWidth,
-      moving: false,
-      rightWidth: 100 - props.leftMinWidth,
-      unit: '%',
-    };
-  }
+ReactivePanel.propTypes = {
+  /**
+   * Minimum possible width of the panel in valid CSS units.
+   */
+  minWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 
-  getTotalWidth = () => window.innerWidth !== null
-      ? window.innerWidth
-      : window.document.documentElement.clientWidth;
+  /**
+   * Current width of the panel in valid CSS units.
+   */
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+};
 
-  handleClickDivider = event => {
+
+/**
+ * Vertical panels that are horizontally resizable.
+ * 
+ * @component
+ * 
+ * @example
+ *   return (
+ *     <ReactivePanels
+ *       leftMinWidth="20%"
+ *       open={true}
+ *       rightMinWidth="30%"
+ *     >
+ *       <p>This goes on the left.</p>
+ *       <p>This goes on the right.</p>
+ *     </ReactivePanels>
+ *   );
+ */
+function ReactivePanels(props) {
+  const { leftMinWidth, open, rightMinWidth } = this.props;
+
+  /** CSS styles and global theme. */
+  const classes = useStyles(props);
+
+  /**
+   * Left panel current width.
+   * @type {number}
+   */
+  const [ leftWidth, setLeftWidth ] = useState(leftMinWidth);
+
+  /**
+   * Flag indicating resizing is occurring.
+   * @type {boolean}
+   */
+  const [ moving, setMoving ] = useState(false);
+
+  /**
+   * Right panel current width.
+   * @type {number}
+   */
+  const [ rightWidth, setRightWidth ] = useState(100 - leftMinWidth);
+  
+  /**
+   * Width CSS unit to use.
+   * @type {String}
+   */
+  const [ unit, setUnit ] = useState('%');
+
+  // Format the widths with their CSS units to be valid CSS.
+  const totalWidth = getTotalWidth();
+  const leftWidthVal = open ? `${leftWidth}${unit}` : "0";
+  const leftMinWidthVal = totalWidth * (leftMinWidth / 100);
+  const rightWidthVal = open ? `${rightWidth - 2}${unit}` : "100%";
+  const rightMinWidthVal = totalWidth * (rightMinWidth / 100);
+
+  /**
+   * Callback to start resizing the panels.
+   * 
+   * @param {Event} event The browser event fired by the click.
+   */
+  const handleClickDivider = event => {
+    // Prevent the click from triggering any other parent components.
     if (event.stopPropagation) {
       event.stopPropagation();
     }
     if (event.preventDefault) {
       event.preventDefault();
     }
-    this.setState({moving: true});
+
+    // Update the flag to indicate movement has started.
+    setMoving(true);
   }
 
-  handleMoveDivider = event => {
+  /**
+   * Callback to update panel widths on horizontal mouse movement.
+   * 
+   * @param {Event} event the browser event fired by mouse movement.
+   */
+  const handleMoveDivider = event => {
+    // Only update if we are currently moving.
     if (this.state.moving) {
+      // Prevent the click from triggering any other components.
+      // If this is not done, the move will also start to highlight text.
       if (event.stopPropagation) {
         event.stopPropagation();
       }
       if (event.preventDefault) {
         event.preventDefault();
       }
-      const totalWidth = this.getTotalWidth();
+
+      // Get the current mouse X position.
       const mouseX = event.pageX;
-      const rightMinWidth = this.props.rightMinWidth * totalWidth / 100;
+
+      // Compute the min and max widths for the panels as percentages.
+      const rightMinWidth = rightMinWidth * totalWidth / 100;
       const leftMaxWidth = totalWidth - rightMinWidth;
-      const leftMinWidth = this.props.leftMinWidth * totalWidth / 100;
+      const leftMinWidth = leftMinWidth * totalWidth / 100;
+
+      // Bound the widths based on the computed min and max widths.
       const leftWidth = Math.min(Math.max(mouseX, leftMinWidth), leftMaxWidth);
       const rightWidth = totalWidth - leftWidth;
 
-      this.setState({ leftWidth, rightWidth, unit: 'px' });
+      // Update the widths and CSS unit.
+      setLeftWidth(leftWidth);
+      setRightWidth(rightWidth);
+      setUnit('px');
     }
   }
 
-  handleReleaseDivider = event => {
+  /**
+   * Callback to stop resizing the panels.
+   * 
+   * @param {Event} event The event fired by releasing the mouse.
+   */
+  const handleReleaseDivider = event => {
+    // Prevent the click from triggering any other parent components.
     if (event.stopPropagation) {
       event.stopPropagation();
     }
     if (event.preventDefault) {
       event.preventDefault();
     }
-    this.setState({moving: false});
+
+    // Update the flag to indicate resizing has stopped.
+    setMoving(false);
   }
 
-  render() {
-    const { leftWidth, rightWidth, unit } = this.state;
-    const { classes, leftMinWidth, open, rightMinWidth } = this.props;
-
-    const totalWidth = this.getTotalWidth()
-    const leftWidthVal = open ? `${leftWidth}${unit}` : "0";
-    const leftMinWidthVal = totalWidth * (leftMinWidth / 100);
-    const rightWidthVal = open ? `${rightWidth - 2}${unit}` : "100%";
-    const rightMinWidthVal = totalWidth * (rightMinWidth / 100);
-
-    return (
-      <Box
-        className={classes.root}
-        component="div"
-        onMouseMove={this.handleMoveDivider}
-        onMouseUp={this.handleReleaseDivider}
+  return (
+    <Box
+      className={classes.root}
+      component="div"
+      onMouseMove={this.handleMoveDivider}
+      onMouseUp={this.handleReleaseDivider}
+    >
+      <ReactivePanel
+        minWidth={leftMinWidthVal}
+        width={leftWidthVal}
       >
-        <ReactivePanel
-          minWidth={leftMinWidthVal}
-          width={leftWidthVal}
-        >
-          <SearchParametersForm />
-        </ReactivePanel>
-        {open &&
-          <Hidden only={['xs', 'sm']}>
-            <Divider
-              className={classes.divider}
-              onMouseDown={this.handleClickDivider}
-              orientation='vertical'
-            />
-          </Hidden>
-        }
-        <ReactivePanel
-          minWidth={rightMinWidthVal}
-          width={rightWidthVal}
-        >
-          <ResultsTable />
-        </ReactivePanel>
-      </Box>
-    );
-  }
+        <SearchParametersForm />
+      </ReactivePanel>
+      {open &&
+        <Hidden only={['xs', 'sm']}>
+          <Divider
+            className={classes.divider}
+            onMouseDown={this.handleClickDivider}
+            orientation='vertical'
+          />
+        </Hidden>
+      }
+      <ReactivePanel
+        minWidth={rightMinWidthVal}
+        width={rightWidthVal}
+      >
+        <ResultsTable />
+      </ReactivePanel>
+    </Box>
+  );
 }
 
 
-export default withStyles(styles)(ReactivePanels);
+ReactivePanels.propTypes = {
+  /**
+   * Minimum width of the left panel as a percent between 0 and 100.
+   */
+  leftMinWidth: PropTypes.number,
+
+  /**
+   * Whether or not the left panel is open, controlled by LanguagesAppBar.
+   */
+  open: PropTypes.bool,
+  
+  /**
+   * Minimum width of the right panel as a percent between 0 and 100.
+   */
+  rightMinWidth: PropTypes.number
+}
+
+
+export default ReactivePanels;

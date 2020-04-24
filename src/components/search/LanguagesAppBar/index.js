@@ -3,7 +3,7 @@
  * 
  * @author [Jeff Kinnison](https://github.com/jeffkinnison)
  * 
- * @exports NavBar
+ * @exports LanguagesAppBar
  * 
  * @requires NPM:react
  * @requires NPM:prop-PropTypes
@@ -11,6 +11,7 @@
  * @requires NPM:react-redux
  * @requires NPM:@material-ui/core
  * @requires NPM:@material-ui/icons
+ * @requires ../../../api/corpus
  */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
