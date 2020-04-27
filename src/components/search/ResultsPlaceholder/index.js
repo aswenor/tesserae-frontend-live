@@ -1,4 +1,20 @@
+/**
+ * @fileoverview Placeholder over the results table before/during search.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports ResultsPlaceholder
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:redux
+ * @requires NPM:react-redux
+ * @requires NPM:@material-ui/core
+ * @requires NPM:@material-ui/icons
+ * @requires ../../../api/corpus
+ */
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -13,6 +29,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { getSearchStatusAction, fetchResultsAction } from '../../../api/corpus';
 
 
+/** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -32,7 +49,6 @@ const useStyles = makeStyles(theme => ({
     width: '20vh'
   },
   text: {
-    // color: "#aeaeae",
     display: 'inline-block',
     fontSize: 18,
     marginTop: '20px'
@@ -40,21 +56,35 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
+/**
+ * Placeholder content before/during a search.
+ * @component
+ * 
+ * @example
+ *   
+ */
 function ResultsPlaceholder(props) {
   const { asyncPending, fetchResults, getSearchStatus, results, searchID,
-          searchInProgress, shouldInitiateSearch, status } = props;
+          searchInProgress, status } = props;
+
+  /** CSS styles and global theme. */
   const classes = useStyles(props);
 
+  // Either check for the status or get results from the REST API.
   if (results.length === 0) {
+    // Ping the REST API for status every few seconds.
     if (searchInProgress && (status === null || status.toLowerCase() !== 'done')) {
       setTimeout(() => getSearchStatus(searchID, asyncPending), 500);
     }
     
+    // Retrieve results if the status is "Done"
     if (!searchInProgress && status !== null && status.toLowerCase() === 'done') {
       fetchResults(searchID, asyncPending);
     }
   }
 
+  // If a search is not in progress, an arrow pointing to the side bar is shown.
+  // If a search is in progress, a spinning wheel is shown.
   return (
     <Hidden only={['xs', 'sm']}>
       <Box
@@ -105,6 +135,50 @@ function ResultsPlaceholder(props) {
 }
 
 
+ResultsPlaceholder.propTypes = {
+  /**
+   * Flag denoting that an AJAX call is/not in progress.
+   */
+  asyncPending: PropTypes.bool,
+
+  /**
+   * Function to get results from the REST API.
+   */
+  fetchResults: PropTypes.func,
+
+  /**
+   * Function to get the status of the search from the REST API.
+   */
+  getSearchStatus: PropTypes.func,
+
+  /**
+   * List of results returned from the search.
+   */
+  results: PropTypes.arrayOf(PropTypes.object),
+
+  /**
+   * ID assigned to the search by the REST API.
+   */
+  searchID: PropTypes.string,
+
+  /**
+   * Flag showing that a search is in progress. (duh)
+   */
+  searchInProgress: PropTypes.bool,
+
+  /**
+   * Search status string returned from the REST API.
+   */
+  status: PropTypes.string
+}
+
+
+/**
+ * Add redux store state to this component's props.
+ * 
+ * @param {object} state The global state of the application.
+ * @returns {object} Members of the global state to provide as props.
+ */
 const mapStateToProps = state => ({
   asyncPending: state.asyncPending,
   results: state.results,
@@ -115,11 +189,15 @@ const mapStateToProps = state => ({
 });
 
 
+/**
+ * Add redux store actions to this component's props.
+ * @param {funciton} dispatch The redux dispatch function.
+ */
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchResults: fetchResultsAction,
   getSearchStatus: getSearchStatusAction,
 }, dispatch)
 
 
-
+// Do redux binding here.
 export default connect(mapStateToProps, mapDispatchToProps)(ResultsPlaceholder);

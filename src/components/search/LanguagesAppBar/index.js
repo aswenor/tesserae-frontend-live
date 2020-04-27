@@ -6,7 +6,7 @@
  * @exports LanguagesAppBar
  * 
  * @requires NPM:react
- * @requires NPM:prop-PropTypes
+ * @requires NPM:prop-types
  * @requires NPM:redux
  * @requires NPM:react-redux
  * @requires NPM:@material-ui/core
@@ -137,7 +137,6 @@ function LanguagesAppBar(props) {
         </Hidden>
         <Grid item md={11} xs={12}>
           <Tabs
-            className={classes.tabs}
             value={currentTab}
           >
             {tabs}
@@ -149,7 +148,7 @@ function LanguagesAppBar(props) {
 }
 
 
-LanguagesAppBar.PropTypes = {
+LanguagesAppBar.propTypes = {
   /**
    * Languages exposed by the REST API.
    */

@@ -1,9 +1,25 @@
+/**
+ * @fileoverview Table to display Tesserae search results.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports ResultsTable
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:redux
+ * @requires NPM:react-redux
+ * @requires NPM:@material-ui/core
+ * @requires ../ResultsPlaceholder
+ * @requires ../../../api/corpus
+ */
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import uniq from 'lodash/uniqBy';
 
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
