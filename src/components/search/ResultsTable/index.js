@@ -17,12 +17,10 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import uniq from 'lodash/uniqBy';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TablePagination from '@material-ui/core/TablePagination';
-import { Typography } from '@material-ui/core';
 
 import { fetchResultsAction,
          getSearchStatusAction,
@@ -32,7 +30,6 @@ import { fetchResultsAction,
 import ResultsPlaceholder from '../ResultsPlaceholder';
 import ResultsTableBody from '../ResultsTableBody';
 import ResultsTableHeader from '../ResultsTableHeader';
-import { isPropertyAccessExpression } from 'typescript';
 
 
 /** CSS styles to apply to the component. */
@@ -151,7 +148,7 @@ ResultsTable.propTypes = {
       /**
        * Pairs of source/target snippet token indices corresponding to matches.
        */
-      highlight: PropTypes.arrayOf(propTypes.arrayOf(number)),
+      highlight: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 
       /**
        * Score of the match.

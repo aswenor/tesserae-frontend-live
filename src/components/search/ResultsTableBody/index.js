@@ -11,7 +11,9 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import uniq from 'lodash/uniq';
 
+import { makeStyles } from '@material-ui/core/styles'
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
@@ -36,6 +38,7 @@ const cellStyles = makeStyles(theme => ({
  * Highlight relevant tokens in a result snippet.
  * 
  * @param {String} snippet The snippet to highlight.
+ * @param {String} tag Locus identifier for the snippet.
  * @param {Array} matchIndices The indices of the tokens to highlight.
  * @returns {Array} A list of Typography components with matches highlighted.
  */
@@ -79,7 +82,7 @@ function highlightMatches(snippet, tag, matchIndices) {
     // If no more matches are found, slice into the remaining tokens and
     // wrap them without a highlight.
     else if (next === undefined) {
-      slice = source_snippet_tokens.slice(current);
+      slice = snippetTokens.slice(current);
 
       highlightedSnippet.push(
         <Typography
@@ -99,7 +102,7 @@ function highlightMatches(snippet, tag, matchIndices) {
     // highlight it.
     else {
       slice = snippetTokens.slice(current, next);
-      source_snippet.push(
+      highlightedSnippet.push(
         <Typography
           color="textPrimary"
           component="span"
@@ -109,12 +112,12 @@ function highlightMatches(snippet, tag, matchIndices) {
         </Typography>
       );
 
-      slice = source_snippet_tokens.slice(next, next + 1);
-      source_snippet.push(
+      slice = snippetTokens.slice(next, next + 1);
+      highlightedSnippet.push(
         <Typography
           color="primary"
           component="span"
-          key={`${item.source_tag} ${next},${next + 1}`}
+          key={`${tag} ${next},${next + 1}`}
         >
           {` ${slice.join(' ')}`}
         </Typography>
@@ -225,7 +228,7 @@ ResultsTableBody.propTypes = {
       /**
        * Pairs of source/target snippet token indices corresponding to matches.
        */
-      highlight: PropTypes.arrayOf(propTypes.arrayOf(number)),
+      highlight: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 
       /**
        * Score of the match.
