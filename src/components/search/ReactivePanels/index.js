@@ -24,7 +24,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
@@ -155,7 +155,7 @@ ReactivePanel.propTypes = {
  *   );
  */
 function ReactivePanels(props) {
-  const { leftMinWidth, open, rightMinWidth } = this.props;
+  const { leftMinWidth, open, rightMinWidth } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
@@ -216,7 +216,7 @@ function ReactivePanels(props) {
    */
   const handleMoveDivider = event => {
     // Only update if we are currently moving.
-    if (this.state.moving) {
+    if (moving) {
       // Prevent the click from triggering any other components.
       // If this is not done, the move will also start to highlight text.
       if (event.stopPropagation) {
@@ -230,12 +230,12 @@ function ReactivePanels(props) {
       const mouseX = event.pageX;
 
       // Compute the min and max widths for the panels as percentages.
-      const rightMinWidth = rightMinWidth * totalWidth / 100;
-      const leftMaxWidth = totalWidth - rightMinWidth;
-      const leftMinWidth = leftMinWidth * totalWidth / 100;
+      const rightMinWidthPercent = rightMinWidth * totalWidth / 100;
+      const leftMaxWidthPercent = totalWidth - rightMinWidthPercent;
+      const leftMinWidthPercent = leftMinWidth * totalWidth / 100;
 
       // Bound the widths based on the computed min and max widths.
-      const leftWidth = Math.min(Math.max(mouseX, leftMinWidth), leftMaxWidth);
+      const leftWidth = Math.min(Math.max(mouseX, leftMinWidthPercent), leftMaxWidthPercent);
       const rightWidth = totalWidth - leftWidth;
 
       // Update the widths and CSS unit.
@@ -267,8 +267,8 @@ function ReactivePanels(props) {
     <Box
       className={classes.root}
       component="div"
-      onMouseMove={this.handleMoveDivider}
-      onMouseUp={this.handleReleaseDivider}
+      onMouseMove={handleMoveDivider}
+      onMouseUp={handleReleaseDivider}
     >
       <ReactivePanel
         minWidth={leftMinWidthVal}
@@ -280,7 +280,7 @@ function ReactivePanels(props) {
         <Hidden only={['xs', 'sm']}>
           <Divider
             className={classes.divider}
-            onMouseDown={this.handleClickDivider}
+            onMouseDown={handleClickDivider}
             orientation='vertical'
           />
         </Hidden>
