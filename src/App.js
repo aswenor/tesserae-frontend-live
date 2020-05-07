@@ -11,7 +11,7 @@
  * @requires ./components/search/index.js:Search
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import NavBar from './components/common/NavBar';

@@ -126,7 +126,7 @@ function LanguagesAppBar(props) {
         <Hidden only={['xs', 'sm']}>
           <Grid item xs={1}>
             <IconButton
-              ariaLabel={open
+              aria-label={open
                          ? 'Hide Search Parameters'
                          : 'View Search Parameters'}
               onClick={handlePanelOpen}
@@ -175,9 +175,9 @@ LanguagesAppBar.propTypes = {
   pending: PropTypes.bool,
 
   /**
-   * True if the language must be updated in the redux store and GUI.
+   * Callback to update the languages exposed through the REST API.
    */
-  updateLanguage: PropTypes.bool
+  updateLanguage: PropTypes.func
 }
 
 

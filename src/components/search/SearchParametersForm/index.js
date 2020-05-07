@@ -20,10 +20,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -184,11 +183,7 @@ function SearchParametersForm(props) {
               <TextSelectGroup
                 handleTextChange={updateSource}
                 loading={pending}
-                loadingText={
-                  <Typography variant="h6">
-                    <CircularProgress />{`Loading ${language} corpus`}
-                  </Typography>
-                }
+                loadingText={`Loading ${language} corpus`}
                 onOpen={() => fetchTexts(language, shouldFetchTexts)}
                 selection={sourceText}
                 textList={availableTexts}
@@ -202,11 +197,7 @@ function SearchParametersForm(props) {
               <TextSelectGroup
                 handleTextChange={updateTarget}
                 loading={pending}
-                loadingText={
-                  <Typography variant="p">
-                    <CircularProgress />{`Loading ${language} corpus`}
-                  </Typography>
-                }
+                loadingText={`Loading ${language} corpus`}
                 onOpen={() => fetchTexts(language, shouldFetchTexts)}
                 selection={targetText}
                 textList={availableTexts}

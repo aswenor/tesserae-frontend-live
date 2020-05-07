@@ -13,7 +13,7 @@
  * @requires NPM:@material-ui/icons
  * @requires ../../../api/corpus
  */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

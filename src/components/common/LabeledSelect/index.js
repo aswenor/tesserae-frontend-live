@@ -59,6 +59,7 @@ function LabeledSelect(props) {
   return (
     <FormControl fullWidth>
       <Select
+        className={classes.select}
         onChange={handleChange}
         value={value}
         variant="outlined"
