@@ -1,8 +1,39 @@
 /**
- * Utilities for managing one or more active Tesserae searches.
+ * @fileoverview Redux utilities for managing Tesserae search internal state.
+ * 
+ * Note: This file is long but mostly boilerplate standardizing interactions
+ * with the redux store. There are some fancier ways of handling redux actions
+ * and reducers, however they do not work well with the way this data is
+ * structured.
  *
- * @module state_management/search
  * @author Jeff Kinnison <jkinniso@nd.edu>
+ * 
+ * @exports DEFAULT_STATE
+ * @exports fetchLanguagesPending
+ * @exports fetchLanguagesSuccess
+ * @exports fetchLanguagesError
+ * @exports updateLanguage
+ * @exports fetchTextsPending
+ * @exports fetchTextsSuccess
+ * @exports fetchTextsError
+ * @exports updateSourceText
+ * @exports updateTargetText
+ * @exports updateSearchParameters
+ * @exports fetchStoplistPending
+ * @exports fetchStoplistSuccess
+ * @exports fetchStoplistError
+ * @exports initiateSearchPending
+ * @exports initiateSearchSuccess
+ * @exports initiateSearchError
+ * @exports getSearchStatusPending
+ * @exports getSearchStatusSuccess
+ * @exports getSearchStatusError
+ * @exports fetchResultsPending
+ * @exports fetchResultsSuccess
+ * @exports fetchResultsError
+ * @exports updateCurrentPage
+ * @exports updateRowsPerPage
+ * @exports searchReducer
  */
 
 
@@ -36,7 +67,7 @@ export const DEFAULT_STATE = {
   shouldFetchTexts: true,
   shouldInitiateSearch: false,
   shouldFetchResults: false,
-  disableSearch: false,
+  disableSearch: true,
   asyncPending: false,
   searchInProgress: false,
   fetchLanguagesError: null,
@@ -530,6 +561,9 @@ export function updateRowsPerPage(rowsPerPage = DEFAULT_STATE.rowsPerPage) {
  * @returns {Object} The object with updated state.
  **/
 export function searchReducer(state = DEFAULT_STATE, action = {}) {
+  /**
+   * Enable/disable the search button in response to the current state.
+   */
   const disableSearch = (
     !state.sourceText.object_id &&
     !state.targetText.object_id &&
