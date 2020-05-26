@@ -38,9 +38,27 @@
         height: 100vh;
         margin: 0;
         padding: 0;
+        width: 100vw;
       }
+
       @media (min-width: 600) {
-        overflow: hidden;
+        html, body, #root {
+          height: 100vh;
+          margin: 0;
+          overflow: hidden;
+          padding: 0;
+          width: 100vw;
+        }
+      }
+
+      @media (max-width: 600) {
+        html, body, #root {
+          height: 100vh;
+          margin: 0;
+          overflow-x: hidden;
+          padding: 0;
+          width: 100vw;
+        }
       }
     </style>
   </head>
