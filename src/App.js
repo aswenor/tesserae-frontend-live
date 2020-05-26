@@ -38,10 +38,12 @@ function App(props) {
 
   return (
     <Router>
-      <NavBar routes={routes} />
+      {/* <NavBar routes={routes} /> */}
 
       <Switch>
-        <Route path="/" exact component={Search} />
+        <Route path="/">
+          <Search routes={routes} />
+        </Route>
       </Switch>
     </Router>
   );

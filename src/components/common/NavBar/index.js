@@ -21,12 +21,21 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 
+import TessLogoButton from '../TessLogoButton';
+
 
 /** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     width: '100%'
+  },
+  button: {
+    border: '1px solid #000000',
+    background: '#ffffff'
+  },
+  header: {
+    width: '50vh'
   },
   logo: {
     height: '100%',
@@ -49,6 +58,8 @@ const useStyles = makeStyles(theme => ({
  *   return <NavBar routes={routes} />
  */
 function NavBar(props) {
+  const { children } = props;
+
   /** CSS styles and global theme. */
   const classes = useStyles();
 
@@ -56,8 +67,11 @@ function NavBar(props) {
   const routes = props.routes.map((route, i) => {
     return (
       <Button
+        className={classes.button}
         component={Link}
+        color="default"
         key={route.link}
+        size="small"
         to={route.link}
       >
         {route.name}
@@ -69,15 +83,25 @@ function NavBar(props) {
     <AppBar className={classes.root} position="static">
       <Toolbar>
         <Box
-          flexGrow={1}
+          alignItems="center"
+          className={classes.header}
+          display="flex"
+          flexGrow={.5}
+          justifyContent="flex-start"
         >
-          <img
-            className={classes.logo}
-            src={"/TesseraeLogo.png"}
-            alt="Tesserae"
-          />
+          {children}
         </Box>
-        {routes}
+        <Box
+          alignItems="center"
+          className={classes.header}
+          display="flex"
+          flexGrow={.5}
+          justifyContent="flex-end"
+          minWidth={.5}
+        >
+          {routes}
+          <TessLogoButton />
+        </Box>
       </Toolbar>
     </AppBar>
   );
