@@ -130,7 +130,7 @@ export function fetchTextsAction(language, shouldFetch) {
  * @returns {function} Callback that calls dispatch to update state.
  */
 export function updateSourceTextAction(event, value) {
-  const realval = value.object_id !== undefined ? value : {author: '', title: ''};
+  const realval = value && value.object_id !== undefined ? value : {author: '', title: ''};
   return dispatch => dispatch(actions.updateSourceText(realval));
 }
 
@@ -143,7 +143,7 @@ export function updateSourceTextAction(event, value) {
  * @returns {function} Callback that calls dispatch to update state.
  */
 export function updateTargetTextAction(event, value) {
-  const realval = value.object_id !== undefined ? value : {author: '', title: ''};
+  const realval = value && value.object_id !== undefined ? value : {author: '', title: ''};
   return dispatch => dispatch(actions.updateTargetText(realval));
 }
 
