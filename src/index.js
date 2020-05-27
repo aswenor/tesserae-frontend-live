@@ -25,10 +25,7 @@ import theme from './theme';
  * Render the React App to #root with a standard theme/styling.
  */
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <App />
-  </ThemeProvider>,
+  <App />,
   document.getElementById('root')
 );
 

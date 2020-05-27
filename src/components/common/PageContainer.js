@@ -5,14 +5,12 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import LanguageSelectMenu from './LanguageSelectMenu';
 import NavBar from './NavBar';
-
+import createTesseraeTheme from '../../theme';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -21,16 +19,24 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+
 function PageContainer(props) {
   const { children, routes, showLanguages } = props;
 
+  const [ userTheme, setTheme ] = useState({palette: {primary: '#f69417', secondary: '#fdead1'}});
+
+  const updateTheme = newTheme => setTheme(newTheme);
+
   return (
-    <Box>
-      <NavBar routes={routes}>
-          <LanguageSelectMenu />
-      </NavBar>
-      {children}
-    </Box>
+    <ThemeProvider theme={createTesseraeTheme(userTheme)}>
+      <CssBaseline />
+      <Box>
+        <NavBar routes={routes} updateTheme={updateTheme}>
+            <LanguageSelectMenu />
+        </NavBar>
+        {children}
+      </Box>
+    </ThemeProvider>
   );
 }
 

@@ -17,8 +17,26 @@ import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
  * @readonly
  */
 const theme = createMuiTheme({
+  palette: {
+    default: {
+      dark: '#ffffff',
+      light: '#ffffff',
+      main: '#ffffff',
+    },
+    primary: {
+      dark: '#f69417',
+      light:'#f69417', 
+      main: '#f69417'
+    },
+    secondary: {
+      dark: '#f69417',
+      light:'#f69417', 
+      main: '#f69417'
+    }
+  },
   typography: {
     fontFamily: [
+      'Futura',
       '-apple-system',
       'BlinkMacSystemFont',
       '"Segoe UI"',
@@ -35,4 +53,41 @@ const theme = createMuiTheme({
 });
 
 
-export default responsiveFontSizes(theme);
+export default function createTesseraeTheme(userOptions) {
+  const theme = createMuiTheme({
+    palette: {
+      default: {
+        light: '#ffffff',
+        main: '#ffffff',
+      },
+      primary: {
+        light: userOptions.palette.primary, 
+        main: userOptions.palette.primary
+      },
+      secondary: {
+        light: userOptions.palette.secondary, 
+        main: userOptions.palette.secondary
+      }
+    },
+    typography: {
+      fontFamily: [
+        'Futura',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(',')
+    },
+    spacing: 8
+  });
+  return responsiveFontSizes(theme);
+}
+
+
+// export default theme;

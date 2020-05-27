@@ -15,6 +15,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import NavBar from './components/common/NavBar';
+import routes from './routes';
 import Search from './components/search/';
 
 /**
@@ -32,18 +33,16 @@ function App(props) {
    * @field {string} name The name of the page being linked.
    * 
    */
-  const routes = [
-    {link: "/", name: "Search"}
-  ]
+  const appRoutes = routes.map(item => {
+    return (
+      <Route path={item.link} component={item.component} />
+    );
+  });
 
   return (
     <Router>
-      {/* <NavBar routes={routes} /> */}
-
       <Switch>
-        <Route path="/">
-          <Search routes={routes} />
-        </Route>
+        {appRoutes}
       </Switch>
     </Router>
   );
