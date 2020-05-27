@@ -20,9 +20,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -30,6 +31,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SearchIcon from '@material-ui/icons/Search';
 
 import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
 import TextSelectGroup from '../TextSelectGroup';
@@ -37,6 +39,33 @@ import TextSelectGroup from '../TextSelectGroup';
 import { fetchStoplistAction, fetchTextsAction,
          updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';
 
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.secondary.main,
+    scrollbarColor: theme.palette.secondary.main,
+    scrollbarWidth: 0,
+    overflow: 'overlay',
+    '&::-webkit-scrollbar': {
+      backgroundColor: theme.palette.secondary.main,
+      width: '0em',
+      display: 'none'
+    },
+    '&::-webkit-scrollbar-track': {
+      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+      display: 'none',
+      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+      display: 'none',
+      outline: '1px solid slategrey'
+    }
+  },
+  panel: {
+    backgroundColor: theme.palette.secondary.main
+  }
+}));
 
 /**
  * Custom styling to make ExpansionPanel layout more dense.
@@ -55,14 +84,11 @@ import { fetchStoplistAction, fetchTextsAction,
  *     </ExpansionPanel>
  *   );
  */
-const ExpansionPanel = withStyles({
+const ExpansionPanel = withStyles(theme => ({
   root: {
     border: '1px solid rgba(0, 0, 0, .125)',
     boxShadow: 'none',
-    width: '100%',
-    '&:not(:last-child)': {
-      borderBottom: 0,
-    },
+    backgroundColor: theme.palette.secondary.main,
     '&:before': {
       display: 'none',
     },
@@ -71,7 +97,7 @@ const ExpansionPanel = withStyles({
     },
   },
   expanded: {},
-})(MuiExpansionPanel);
+}))(MuiExpansionPanel);
 
 
 /**
@@ -150,6 +176,8 @@ function SearchParametersForm(props) {
           pending, searchParameters, shouldFetchTexts, sourceText, targetText,
           updateSource, updateTarget } = props;
 
+  const classes = useStyles();
+
   /** The actual basis used by the REST API uses language names or text IDs, so this converts. */
   const basis = (searchParameters !== undefined && searchParameters.stoplistBasis === 'corpus'
                  ? language
@@ -159,84 +187,95 @@ function SearchParametersForm(props) {
   // members of the form.
   return (
     <Box
+      className={classes.root}
       component="section"
       display="flex"
       flexDirection="column"
       flexGrow={1}
+      height={'100%'}
       width={1}
     >
-      <ExpansionPanel
-        expanded={true}
+      <div
+        className={classes.root}
       >
-        <ExpansionPanelDetails
+        <ExpansionPanel
+          className={classes.panel}
+          expanded={true}
+          square
         >
-          <Grid container
-            alignContent="center"
-            alignItems="center"
-            justify="flex-start"
-            spacing={2}
+          <ExpansionPanelDetails
           >
-            <Grid item
-              align="center"
-              xs={12}
+            <Grid container
+              alignContent="center"
+              alignItems="center"
+              justify="flex-start"
+              spacing={2}
             >
-              <TextSelectGroup
-                handleTextChange={updateSource}
-                loading={pending}
-                loadingText={`Loading ${language} corpus`}
-                onOpen={() => fetchTexts(language, shouldFetchTexts)}
-                selection={sourceText}
-                textList={availableTexts}
-                title="Source Text"
-              />
-            </Grid>
-            <Grid item 
-              align="center"
-              xs={12}
-            >
-              <TextSelectGroup
-                handleTextChange={updateTarget}
-                loading={pending}
-                loadingText={`Loading ${language} corpus`}
-                onOpen={() => fetchTexts(language, shouldFetchTexts)}
-                selection={targetText}
-                textList={availableTexts}
-                title="Target Text"
-              />
-            </Grid>
-            <Grid item
-              align="center"
-              xs={12}
-            >
-              <Button
-                color="primary"
-                disabled={disableSearch}
-                onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, pending)}
-                variant="contained"
+              <Grid item
+                align="center"
+                xs={12}
               >
-                Search
-              </Button>
+                <TextSelectGroup
+                  handleTextChange={updateSource}
+                  loading={pending}
+                  loadingText={`Loading ${language} corpus`}
+                  onOpen={() => fetchTexts(language, shouldFetchTexts)}
+                  selection={sourceText}
+                  textList={availableTexts}
+                  title="Source Text"
+                />
+              </Grid>
+              <Grid item 
+                align="center"
+                xs={12}
+              >
+                <TextSelectGroup
+                  handleTextChange={updateTarget}
+                  loading={pending}
+                  loadingText={`Loading ${language} corpus`}
+                  onOpen={() => fetchTexts(language, shouldFetchTexts)}
+                  selection={targetText}
+                  textList={availableTexts}
+                  title="Target Text"
+                />
+              </Grid>
+              <Grid item
+                align="center"
+                xs={12}
+              >
+                <Fab
+                  color="primary"
+                  disabled={disableSearch}
+                  onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, pending)}
+                  variant="contained"
+                >
+                  <SearchIcon /> Search
+                </Fab>
+              </Grid>
             </Grid>
-          </Grid>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          aria-controls="advanced-options-form"
-          expandIcon={<ExpandMoreIcon />}
-          id="advanced-options-header"
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+        <ExpansionPanel
+          className={classes.panel}
+          square
         >
-          <Typography
-            align="center"
-            variant="h5"
+          <ExpansionPanelSummary
+            aria-controls="advanced-options-form"
+            expandIcon={<ExpandMoreIcon />}
+            id="advanced-options-header"
           >
-            Advanced Options
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <AdvancedOptionsGroup />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+            <Typography
+              align="center"
+              variant="h5"
+            >
+              Advanced Options
+            </Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <AdvancedOptionsGroup />
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      </div>
     </Box>
   );
 }

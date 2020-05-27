@@ -69,6 +69,7 @@ const useStyles = makeStyles(theme => ({
 /** CSS styles to apply to the child components. */
 const panelStyles = makeStyles(theme => ({
   root: {
+    borderRadius: 0,
     marginTop: 0,
     marginBottom: 0,
     marginLeft: 0,
@@ -77,6 +78,8 @@ const panelStyles = makeStyles(theme => ({
     paddingBottom: 0,
     paddingLeft: 0,
     paddingRight: 0,
+    scrollbarColor: theme.palette.secondary.main,
+    scrollbarWidth: 0,
     [theme.breakpoints.up('md')]: {
       display : props => props.width > 0 ? 'auto' : 'hidden',
       float: 'left',
@@ -88,6 +91,17 @@ const panelStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       width: '100%',
       minWidth: '100%'
+    },
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    },
+    '&::-webkit-scrollbar-track': {
+      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+      outline: '1px solid slategrey'
     }
   }
 }));
