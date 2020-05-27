@@ -19,8 +19,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import Toolbar from '@material-ui/core/Toolbar';
 
+import createTessTheme from '../../../theme';
+import PaletteSwapper from '../PaletteSwapper';
+import routes from '../../../routes';
 import TessLogoButton from '../TessLogoButton';
 
 
@@ -31,8 +35,9 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   },
   button: {
+    background: '#ffffff',
     border: '1px solid #000000',
-    background: '#ffffff'
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
   },
   header: {
     width: '50vh'
@@ -47,6 +52,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
+const localTheme = {
+  palette: {
+    default: '#ffffff',
+    primary: '#757575',
+    secondary: '#757575'
+  }
+};
+
 /**
  * Top navigation bar with a logo and links to pages in the app.
  *
@@ -58,13 +71,13 @@ const useStyles = makeStyles(theme => ({
  *   return <NavBar routes={routes} />
  */
 function NavBar(props) {
-  const { children } = props;
+  const { children, updateTheme } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles();
 
   /** Array of links to add to the top bar */
-  const routes = props.routes.map((route, i) => {
+  const links = routes.map((route, i) => {
     return (
       <Button
         className={classes.button}
@@ -99,8 +112,11 @@ function NavBar(props) {
           justifyContent="flex-end"
           minWidth={.5}
         >
-          {routes}
-          <TessLogoButton />
+          <ThemeProvider theme={createTessTheme(localTheme)}>
+            {links}
+            <PaletteSwapper updateTheme={updateTheme} />
+            <TessLogoButton />
+          </ThemeProvider>
         </Box>
       </Toolbar>
     </AppBar>

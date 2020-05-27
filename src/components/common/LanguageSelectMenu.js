@@ -28,9 +28,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
+import createTessTheme from '../../theme';
 import { fetchLanguagesAction, updateLanguageAction } from '../../api/corpus';
 
 
@@ -38,9 +40,18 @@ import { fetchLanguagesAction, updateLanguageAction } from '../../api/corpus';
 const useStyles = makeStyles(theme => ({
   button: {
     border: '1px solid #000000',
-    background: '#ffffff'
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
   },
 }))
+
+
+const localTheme = {
+  palette: {
+    default: '#ffffff',
+    primary: '#757575',
+    secondary: '#757575'
+  }
+};
 
 
 /**
@@ -127,9 +138,11 @@ function LanguageSelectMenu(props) {
     languageButtons.push(
       <Button
         className={classes.button}
+        color={language === 'latin' ? 'secondary' : 'default'}
         key="latin"
-        onClick={event => updateLanguage('latin')}
+        onClick={event => handleClick('latin')}
         size="small"
+        variant="contained"
       >
         Latin
       </Button>
@@ -146,9 +159,11 @@ function LanguageSelectMenu(props) {
     languageButtons.push(
       <Button
         className={classes.button}
+        color={language === 'greek' ? 'secondary' : 'default'}
         key="greek"
-        onClick={event => updateLanguage('greek')}
+        onClick={event => handleClick('greek')}
         size="small"
+        variant="contained"
       >
         Greek
       </Button>
@@ -225,12 +240,14 @@ function LanguageSelectMenu(props) {
 
   return (
     <Box>
-      <ButtonGroup
-        ref={anchorRef}
-      >
-        {languageButtons}
-      </ButtonGroup>
-      {popper}
+      <ThemeProvider theme={createTessTheme(localTheme)}>
+        <ButtonGroup
+          ref={anchorRef}
+        >
+          {languageButtons}
+        </ButtonGroup>
+        {popper}
+      </ThemeProvider>
     </Box>
   );
 }
