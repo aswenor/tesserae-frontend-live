@@ -11,6 +11,7 @@
  * @requires ./components/search/index.js:Search
  */
 import Search from './components/search';
+import Library from './components/library/Library';
 
 
 /**
@@ -24,7 +25,8 @@ const routes = [
    * @field {string} name The name of the page being linked.
    * @field {React.Component} component The component to render.
    */
-  {link: "/", name: "Search", component: Search}
+  {link: "/", name: "Search", component: Search},
+  // {link: "/corpora", name: "Corpora", component: Library}
 ];
 
 

@@ -14,9 +14,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import NavBar from './components/common/NavBar';
 import routes from './routes';
-import Search from './components/search/';
 
 /**
  * Global container for routing and content presentation.
@@ -33,9 +31,9 @@ function App(props) {
    * @field {string} name The name of the page being linked.
    * 
    */
-  const appRoutes = routes.map(item => {
+  const appRoutes = routes.reverse().map(item => {
     return (
-      <Route path={item.link} component={item.component} />
+      <Route key={item.name} path={item.link} component={item.component} />
     );
   });
 
