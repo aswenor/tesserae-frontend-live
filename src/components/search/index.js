@@ -19,9 +19,6 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
-import Grid from '@material-ui/core/Grid';
-
-import LanguagesAppBar from './LanguagesAppBar';
 import PageContainer from '../common/PageContainer';
 import ReactivePanels from './ReactivePanels';
 
@@ -54,6 +51,7 @@ function Search(props) {
         <PageContainer
           routes={routes}
           showLanguages
+          toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
         >
           <ReactivePanels
             leftMinWidth={15}

@@ -22,7 +22,6 @@ import { bindActionCreators } from 'redux';
 
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -247,7 +246,7 @@ function SearchParametersForm(props) {
                   color="primary"
                   disabled={disableSearch}
                   onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, pending)}
-                  variant="contained"
+                  variant="extended"
                 >
                   <SearchIcon /> Search
                 </Fab>

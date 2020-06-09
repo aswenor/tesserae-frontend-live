@@ -43,7 +43,7 @@ function UnitInput(props) {
   const { unit, updateSearchParameters } = props;
 
   const handleChange = (event, newUnit) => {
-    updateSearchParameters({unit: event.target.value});
+    updateSearchParameters({unitType: newUnit});
   };
 
   return (

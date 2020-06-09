@@ -64,6 +64,7 @@ function FeatureInput(props) {
       <MenuItem
         dense
         disableGutters
+        key={norm}
         onClick={handleSelect}
         selected={norm === feature}
         value={norm}

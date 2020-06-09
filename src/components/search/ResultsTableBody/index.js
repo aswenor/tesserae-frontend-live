@@ -47,7 +47,7 @@ function highlightMatches(snippet, tag, matchIndices) {
   let highlightedSnippet = [];
 
   /** Split the snippet along whitespace. */
-  let snippetTokens = snippet.split(' ');
+  let snippetTokens = snippet.split(/[\s.?!,;:/]+/);
   
   /** The current token index to inspect. */
   let current = 0;

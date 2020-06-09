@@ -15,8 +15,6 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 

@@ -38,7 +38,7 @@ function CollapseBox(props) {
     <Box
       className={classes.root}
       flexGrow={1}
-      justifyContent="flex-start"
+      justifyContent="center"
       width={1}
     >
       <Box
@@ -52,6 +52,8 @@ function CollapseBox(props) {
       </Box>
       <Collapse in={open}>
         <Box
+          alignContent="center"
+          alignItems="center"
           justifyContent="center"
           width={1}
         >

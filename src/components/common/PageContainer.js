@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function PageContainer(props) {
-  const { children, routes, showLanguages } = props;
+  const { children, routes, showLanguages, sideBarOpen, toggleSideBar } = props;
 
   const [ userTheme, setTheme ] = useState({palette: {primary: '#f69417', secondary: '#fdead1'}});
 
@@ -31,8 +31,14 @@ function PageContainer(props) {
     <ThemeProvider theme={createTesseraeTheme(userTheme)}>
       <CssBaseline />
       <Box>
-        <NavBar routes={routes} updateTheme={updateTheme}>
-            <LanguageSelectMenu />
+        <NavBar
+          routes={routes}
+          updateTheme={updateTheme}
+        >
+            { showLanguages
+              ? <LanguageSelectMenu sideBarOpen={sideBarOpen} toggleSideBar={toggleSideBar} />
+              : <div />
+            }
         </NavBar>
         {children}
       </Box>

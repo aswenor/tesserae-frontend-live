@@ -68,7 +68,7 @@ function PaletteSwapper(props) {
       <MenuItem
         key={`${item.palette.primary}-${item.palette.secondary}`}
         onClick={() => handleSelect(item, idx)}
-        selected={idx == selectedIdx}
+        selected={idx === selectedIdx}
         style={{backgroundColor: item.palette.primary, height: '50px', borderBottom: '2px solid black'}}
       >
       </MenuItem>

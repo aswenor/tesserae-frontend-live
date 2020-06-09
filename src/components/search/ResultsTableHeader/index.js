@@ -85,7 +85,7 @@ function ResultsTableHeader(props) {
           variant="head"
         >
           <TableSortLabel
-            active={sortHeader === 'source_tag'}
+            active
             direction={sortDirection}
           >
             <Typography variant="h6"><b>Source</b></Typography>
@@ -100,7 +100,7 @@ function ResultsTableHeader(props) {
           variant="head"
         >
           <TableSortLabel
-            active={sortHeader === 'target_tag'}
+            active
             direction={sortDirection}
           >
             <Typography variant="h6"><b>Target</b></Typography>
@@ -123,7 +123,7 @@ function ResultsTableHeader(props) {
           variant="head"
         >
           <TableSortLabel
-            active={sortHeader === 'score'}
+            active
             direction={sortDirection}
           >
             <Typography variant="h6"><b>Score</b></Typography>

@@ -65,6 +65,7 @@ function DistanceBasisInput(props) {
       <MenuItem
         dense
         disableGutters
+        key={norm}
         onClick={handleSelect}
         selected={norm === distanceBasis}
         value={norm}

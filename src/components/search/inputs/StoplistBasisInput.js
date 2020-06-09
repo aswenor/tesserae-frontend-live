@@ -63,6 +63,7 @@ function StoplistBasisInput(props) {
       <MenuItem
         dense
         disableGutters
+        key={norm}
         onClick={handleSelect}
         selected={norm === stoplistBasis}
         value={norm}
