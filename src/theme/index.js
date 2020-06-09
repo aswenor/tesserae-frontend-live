@@ -11,48 +11,6 @@
 import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 
 
-/**
- * [Material UI theme object.](https://material-ui.com/customization/theming/)
- * 
- * @readonly
- */
-const theme = createMuiTheme({
-  palette: {
-    default: {
-      dark: '#ffffff',
-      light: '#ffffff',
-      main: '#ffffff',
-    },
-    primary: {
-      dark: '#f69417',
-      light:'#f69417', 
-      main: '#f69417'
-    },
-    secondary: {
-      dark: '#f69417',
-      light:'#f69417', 
-      main: '#f69417'
-    }
-  },
-  typography: {
-    fontFamily: [
-      'Futura',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(',')
-  },
-  spacing: 8
-});
-
-
 export default function createTesseraeTheme(userOptions) {
   const theme = createMuiTheme({
     palette: {
