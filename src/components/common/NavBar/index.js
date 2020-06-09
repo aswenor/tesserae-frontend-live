@@ -94,31 +94,31 @@ function NavBar(props) {
 
   return (
     <AppBar className={classes.root} position="static">
-      <Toolbar>
-        <Box
-          alignItems="center"
-          className={classes.header}
-          display="flex"
-          flexGrow={.5}
-          justifyContent="flex-start"
-        >
-          {children}
-        </Box>
-        <Box
-          alignItems="center"
-          className={classes.header}
-          display="flex"
-          flexGrow={.5}
-          justifyContent="flex-end"
-          minWidth={.5}
-        >
-          <ThemeProvider theme={createTessTheme(localTheme)}>
-            {links}
-            <PaletteSwapper updateTheme={updateTheme} />
-            <TessLogoButton />
-          </ThemeProvider>
-        </Box>
-      </Toolbar>
+      <ThemeProvider theme={createTessTheme(localTheme)}>
+        <Toolbar>
+          <Box
+            alignItems="center"
+            className={classes.header}
+            display="flex"
+            flexGrow={.5}
+            justifyContent="flex-start"
+          >
+            {children}
+          </Box>
+          <Box
+            alignItems="center"
+            className={classes.header}
+            display="flex"
+            flexGrow={.5}
+            justifyContent="flex-end"
+            minWidth={.5}
+          >
+              {links}
+              <PaletteSwapper updateTheme={updateTheme} />
+              <TessLogoButton />
+          </Box>
+        </Toolbar>
+      </ThemeProvider>
     </AppBar>
   );
 }
@@ -139,7 +139,12 @@ NavBar.propTypes = {
        * Display name of this link.
        */
       name: PropTypes.string
-  }))
+  })),
+
+  /**
+   * Function to toggle a sidebar on larger screens.
+   */
+  toggleSideBar: PropTypes.func
 };
 
 

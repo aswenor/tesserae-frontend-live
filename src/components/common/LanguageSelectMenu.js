@@ -31,6 +31,7 @@ import Popper from '@material-ui/core/Popper';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import createTessTheme from '../../theme';
 import { fetchLanguagesAction, updateLanguageAction } from '../../api/corpus';
@@ -42,6 +43,11 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid #000000',
     boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
   },
+  menuButton: {
+    border: '1px solid #000000',
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
+    background: '#bfbfbf'
+  }
 }))
 
 
@@ -75,7 +81,7 @@ const localTheme = {
  */
 function LanguageSelectMenu(props) {
   const { availableLanguages, fetchLanguages, language,
-          updateLanguage } = props;
+          sideBarOpen, toggleSideBar, updateLanguage } = props;
   
   /** CSS styles and global theme. */
   const classes = useStyles();
@@ -129,6 +135,21 @@ function LanguageSelectMenu(props) {
   // Get the available languages from the REST API if none are found.
   if (availableLanguages.length === 0) {
     fetchLanguages();
+  }
+
+  if (toggleSideBar) {
+    languageButtons.push(
+      <Button
+        aria-label="toggle-sidebar"
+        className={classes.menuButton}
+        key="toggler"
+        onClick={toggleSideBar}
+        size="small"
+        variant="contained"
+      >
+        <MenuIcon />
+      </Button>
+    );
   }
 
   // If Latin is one of the languages, extract it from the list and add
