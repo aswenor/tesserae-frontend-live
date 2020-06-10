@@ -42,7 +42,7 @@
  */
 export const DEFAULT_STATE = {
   searchID: null,
-  status: null,
+  status: '',
   availableLanguages: [],
   language: '',
   availableTexts: [],
