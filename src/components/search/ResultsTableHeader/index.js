@@ -23,10 +23,10 @@ import Typography from '@material-ui/core/Typography';
 /** CSS styles to apply to table cells. */
 const cellStyles = makeStyles(theme => ({
   numberCell: {
-    width: '10%'
+    width: '1%'
   },
   snippetCell: {
-    width: '20%'
+    width: '48%'
   },
   matchesCell: {
     width: '10%'
@@ -77,7 +77,7 @@ function ResultsTableHeader(props) {
         >
         </TableCell>
         <TableCell
-          align="center"
+          align="left"
           className={classes.snippetCell}
           key="source"
           onClick={() => handleSortUpdate('source_tag')}
@@ -92,7 +92,7 @@ function ResultsTableHeader(props) {
           </TableSortLabel>
         </TableCell>
         <TableCell
-          align="center"
+          align="left"
           className={classes.snippetCell}
           key="target"
           onClick={() => handleSortUpdate('target_tag')}

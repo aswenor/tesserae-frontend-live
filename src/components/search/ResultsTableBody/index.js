@@ -23,10 +23,10 @@ import Typography from '@material-ui/core/Typography';
 /** CSS styles to apply to table cells. */
 const cellStyles = makeStyles(theme => ({
   numberCell: {
-    width: '10%'
+    width: '2%'
   },
   snippetCell: {
-    width: '20%'
+    width: '43%'
   },
   matchesCell: {
     width: '10%'

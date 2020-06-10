@@ -20,6 +20,7 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
+import TableContainer from'@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 
 import { fetchResultsAction,
@@ -94,7 +95,9 @@ function ResultsTable(props) {
     <div className={classes.root}>
       { results.length === 0
         ? <ResultsPlaceholder />
-        : <div>
+        : <TableContainer
+            className={classes.root}
+          >
             <Table
               stickyHeader
             >
@@ -117,7 +120,7 @@ function ResultsTable(props) {
               rowsPerPage={rowsPerPage}
               rowsPerPageOptions={[50, 100, 200, 500]}
             />
-          </div>
+          </TableContainer>
       }
     </div>
   )
