@@ -25,6 +25,7 @@
  * @requires ../../state_management/search
  */
 import axios from 'axios';
+import { maxBy } from 'lodash/maxBy';
 
 import * as actions from '../../state_management/search';
 
@@ -93,6 +94,7 @@ export function updateLanguageAction(language) {
 export function fetchTextsAction(language, shouldFetch) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
+    console.log(language, shouldFetch);
     if (shouldFetch) {
       // Update app state to show there is a new async action.
       dispatch(actions.fetchTextsPending());
@@ -239,6 +241,7 @@ export function initiateSearchAction(source, target, params, stopwords, pending)
             contentType: 'x-www-form-urlencoded'
           },
           responseType: 'json',
+          cacheControl: 'no-store',
           data : {
             source: {
               object_id: source.object_id,
@@ -301,7 +304,8 @@ export function getSearchStatusAction(searchID, pending) {
         method: 'get',
         url: `${REST_API}/parallels/${searchID}/status/`,
         crossDomain: true,
-        responseType: 'json'
+        responseType: 'json',
+        cacheControl: 'no-store'
       })
       .then(response => {
         // On success, update the global state and return the status.
@@ -338,12 +342,22 @@ export function fetchResultsAction(searchID, pending) {
           method: 'get',
           url: `${REST_API}/parallels/${searchID}`,
           crossDomain: true,
-          responseType: 'json'
+          responseType: 'json',
+          cacheControl: 'no-store'
       })
       .then(response => {
         // On success, update the global state and return the results.
-        dispatch(actions.fetchResultsSuccess(response.data.parallels));
-        return response.data.parallels;
+        // Because of strange design constraints and group consensus, normalize
+        // all scores to be in range [0, 10].
+        const maxScore = maxBy(response.data.parallels, item => item.score);
+        const normedParallels = response.data.parallels.map(item => {
+          return {
+            ...item,
+            score: item.score * 10 / maxScore
+          };
+        });
+        dispatch(actions.fetchResultsSuccess(normedParallels));
+        return normedParallels;
       })
       .catch(error => {
         // On error, update the error log.
