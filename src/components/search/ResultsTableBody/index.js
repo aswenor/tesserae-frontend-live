@@ -60,7 +60,7 @@ function highlightMatches(snippet, tag, matchIndices) {
 
   // Iterate over the match indices, extract token slices, and highlight
   // relevant tokens.
-  while (matchIndices.length > 0 && current < snippetTokens.length) {
+  while (matchIndices.length > 0 || current < snippetTokens.length) {
     // Get the index of the next match token.
     next = matchIndices.shift();
 
@@ -82,7 +82,7 @@ function highlightMatches(snippet, tag, matchIndices) {
     // If no more matches are found, slice into the remaining tokens and
     // wrap them without a highlight.
     else if (next === undefined) {
-      slice = snippetTokens.slice(current);
+      slice = snippetTokens.slice(current, snippetTokens.length);
 
       highlightedSnippet.push(
         <Typography
@@ -204,7 +204,7 @@ function ResultsTableBody(props) {
           variant="body"
         >
           <Typography>
-            <b>{item.score > 10 ? Math.round(item.score) : 10}</b>
+            <b>{Math.round(item.score)}</b>
           </Typography>
         </TableCell>
       </TableRow>
