@@ -204,7 +204,7 @@ function ResultsTableBody(props) {
           variant="body"
         >
           <Typography>
-            <b>{Math.round(item.score)}</b>
+            <b>{Math.floor(item.score)}</b>
           </Typography>
         </TableCell>
       </TableRow>
