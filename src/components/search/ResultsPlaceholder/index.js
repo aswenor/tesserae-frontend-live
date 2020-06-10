@@ -13,7 +13,7 @@
  * @requires NPM:@material-ui/icons
  * @requires ../../../api/corpus
  */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -70,17 +70,27 @@ function ResultsPlaceholder(props) {
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
+  const [ intervalId, setIntervalId ] = useState(null);
+
   // Either check for the status or get results from the REST API.
   if (results.length === 0) {
     // Ping the REST API for status every few seconds.
-    if (searchInProgress && (status === null || status.toLowerCase() !== 'done')) {
-      setTimeout(() => getSearchStatus(searchID, asyncPending), 500);
+    if (intervalId === null && searchInProgress && status.toLowerCase() !== 'done') {
+      clearInterval(intervalId);
+      const iid = setInterval(() => getSearchStatus(searchID, asyncPending), 500);
+      setIntervalId(iid);
     }
     
     // Retrieve results if the status is "Done"
     if (!searchInProgress && status !== null && status.toLowerCase() === 'done') {
+      clearInterval(intervalId);
+      setIntervalId(null);
       fetchResults(searchID, asyncPending);
     }
+  }
+  else {
+    clearInterval(intervalId);
+    setIntervalId(null);
   }
 
   // If a search is not in progress, an arrow pointing to the side bar is shown.
