@@ -22,6 +22,9 @@ import Typography from '@material-ui/core/Typography';
 
 /** CSS styles to apply to table cells. */
 const cellStyles = makeStyles(theme => ({
+  row: {
+    borderBottom: '2px solid black'
+  },
   numberCell: {
     width: '1%'
   },
@@ -68,7 +71,9 @@ function ResultsTableHeader(props) {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableRow
+        className={classes.row}
+      >
         <TableCell
           align="center"
           className={classes.numberCell}
@@ -85,8 +90,9 @@ function ResultsTableHeader(props) {
           variant="head"
         >
           <TableSortLabel
-            active
-            direction={sortDirection}
+            active={sortHeader === 'source_tag'}
+            direction={sortHeader === 'source_tag' ? sortDirection : 'desc'}
+            hideSortIcon={false}
           >
             <Typography variant="h6"><b>Source</b></Typography>
           </TableSortLabel>
@@ -100,8 +106,9 @@ function ResultsTableHeader(props) {
           variant="head"
         >
           <TableSortLabel
-            active
-            direction={sortDirection}
+            active={sortHeader === 'target_tag'}
+            direction={sortHeader === 'target_tag' ? sortDirection : 'desc'}
+            hideSortIcon={false}
           >
             <Typography variant="h6"><b>Target</b></Typography>
           </TableSortLabel>
@@ -123,8 +130,9 @@ function ResultsTableHeader(props) {
           variant="head"
         >
           <TableSortLabel
-            active
-            direction={sortDirection}
+            active={sortHeader === 'score'}
+            direction={sortHeader === 'score' ? sortDirection : 'desc'}
+            hideSortIcon={false}
           >
             <Typography variant="h6"><b>Score</b></Typography>
           </TableSortLabel>
