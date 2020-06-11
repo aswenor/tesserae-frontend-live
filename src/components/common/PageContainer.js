@@ -13,6 +13,11 @@ import NavBar from './NavBar';
 import createTesseraeTheme from '../../theme';
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    overflow: 'hidden',
+    width: '100vw'
+  },
   button: {
     border: '1px solid #000000',
     background: '#ffffff'

@@ -37,10 +37,13 @@ import ResultsTableHeader from '../ResultsTableHeader';
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
-    height: '100%',
+    height: '97%',
     width: '100%',
     padding: 0,
     margin: 0
+  },
+  pagination: {
+    borderTop: '2px solid black'
   }
 }));
 
@@ -95,22 +98,25 @@ function ResultsTable(props) {
     <div className={classes.root}>
       { results.length === 0
         ? <ResultsPlaceholder />
-        : <TableContainer
-            className={classes.root}
-          >
-            <Table
-              stickyHeader
+        : <div>
+            <TableContainer
+              className={classes.root}
             >
-              <ResultsTableHeader
-                labels={headerLabels}
-                sortHeader={sortHeader}
-                sortOrder={sortOrder}
-                updateSortHeader={setSortHeader}
-                updateSortOrder={setSortOrder}
-              />
-              <ResultsTableBody results={displayResults} />
-            </Table>
+              <Table
+                stickyHeader
+              >
+                <ResultsTableHeader
+                  labels={headerLabels}
+                  sortHeader={sortHeader}
+                  sortOrder={sortOrder}
+                  updateSortHeader={setSortHeader}
+                  updateSortOrder={setSortOrder}
+                />
+                <ResultsTableBody results={displayResults} />
+              </Table>
+            </TableContainer>
             <TablePagination
+              className={classes.pagination}
               component="div"
               count={results.length}
               labelRowsPerPage="Results per page:"
@@ -120,7 +126,7 @@ function ResultsTable(props) {
               rowsPerPage={rowsPerPage}
               rowsPerPageOptions={[50, 100, 200, 500]}
             />
-          </TableContainer>
+          </div>
       }
     </div>
   )

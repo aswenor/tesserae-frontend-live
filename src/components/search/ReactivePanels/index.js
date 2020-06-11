@@ -37,14 +37,15 @@ import { getTotalWidth } from '../../../utils';
 /** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
   root: {
+    overflow: 'hidden',
     paddingTop: 0,
     paddingmarginBottom: 0,
     paddingmarginLeft: 0,
     paddingRight: 0,
-    width: '100%',
+    width: '100vw',
     [theme.breakpoints.up('md')]: {
       display: 'flex',
-      height: '86.5vh'
+      height: '93.2vh',
     },
     [theme.breakpoints.down('xs')]: {
       display: 'inline-block',
