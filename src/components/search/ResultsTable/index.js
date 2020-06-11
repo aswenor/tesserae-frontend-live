@@ -19,6 +19,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Table from '@material-ui/core/Table';
 import TableContainer from'@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -37,7 +38,7 @@ import ResultsTableHeader from '../ResultsTableHeader';
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
-    height: '97%',
+    height: '100%',
     width: '100%',
     padding: 0,
     margin: 0
@@ -95,7 +96,13 @@ function ResultsTable(props) {
   // placeholder that points to the parameters form or shows a spinning
   // load bar. Otherwise, show the results.
   return (
-    <div className={classes.root}>
+    <Box
+      display="flex"
+      flexGrow={1}
+      height={'93%'}
+      maxHeight={'93%'}
+      width={1}
+    >
       { results.length === 0
         ? <ResultsPlaceholder />
         : <div>
@@ -128,7 +135,7 @@ function ResultsTable(props) {
             />
           </div>
       }
-    </div>
+    </Box>
   )
 }
 
