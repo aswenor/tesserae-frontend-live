@@ -755,7 +755,7 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
       return {
         ...state,
         disableSearch: disableSearch,
-        resultsPerPage: action.payload.resultsPerPage,
+        rowsPerPage: action.payload.rowsPerPage,
       };
     default:
       return state;

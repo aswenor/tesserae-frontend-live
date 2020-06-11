@@ -412,7 +412,7 @@ export function fetchResultsAction(searchID, pending) {
  * @returns {function} Callback that calls dispatch to update state.
  */
 export function updateCurrentPageAction(event, value) {
-  return dispatch => dispatch(actions.updateCurrentPage());
+  return dispatch => dispatch(actions.updateCurrentPage(value));
 }
 
 
@@ -423,6 +423,7 @@ export function updateCurrentPageAction(event, value) {
  * @param {Object} value The number of results to display per page.
  * @returns {function} Callback that calls dispatch to update state.
  */
-export function updateRowsPerPageAction(event, value) {
-  return dispatch => dispatch(actions.updateRowsPerPage());
+export function updateRowsPerPageAction(event) {
+  console.log(event);
+  return dispatch => dispatch(actions.updateRowsPerPage(event.target.value));
 }
