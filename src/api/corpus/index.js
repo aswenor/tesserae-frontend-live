@@ -288,7 +288,6 @@ export function initiateSearchAction(source, target, params, stopwords, pending)
         if (response.data.parallels !== undefined) {
           let normedParallels = response.data.parallels;
           let maxScore = maxBy(normedParallels, item => item.score).score;
-          console.log(maxScore);
           
           if (maxScore > 10) {
             normedParallels = response.data.parallels.map(item => {
@@ -382,13 +381,13 @@ export function fetchResultsAction(searchID, pending) {
         // all scores to be in range [0, 10].
         let normedParallels = response.data.parallels;
         let maxScore = maxBy(normedParallels, item => item.score);
-        console.log(maxScore);
         
         if (maxScore > 10) {
           normedParallels = response.data.parallels.map(item => {
+            const score = Math.round((item.score * 10) / maxScore);
             return {
               ...item,
-              score: (item.score * 10) / maxScore
+              score: score
             };
           });
         }
