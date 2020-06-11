@@ -59,8 +59,22 @@ export function fetchLanguagesAction(pending) {
       })
       .then(response => {
         // On success, update the global state and return the languages.
-        dispatch(actions.fetchLanguagesSuccess(response.data.languages));
-        return response.data.languages;
+        const languages = response.data.languages.map(item => item.toLowerCase()).sort();
+        const latinIdx = languages.indexOf('latin');
+        const greekIdx = languages.indexOf('greek');
+        let language = '';
+        if (latinIdx !== undefined) {
+          language = 'latin';
+        }
+        else if (latinIdx === undefined && greekIdx !== undefined) {
+          language = 'greek';
+        }
+        else {
+          language = languages.length > 0 ? languages[0] : '';
+        }
+
+        dispatch(actions.fetchLanguagesSuccess(languages, language));
+        return languages;
       })
       .catch(error => {
         // On error, update the error log.
@@ -111,6 +125,9 @@ export function fetchTextsAction(language, shouldFetch) {
       })
       .then(response => {
         // On success, update the global state and return the text list.
+        const texts = response.data.texts.sort((a, b) => {
+          return a.author > b.author || (a.author === b.author && a.title > b.title);
+        });
         dispatch(actions.fetchTextsSuccess(response.data.texts));
         return response.data.texts;
       })
@@ -269,14 +286,20 @@ export function initiateSearchAction(source, target, params, stopwords, pending)
         }
 
         if (response.data.parallels !== undefined) {
-          let maxScore = maxBy(response.data.parallels, item => item.score);
-          maxScore = maxScore > 10 ? maxScore : 10;
-          const normedParallels = response.data.parallels.map(item => {
-            return {
-              ...item,
-              score: (item.score * 10) / maxScore
-            };
-          });
+          let normedParallels = response.data.parallels;
+          let maxScore = maxBy(normedParallels, item => item.score).score;
+          console.log(maxScore);
+          
+          if (maxScore > 10) {
+            normedParallels = response.data.parallels.map(item => {
+              const score = Math.round((item.score * 10) / maxScore);
+              return {
+                ...item,
+                score: score
+              };
+            });
+          }
+          
           dispatch(actions.fetchResultsSuccess(normedParallels));
           return normedParallels;
         }
@@ -357,14 +380,19 @@ export function fetchResultsAction(searchID, pending) {
         // On success, update the global state and return the results.
         // Because of strange design constraints and group consensus, normalize
         // all scores to be in range [0, 10].
-        let maxScore = maxBy(response.data.parallels, item => item.score);
-        maxScore = maxScore > 10 ? maxScore : 10;
-        const normedParallels = response.data.parallels.map(item => {
-          return {
-            ...item,
-            score: (item.score * 10) / maxScore
-          };
-        });
+        let normedParallels = response.data.parallels;
+        let maxScore = maxBy(normedParallels, item => item.score);
+        console.log(maxScore);
+        
+        if (maxScore > 10) {
+          normedParallels = response.data.parallels.map(item => {
+            return {
+              ...item,
+              score: (item.score * 10) / maxScore
+            };
+          });
+        }
+        
         dispatch(actions.fetchResultsSuccess(normedParallels));
         return normedParallels;
       })
