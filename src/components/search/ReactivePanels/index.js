@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     width: '100vw',
     [theme.breakpoints.up('md')]: {
       display: 'flex',
-      height: '93.2vh',
+      height: '93vh',
     },
     [theme.breakpoints.down('xs')]: {
       display: 'inline-block',
