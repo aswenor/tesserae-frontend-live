@@ -131,15 +131,17 @@ export function fetchLanguagesPending() {
  *  Create an action to save languages fetched from the REST API.
  *
  * @param {Array} availableLanguages - list of languages to make available for search
+ * @param {String} language - the language to select from the list
  * @returns {Object} A redux-style action.
  **/
-export function fetchLanguagesSuccess(availableLanguages) {
+export function fetchLanguagesSuccess(availableLanguages = DEFAULT_STATE.availableLanguages,
+                                      language = DEFAULT_STATE.language) {
   return {
     type: FETCH_LANGUAGES_SUCCESS,
     payload: {
       asyncPending: false,
       availableLanguages: availableLanguages,
-      language: availableLanguages[0],
+      language: language,
       shouldFetchTexts: true,
     }
   };
