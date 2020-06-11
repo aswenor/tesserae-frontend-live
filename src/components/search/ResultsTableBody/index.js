@@ -21,14 +21,23 @@ import Typography from '@material-ui/core/Typography';
 
 
 /** CSS styles to apply to table cells. */
-const cellStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
+  root: {
+    height: '80%',
+  },
+  row: {
+    overflowX: 'hidden',
+  },
   numberCell: {
+    overflowX: 'hidden',
     width: '2%'
   },
   snippetCell: {
+    overflowX: 'hidden',
     width: '43%'
   },
   matchesCell: {
+    overflowX: 'hidden',
     width: '10%'
   },
 }));
@@ -140,7 +149,7 @@ function ResultsTableBody(props) {
   const { results } = props;
 
   /** CSS styles and global theme. */
-  const classes = cellStyles();
+  const classes = useStyles();
 
   /** Attempt to highlight the match tokens in each result snippet. */
   const bodyCells = results.map((item, idx) => {
@@ -155,6 +164,7 @@ function ResultsTableBody(props) {
 
     return (
       <TableRow
+        className={classes.row}
         hover
         tabIndex={-1}
         key={item.source_tag + item.target_tag + item.matched_features.join(', ')}
@@ -212,7 +222,9 @@ function ResultsTableBody(props) {
   });
 
   return (
-    <TableBody>
+    <TableBody
+      className={classes.root}
+    >
       {bodyCells}
     </TableBody>
   );
