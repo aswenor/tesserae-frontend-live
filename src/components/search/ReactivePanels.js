@@ -29,8 +29,8 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
 
-import ResultsTable from '../ResultsTable';
-import SearchParametersForm from '../SearchParametersForm';
+import ResultsTable from './ResultsTable';
+import SearchParametersForm from './SearchParametersForm';
 import { getTotalWidth } from '../../../utils';
 
 

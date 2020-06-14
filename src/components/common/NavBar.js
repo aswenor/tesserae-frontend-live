@@ -23,9 +23,9 @@ import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import Toolbar from '@material-ui/core/Toolbar';
 
 import createTessTheme from '../../../theme';
-import PaletteSwapper from '../PaletteSwapper';
+import PaletteSwapper from './PaletteSwapper';
 import routes from '../../../routes';
-import TessLogoButton from '../TessLogoButton';
+import TessLogoButton from './TessLogoButton';
 
 
 /** CSS styles to apply to the component. */

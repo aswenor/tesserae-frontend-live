@@ -32,8 +32,8 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
 
-import AdvancedOptionsGroup from '../AdvancedOptionsGroup'
-import TextSelectGroup from '../TextSelectGroup';
+import AdvancedOptionsGroup from './AdvancedOptionsGroup'
+import TextSelectGroup from './TextSelectGroup';
 
 import { fetchStoplistAction, fetchTextsAction,
          updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';

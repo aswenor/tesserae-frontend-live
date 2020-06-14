@@ -18,14 +18,14 @@ import PropTypes from 'prop-types';
 
 import Box from '@material-ui/core/Box';
 
-import DistanceBasisInput from '../inputs/DistanceBasisInput';
-import DropScoresInput from '../inputs/DropScoresInput';
-import FeatureInput from '../inputs/FeatureInput';
-import FrequencyBasisInput from '../inputs/FrequencyBasisInput';
-import ScoreBasisInput from '../inputs/ScoreBasisInput';
-import StoplistBasisInput from '../inputs/StoplistBasisInput';
-import StoplistInput from '../inputs/StoplistInput';
-import UnitInput from '../inputs/UnitInput';
+import DistanceBasisInput from './inputs/DistanceBasisInput';
+import DropScoresInput from './inputs/DropScoresInput';
+import FeatureInput from './inputs/FeatureInput';
+import FrequencyBasisInput from './inputs/FrequencyBasisInput';
+import ScoreBasisInput from './inputs/ScoreBasisInput';
+import StoplistBasisInput from './inputs/StoplistBasisInput';
+import StoplistInput from './inputs/StoplistInput';
+import UnitInput from './inputs/UnitInput';
 
 
 /**

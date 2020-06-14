@@ -11,7 +11,7 @@
  * @requires ./components/search/index.js:Search
  */
 import Search from './components/search';
-import Library from './components/library/Library';
+import Library from './components/library';
 
 
 /**

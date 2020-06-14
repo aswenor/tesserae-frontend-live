@@ -29,9 +29,9 @@ import { fetchResultsAction,
          updateCurrentPageAction,
          updateRowsPerPageAction, 
          initiateSearchAction } from '../../../api/corpus';
-import ResultsPlaceholder from '../ResultsPlaceholder';
-import ResultsTableBody from '../ResultsTableBody';
-import ResultsTableHeader from '../ResultsTableHeader';
+import ResultsPlaceholder from './ResultsPlaceholder';
+import ResultsTableBody from './ResultsTableBody';
+import ResultsTableHeader from './ResultsTableHeader';
 
 
 /** CSS styles to apply to the component. */
