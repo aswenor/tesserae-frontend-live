@@ -22,9 +22,9 @@ import Button from '@material-ui/core/Button';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import Toolbar from '@material-ui/core/Toolbar';
 
-import createTessTheme from '../../../theme';
+import createTessTheme from '../../theme';
 import PaletteSwapper from './PaletteSwapper';
-import routes from '../../../routes';
+import routes from '../../routes';
 import TessLogoButton from './TessLogoButton';
 
 

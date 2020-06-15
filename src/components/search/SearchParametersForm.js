@@ -13,7 +13,7 @@
  * @requires NPM:@material-ui/icons
  * @requires ../AdvancedOptionsGroup
  * @requires ../TextSelectGroup
- * @requires ../../../api/corpus
+ * @requires ../../api/corpus
  */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -36,7 +36,7 @@ import AdvancedOptionsGroup from './AdvancedOptionsGroup'
 import TextSelectGroup from './TextSelectGroup';
 
 import { fetchStoplistAction, fetchTextsAction,
-         updateSourceTextAction, updateTargetTextAction } from '../../../api/corpus';
+         updateSourceTextAction, updateTargetTextAction } from '../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({

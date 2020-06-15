@@ -11,7 +11,7 @@
  * @requires NPM:react-redux
  * @requires NPM:@material-ui/core
  * @requires ../ResultsPlaceholder
- * @requires ../../../api/corpus
+ * @requires ../../api/corpus
  */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -28,7 +28,7 @@ import { fetchResultsAction,
          getSearchStatusAction,
          updateCurrentPageAction,
          updateRowsPerPageAction, 
-         initiateSearchAction } from '../../../api/corpus';
+         initiateSearchAction } from '../../api/corpus';
 import ResultsPlaceholder from './ResultsPlaceholder';
 import ResultsTableBody from './ResultsTableBody';
 import ResultsTableHeader from './ResultsTableHeader';

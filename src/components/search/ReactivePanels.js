@@ -19,7 +19,7 @@
  * @requires NPM:@material-ui/icons
  * @requires ../ResultsTable
  * @requires ../SearchParametersForm
- * @requires ../../../utils
+ * @requires ../../utils
  */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -31,7 +31,7 @@ import Hidden from '@material-ui/core/Hidden';
 
 import ResultsTable from './ResultsTable';
 import SearchParametersForm from './SearchParametersForm';
-import { getTotalWidth } from '../../../utils';
+import { getTotalWidth } from '../../utils';
 
 
 /** CSS styles to apply to the component. */

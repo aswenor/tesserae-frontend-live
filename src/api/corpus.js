@@ -22,12 +22,12 @@
  * @exports updateResultsPerPageAction
  * 
  * @requires NPM:axios
- * @requires ../../state_management/search
+ * @requires ../state_management/search
  */
 import axios from 'axios';
 import maxBy from 'lodash/maxBy';
 
-import * as actions from '../../state_management/search';
+import * as actions from '../state_management/search';
 
 
 /**

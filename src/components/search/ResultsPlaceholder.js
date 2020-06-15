@@ -26,7 +26,7 @@ import Typography from '@material-ui/core/Typography';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { getSearchStatusAction, fetchResultsAction } from '../../../api/corpus';
+import { getSearchStatusAction, fetchResultsAction } from '../../api/corpus';
 
 
 /** CSS styles to apply to the component. */
