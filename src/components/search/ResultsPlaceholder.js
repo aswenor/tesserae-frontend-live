@@ -22,11 +22,13 @@ import { makeStyles } from '@material-ui/styles';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Hidden from '@material-ui/core/Hidden';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { getSearchStatusAction, fetchResultsAction } from '../../api/corpus';
+import { sleep, toTitleCase } from '../../utils';
 
 
 /** CSS styles to apply to the component. */
@@ -65,33 +67,37 @@ const useStyles = makeStyles(theme => ({
  */
 function ResultsPlaceholder(props) {
   const { asyncPending, fetchResults, getSearchStatus, results, searchID,
-          searchInProgress, status } = props;
+          searchInProgress, searchStatus, searchStatusProgress } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
-  const [ intervalId, setIntervalId ] = useState(null);
-
+  console.log(searchID);
   // Either check for the status or get results from the REST API.
-  if (results.length === 0) {
+  if (results.length === 0 && searchID !== null) {
+
     // Ping the REST API for status every few seconds.
-    if (intervalId === null && searchInProgress && status.toLowerCase() !== 'done') {
-      clearInterval(intervalId);
-      const iid = setInterval(() => getSearchStatus(searchID, asyncPending), 500);
-      setIntervalId(iid);
+    if (searchInProgress && searchStatus.toLowerCase() !== 'done') {
+      (async () => {
+        await sleep(100).then(() => {
+          getSearchStatus(searchID, asyncPending);
+        });
+      })();
     }
     
     // Retrieve results if the status is "Done"
-    if (!searchInProgress && status !== null && status.toLowerCase() === 'done') {
-      clearInterval(intervalId);
-      setIntervalId(null);
+    if (searchStatus.toLowerCase() === 'done') {
       fetchResults(searchID, asyncPending);
     }
   }
-  else {
-    clearInterval(intervalId);
-    setIntervalId(null);
-  }
+
+  console.log(searchStatusProgress);
+  const progress = searchStatusProgress.map(item => {
+    return (
+      <Typography>{toTitleCase(item.stage)}: <LinearProgress value={item.value * 100} variant= "determinate" /></Typography>
+    );
+  })
+
 
   // If a search is not in progress, an arrow pointing to the side bar is shown.
   // If a search is in progress, a spinning wheel is shown.
@@ -137,6 +143,7 @@ function ResultsPlaceholder(props) {
               >
                 Searching. This may take a moment.
               </Typography>
+              {progress}
             </Box>
         }
       </Box>
@@ -179,7 +186,22 @@ ResultsPlaceholder.propTypes = {
   /**
    * Search status string returned from the REST API.
    */
-  status: PropTypes.string
+  searchStatus: PropTypes.string,
+
+  /**
+   * Progress indicators for stages of a search.
+   */
+  searchStatusProgress: PropTypes.arrayOf(PropTypes.shape({
+    /**
+     * Name of the search stage.
+     */
+    stage: PropTypes.string,
+
+    /**
+     * Percent completion.
+     */
+    value : PropTypes.number
+  }))
 }
 
 
@@ -194,14 +216,15 @@ const mapStateToProps = state => ({
   results: state.results,
   searchID: state.searchID,
   searchInProgress: state.searchInProgress,
-  shouldInitiateSearch: state.shouldInitiateSearch,
-  status: state.status
+  searchStatus: state.searchStatus,
+  searchStatusProgress: state.searchStatusProgress,
+  shouldInitiateSearch: state.shouldInitiateSearch
 });
 
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchResults: fetchResultsAction,
