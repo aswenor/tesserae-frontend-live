@@ -72,34 +72,33 @@ function ResultsPlaceholder(props) {
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
-  const searchInProgress = searchID !== '' && results.length === 0;
-
-  console.log(searchID);
-  console.log(results, searchStatus, searchProgress);
+  const searchInProgress = searchID && results.length === 0;
 
   // Either check for the status or get results from the REST API.
   if (searchInProgress) {
 
     // Ping the REST API for status every few seconds.
-    if (searchInProgress && searchStatus.toLowerCase() !== 'done') {
-      console.log('Getting status');
+    if (searchStatus.toLowerCase() !== 'done') {
       (async () => {
         await sleep(250).then(() => {
           getSearchStatus(searchID, asyncPending);
         });
       })();
     }
-    
     // Retrieve results if the status is "Done"
-    if (searchStatus.toLowerCase() === 'done') {
-      console.log('Getting results');
+    else {
       fetchResults(searchID, asyncPending);
     }
   }
 
   const progress = searchProgress.map(item => {
     return (
-      <Typography>{toTitleCase(item.stage)}: <LinearProgress value={item.value * 100} variant= "determinate" /></Typography>
+      <div
+        key={item.stage}
+      >
+        <Typography>{toTitleCase(item.stage)}:</Typography>
+        <LinearProgress value={item.value * 100} variant= "determinate" />
+      </div>
     );
   })
 
@@ -214,6 +213,7 @@ ResultsPlaceholder.propTypes = {
 const mapStateToProps = state => ({
   asyncPending: state.async.asyncPending,
   results: state.search.results,
+  resultCount: state.search.resultCount,
   searchID: state.search.searchID,
   searchStatus: state.search.searchStatus,
   searchProgress: state.search.searchProgress
