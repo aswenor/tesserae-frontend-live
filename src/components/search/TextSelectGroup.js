@@ -90,7 +90,7 @@ function TextSelectGroup(props) {
       <Autocomplete
         className={classes.select}
         defaultValue={{author: '', title: ''}}
-        getOptionLabel={option => option.author !== undefined ? option.author : option}
+        getOptionLabel={option => option.author !== undefined ? option.author : ''}
         loading={loading}
         loadingText={loadingText}
         onChange={handleTextChange}
@@ -98,9 +98,9 @@ function TextSelectGroup(props) {
         options={authorItems}
         renderInput={params => (
           <TextField {...params}
-            label={"Select an Author"}
-            variant="outlined"
             fullWidth
+            placeholder={"Select an Author"}
+            variant="outlined"
           />
         )}
         value={selection}
@@ -108,7 +108,7 @@ function TextSelectGroup(props) {
       <Autocomplete
         className={classes.select}
         defaultValue={{author: '', title: ''}}
-        getOptionLabel={option => option.title !== undefined ? option.title : option}
+        getOptionLabel={option => option.title !== undefined ? option.title : ''}
         loading={loading}
         loadingText={loadingText}
         onChange={handleTextChange}
@@ -116,9 +116,9 @@ function TextSelectGroup(props) {
         options={textItems}
         renderInput={params => (
           <TextField {...params}
-            label={"Select a Text"}
-            variant="outlined"
             fullWidth
+            placeholder={"Select a Text"}
+            variant="outlined"
           />
         )}
         value={selection}
