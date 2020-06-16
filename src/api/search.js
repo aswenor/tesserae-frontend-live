@@ -20,55 +20,15 @@ import axios from 'axios';
 import maxBy from 'lodash/maxBy';
 
 import { initiateAsync, clearAsync,
-         registerError } from '../state_management/async';
-import { updateResults, updateSearchID,
-         updateSearchParameters, updateSearchStatus,
-         updateSourceText, updateStopwords,
-         updateTargetText } from '../state_management/search';
+         registerError } from '../state/async';
+import { updateResults, updateSearchID, updateSearchStatus,
+         updateStopwords } from '../state/search';
 
 
 /**
  * URL of the REST API as defined in the environment.
  */
 const REST_API = process.env.REACT_APP_REST_API_URL;
-
-
-/**
- * Update the selected source text being searched.
- * 
- * @param {Event} event The browser event fired by the calling component.
- * @param {Object} value The selected source text metadata.
- * @returns {function} Callback that calls dispatch to update state.
- */
-export function updateSourceText(event, value) {
-  const realval = value && value.object_id !== undefined ? value : {author: '', title: ''};
-  return dispatch => dispatch(updateSourceText(realval));
-}
-
-
-/**
- * Update the selected target text being searched.
- * 
- * @param {Event} event The browser event fired by the calling component.
- * @param {Object} value The selected source text metadata.
- * @returns {function} Callback that calls dispatch to update state.
- */
-export function updateTargetText(event, value) {
-  // If an incorrect text object, dispatch a blank text.
-  const realval = value && value.object_id !== undefined ? value : {author: '', title: ''};
-  return dispatch => dispatch(updateTargetText(realval));
-}
-
-
-/**
- * Update the search parameters.
- * 
- * @param {Object} params The advanced parameters of the search.
- * @returns {function} Callback that calls dispatch to update state.
- */
-export function updateSearchParameters(params) {
-  return dispatch => dispatch(updateSearchParameters(params));
-}
 
 
 /**
@@ -176,7 +136,6 @@ export function initiateSearch(source, target, params, stopwords, pending) {
       })
       .then(response => {
         // On success, update the global state and return the search ID or results.
-        console.log(response.headers.location);
         if (response.headers.location !== undefined) {
           const searchID = response.headers.location.split('/')[5];
           dispatch(updateSearchID(searchID));
@@ -223,6 +182,7 @@ export function initiateSearch(source, target, params, stopwords, pending) {
  * @returns {function} Callback that calls dispatch to handle communication.
  */
 export function getSearchStatus(searchID, pending) {
+  console.log(searchID);
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
@@ -240,11 +200,8 @@ export function getSearchStatus(searchID, pending) {
       })
       .then(response => {
         // On success, update the global state and return the status.
-        const done = response.data.status === 'Done';
         dispatch(updateSearchStatus(response.data.status, response.data.progress));
-        if (done) {
-          dispatch(clearAsync());
-        }
+        dispatch(clearAsync());
         return response.data.status;
       })
       .catch(error => {

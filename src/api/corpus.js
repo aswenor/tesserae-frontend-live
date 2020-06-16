@@ -13,9 +13,10 @@
 import axios from 'axios';
 
 import { initiateAsync, clearAsync,
-         registerError} from '../state/async';
+         registerError } from '../state/async';
 import { updateAvailableLanguages, updateAvailableTexts,
          updateSelectedLanguage } from '../state/corpus';
+import { resetSearch } from '../state/search';
 
 
 /**
@@ -84,6 +85,7 @@ export function fetchLanguages(pending) {
 export function updateLanguage(language) {
   return dispatch => {
       dispatch(updateSelectedLanguage(language));
+      dispatch(resetSearch());
   }
 }
 
@@ -118,7 +120,7 @@ export function fetchTexts(language, shouldFetch) {
         const texts = response.data.texts.sort((a, b) => {
           return a.author > b.author || (a.author === b.author && a.title > b.title);
         });
-        dispatch(updateAvailableTexts(response.data.texts));
+        dispatch(updateAvailableTexts(texts));
         dispatch(clearAsync());
         return response.data.texts;
       })
