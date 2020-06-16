@@ -167,7 +167,7 @@ function ResultsTableBody(props) {
         className={classes.row}
         hover
         tabIndex={-1}
-        key={item.source_tag + item.target_tag + item.matched_features.join(', ')}
+        key={item.object_id}
       >
         <TableCell
           className={classes.numberCell}
