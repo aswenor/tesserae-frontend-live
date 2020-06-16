@@ -5,6 +5,7 @@
  * 
  * @exports toTitleCase
  * @exports getTotalWidth
+ * @exports sleep
  */
 
 
@@ -22,14 +23,14 @@
  *   return toTitleCase(title);
  */
 export function toTitleCase(str) {
-    return str.toLowerCase.split().map(item => {
-        if (item.length > 1) {
-            return item.charAt(0).toUpperCase + item.substring(1)
-        }
-        else {
-            return item
-        }
-    }).join(' ');
+  return str.toLowerCase().split().map(item => {
+    if (item.length > 1) {
+      return item.charAt(0).toUpperCase() + item.substring(1)
+    }
+    else {
+      return item
+    }
+  }).join(' ');
 }
 
 
@@ -42,7 +43,21 @@ export function toTitleCase(str) {
  *   return getTotalWidth();
  */
 export function getTotalWidth() {
-    return window.innerWidth !== null
-      ? window.innerWidth
-      : window.document.documentElement.clientWidth
+  return window.innerWidth !== null
+    ? window.innerWidth
+    : window.document.documentElement.clientWidth
+}
+
+
+/**
+ * Busy wait for some amount of time.
+ * 
+ * @param {number} ms The amount of time to sleep in milliseconds.
+ * @returns {Promise} Async Promise to await on for a blocking sleep.
+ * 
+ * @example
+ *  return sleep(5000);
+ */
+export function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
