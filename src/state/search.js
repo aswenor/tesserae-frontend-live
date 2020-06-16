@@ -140,7 +140,6 @@ export function updateSearchParameters(searchParameters = DEFAULT_STATE.searchPa
 **/
 export function updateSearchStatus(searchStatus = DEFAULT_STATE.searchStatus,
                                    searchProgress = DEFAULT_STATE.searchProgress) {
-  console.log(`Updated with status ${searchStatus} and progress ${searchProgress}`);
   return {
     type: UPDATE_SEARCH_STATUS,
     payload: {
