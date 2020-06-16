@@ -40,7 +40,7 @@ function Search(props) {
         toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
       >
         <ReactivePanels
-          leftMinWidth={15}
+          leftMinWidth={20}
           open={isOpen}
           rightMinWidth={35}
         />
