@@ -31,6 +31,7 @@ import Hidden from '@material-ui/core/Hidden';
 
 import ResultsTable from './ResultsTable';
 import SearchParametersForm from './SearchParametersForm';
+
 import { getTotalWidth } from '../../utils';
 
 
