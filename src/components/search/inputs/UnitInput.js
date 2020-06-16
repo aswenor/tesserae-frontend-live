@@ -22,7 +22,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParameters } from '../../../state/search';
+import { updateSearchID, updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -43,6 +43,7 @@ function UnitInput(props) {
   const { unit, updateSearchParameters } = props;
 
   const handleChange = (event, newUnit) => {
+    updateSearchID();
     updateSearchParameters({unitType: newUnit});
   };
 

@@ -22,7 +22,7 @@ import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParameters } from '../../../state/search';
+import { updateSearchID, updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -56,6 +56,7 @@ function DistanceBasisInput(props) {
   const { distanceBasis, updateSearchParameters } = props;
 
   const handleSelect = event => {
+    updateSearchID();
     updateSearchParameters({distanceBasis: event.target.value});
   };
 

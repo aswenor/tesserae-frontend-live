@@ -22,7 +22,7 @@ import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParameters } from '../../../state/search';
+import { updateSearchID, updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -55,6 +55,7 @@ function FeatureInput(props) {
   const { feature, updateSearchParameters } = props;
 
   const handleSelect = event => {
+    updateSearchID();
     updateSearchParameters({feature: event.target.value});
   };
 
