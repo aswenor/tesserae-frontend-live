@@ -21,7 +21,7 @@ import Slider from '@material-ui/core/Slider';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParametersAction } from '../../../api/corpus';
+import { updateSearchParameters } from '../../../state/search';
 
 
 const sizes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -98,11 +98,11 @@ function mapStateToProps(state) {
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParametersAction
+    updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
 

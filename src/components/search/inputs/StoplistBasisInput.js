@@ -22,7 +22,7 @@ import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParametersAction } from '../../../api/corpus';
+import { updateSearchParameters} from '../../../state/search';
 
 
 /**
@@ -113,7 +113,7 @@ StoplistBasisInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return { stoplistBasis: state.searchParameters.stoplistBasis };
+  return { stoplistBasis: state.search.searchParameters.stoplistBasis };
 }
 
 
@@ -123,7 +123,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParametersAction
+    updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
 

@@ -13,16 +13,16 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-import { fetchTextsAction,
-         updateCurrentPageAction,
-         updateRowsPerPageAction } from '../../api/corpus';
+import { fetchTexts } from '../../api/corpus';
 
 
 function LibraryTable(props) {
-  const { asyncPending, availableTexts, currentPage, fetchTexts, language,
-          rowsPerPage, updateCurrentPage, updateRowsPerPage } = props;
+  const { asyncPending, availableTexts, fetchTexts, language } = props;
+  
   const [ sortLabel, setSortLabel ] = useState('Author');
   const [ sortOrder, setSortOrder ] = useState(1);
+  const [ currentPage, setCurrentPage ] = useState(0);
+  const [ rowsPerPage, setRowsPerPage ] = useState(100);
 
   console.log(availableTexts, language);
   if (availableTexts.length === 0 && language !== '') {
@@ -78,8 +78,8 @@ function LibraryTable(props) {
       </TableContainer>
       <TablePagination
         count={availableTexts.length}
-        onChangePage={updateCurrentPage}
-        onChangeRowsPerPage={updateRowsPerPage}
+        onChangePage={(event, value) => setCurrentPage(value)}
+        onChangeRowsPerPage={(event) => setRowsPerPage(event.target.value)}
         page={currentPage}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[25, 50, 100, 200]}
@@ -92,16 +92,12 @@ function LibraryTable(props) {
 const mapStateToProps = state => ({
   asyncPending: state.asyncPending,
   availableTexts: state.availableTexts,
-  currentPage: state.currentPage,
-  language: state.language,
-  rowsPerPage: state.rowsPerPage
+  language: state.language
 });
 
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchTexts: fetchTextsAction,
-  updateCurrentPage: updateCurrentPageAction,
-  updateRowsPerPage: updateRowsPerPageAction
+  fetchTexts: fetchTexts,
 }, dispatch);
 
 

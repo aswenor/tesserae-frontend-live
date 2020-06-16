@@ -22,7 +22,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParametersAction } from '../../../api/corpus';
+import { updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -99,7 +99,7 @@ UnitInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return { unit: state.searchParameters.unitType };
+  return { unit: state.search.searchParameters.unitType };
 }
 
 
@@ -109,7 +109,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParametersAction
+    updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
 

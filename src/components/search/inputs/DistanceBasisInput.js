@@ -22,7 +22,7 @@ import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParametersAction } from '../../../api/corpus';
+import { updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -115,17 +115,17 @@ DistanceBasisInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return { distanceBasis: state.searchParameters.distanceBasis };
+  return { distanceBasis: state.search.searchParameters.distanceBasis };
 }
 
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParametersAction
+    updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
 

@@ -34,7 +34,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import createTessTheme from '../../theme';
-import { fetchLanguagesAction, updateLanguageAction } from '../../api/corpus';
+import { fetchLanguages, updateLanguage } from '../../api/corpus';
 
 
 /** CSS styles to apply to the component. */
@@ -304,8 +304,8 @@ LanguageSelectMenu.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
-  availableLanguages: state.availableLanguages,
-  language: state.language
+  availableLanguages: state.corpus.availableLanguages,
+  language: state.corpus.language
 });
 
 
@@ -314,8 +314,8 @@ const mapStateToProps = state => ({
  * @param {funciton} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchLanguages: fetchLanguagesAction,
-  updateLanguage: updateLanguageAction
+  fetchLanguages: fetchLanguages,
+  updateLanguage: updateLanguage
 }, dispatch);
 
 

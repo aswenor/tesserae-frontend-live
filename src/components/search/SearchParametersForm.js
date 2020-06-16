@@ -35,8 +35,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import AdvancedOptionsGroup from './AdvancedOptionsGroup'
 import TextSelectGroup from './TextSelectGroup';
 
-import { fetchStoplistAction, fetchTextsAction,
-         updateSourceTextAction, updateTargetTextAction } from '../../api/corpus';
+import { fetchTexts } from '../../api/corpus';
+import { fetchStoplist } from '../../api/search';
+import { updateSourceText, updateTargetText } from '../../state/search';
 
 
 const useStyles = makeStyles(theme => ({
@@ -171,11 +172,14 @@ const ExpansionPanelDetails = withStyles((theme) => ({
  *   );
  */
 function SearchParametersForm(props) {
-  const { availableTexts, disableSearch, fetchTexts, fetchStoplist, language,
-          pending, searchParameters, shouldFetchTexts, sourceText, targetText,
-          updateSource, updateTarget } = props;
+  const { asyncPending, availableTexts, fetchTexts, fetchStoplist, language,
+          searchParameters, sourceText, targetText, updateSource,
+          updateTarget } = props;
 
   const classes = useStyles();
+
+  const shouldFetchTexts = !asyncPending && availableTexts.length === 0;
+  const disableSearch = sourceText.object_id === undefined && targetText.object_id === undefined;
 
   /** The actual basis used by the REST API uses language names or text IDs, so this converts. */
   const basis = (searchParameters !== undefined && searchParameters.stoplistBasis === 'corpus'
@@ -216,7 +220,7 @@ function SearchParametersForm(props) {
               >
                 <TextSelectGroup
                   handleTextChange={updateSource}
-                  loading={pending}
+                  loading={asyncPending}
                   loadingText={`Loading ${language} corpus`}
                   onOpen={() => fetchTexts(language, shouldFetchTexts)}
                   selection={sourceText}
@@ -230,7 +234,7 @@ function SearchParametersForm(props) {
               >
                 <TextSelectGroup
                   handleTextChange={updateTarget}
-                  loading={pending}
+                  loading={asyncPending}
                   loadingText={`Loading ${language} corpus`}
                   onOpen={() => fetchTexts(language, shouldFetchTexts)}
                   selection={targetText}
@@ -245,7 +249,7 @@ function SearchParametersForm(props) {
                 <Fab
                   color="primary"
                   disabled={disableSearch}
-                  onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, pending)}
+                  onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, asyncPending)}
                   variant="extended"
                 >
                   <SearchIcon /> Search
@@ -282,14 +286,14 @@ function SearchParametersForm(props) {
 
 SearchParametersForm.propTypes = {
   /**
+   * Flag indicating that an AJAX call is in progress.
+   */
+  asyncPending: PropTypes.bool,
+
+  /**
    * List of texts exposed by the REST API.
    */
   availableTexts: PropTypes.arrayOf(PropTypes.object),
-  
-  /**
-   * Flag to disable the search button if parameters are missing.
-   */
-  disableSearch: PropTypes.bool,
   
   /**
    * Function to retrieve texts from the REST API.
@@ -307,20 +311,10 @@ SearchParametersForm.propTypes = {
   language: PropTypes.string,
   
   /**
-   * Flag indicating that an AJAX call is in progress.
-   */
-  pending: PropTypes.bool,
-  
-  /**
    * Object containing all currently selected advanced parameters for the search.
    */
   searchParameters: PropTypes.object,
-  
-  /**
-   * Flag indicating that texts should be retrieved from the REST API.
-   */
-  shouldFetchTexts: PropTypes.bool,
-  
+
   /**
    * The currently selected source text.
    */
@@ -351,16 +345,13 @@ SearchParametersForm.propTypes = {
  */
 const mapStateToProps = (state) => {
   return {
-    availableTexts: state.availableTexts,
-    disableSearch: state.disableSearch,
-    language: state.language,
-    pending: state.asyncPending,
-    searchParameters: state.searchParameters,
-    shouldFetchStoplist: state.shouldFetchStoplist,
-    shouldFetchTexts: state.shouldFetchTexts,
-    sourceText: state.sourceText,
-    stopwords: state.stopwords,
-    targetText: state.targetText,
+    asyncPending: state.async.asyncPending,
+    availableTexts: state.corpus.availableTexts,
+    language: state.corpus.language,
+    searchParameters: state.search.searchParameters,
+    sourceText: state.search.sourceText,
+    stopwords: state.search.stopwords,
+    targetText: state.search.targetText,
   };
 };
 
@@ -370,10 +361,10 @@ const mapStateToProps = (state) => {
  * @param {funciton} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchTexts: fetchTextsAction,
-  fetchStoplist: fetchStoplistAction,
-  updateSource: updateSourceTextAction,
-  updateTarget: updateTargetTextAction
+  fetchTexts: fetchTexts,
+  fetchStoplist: fetchStoplist,
+  updateSource: (event, text) => updateSourceText(text),
+  updateTarget: (event, text) => updateTargetText(text)
 }, dispatch);
 
 

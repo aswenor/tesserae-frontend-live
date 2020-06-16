@@ -21,7 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParametersAction } from '../../../api/corpus';
+import { updateSearchParameters } from '../../../state/search';
 
 
 const sizes = [0, 50, 100, 150, 200];
@@ -42,8 +42,6 @@ const sizes = [0, 50, 100, 150, 200];
  *   );
  */
 function StoplistInput(props) {
-  const { updateSearchParameters } = props;
-
   const handleChange = (event, newStoplist) => {
     updateSearchParameters({stoplist: `${newStoplist}`});
   };
@@ -98,7 +96,7 @@ StoplistInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return { stoplist: state.searchParameters.stoplist };
+  return {  };
 }
 
 
@@ -108,7 +106,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParametersAction
+    updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
 
