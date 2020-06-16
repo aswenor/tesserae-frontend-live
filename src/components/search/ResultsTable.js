@@ -24,9 +24,6 @@ import Table from '@material-ui/core/Table';
 import TableContainer from'@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 
-import { fetchResults,
-         getSearchStatus,
-         initiateSearch } from '../../api/search';
 import ResultsPlaceholder from './ResultsPlaceholder';
 import ResultsTableBody from './ResultsTableBody';
 import ResultsTableHeader from './ResultsTableHeader';
@@ -53,8 +50,7 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function ResultsTable(props) {
-  const { asyncPending, initiateSearch, results,
-          searchParams, sourceText, stopwords, targetText } = props;
+  const { results, resultsCount } = props;
   
   /** Managers for UI sorting state and pagination. */
   const [ sortHeader, setSortHeader ] = useState('score');
@@ -65,19 +61,12 @@ function ResultsTable(props) {
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
-  const shouldInitiateSearch = stopwords.length > 0;
-
   /** Labels for the columns. */
   const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
 
-  // Kick off a search if all parameters are selected.
-  if (shouldInitiateSearch) {
-    initiateSearch(sourceText, targetText, searchParams, stopwords, asyncPending);
-  }
-
   /** Get the indices of results to display in the table. */
   const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, results.length);
+  const end = Math.min(start + rowsPerPage, resultsCount);
 
   /** Get the results entries by sorting and slicing. */
   const displayResults = results.sort((a, b) => {
@@ -142,14 +131,9 @@ function ResultsTable(props) {
 
 ResultsTable.propTypes = {
   /**
-   * True if an AJAX request is in progress.
+   * The number of results returned byt this search.
    */
-  asyncPending: PropTypes.bool,
-
-  /**
-   * Callback to kick off a search.
-   */
-  initiateSearch: PropTypes.func,
+  resultsCount: PropTypes.number,
 
   /**
    * Array of search results retrieved frmo the REST API.
@@ -160,6 +144,11 @@ ResultsTable.propTypes = {
        * Pairs of source/target snippet token indices corresponding to matches.
        */
       highlight: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+
+      /**
+       * Database ID of the result.
+       */
+      object_id: PropTypes.string,
 
       /**
        * Score of the match.
@@ -186,27 +175,7 @@ ResultsTable.propTypes = {
        */
       target_tag: PropTypes.string,
     })
-  ),
-
-  /**
-   * Selected parameters for the search.
-   */
-  searchParams: PropTypes.object,
-
-  /**
-   * The source text to use in the search.
-   */
-  sourceText: PropTypes.object,
-
-  /**
-   * List of words to ignore in the search.
-   */
-  stopwords: PropTypes.array,
-
-  /**
-   * The target text to use in the search.
-   */
-  targetText: PropTypes.object
+  )
 }
 
 
@@ -217,13 +186,8 @@ ResultsTable.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
-  asyncPending: state.async.asyncPending,
   results: state.search.results,
-  searchID: state.search.searchID,
-  searchParams: state.search.searchParameters,
-  sourceText: state.search.sourceText,
-  stopwords: state.search.stopwords,
-  targetText: state.search.targetText,
+  resultsCount: state.search.resultsCount,
 });
 
 
@@ -231,11 +195,7 @@ const mapStateToProps = state => ({
  * Add redux store actions to this component's props.
  * @param {function} dispatch The redux dispatch function.
  */
-const mapDispatchToProps = dispatch => bindActionCreators({
-  initiateSearch: initiateSearch,
-  fetchResults: fetchResults,
-  getSearchStatus: getSearchStatus
-}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
 
 
 // Do redux binding here.
