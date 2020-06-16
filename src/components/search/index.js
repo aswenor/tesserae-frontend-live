@@ -15,22 +15,9 @@
  * @requires ../../state_management/search
  */
 import React, { useState } from 'react';
-import { Provider } from 'react-redux';
-import { applyMiddleware, createStore } from 'redux';
-import thunk from 'redux-thunk';
 
 import PageContainer from '../common/PageContainer';
 import ReactivePanels from './ReactivePanels';
-
-import { searchReducer, DEFAULT_STATE } from '../../state_management/search';
-
-
-// Create the ReduxJS store using thunks to enable storing Promises in redux.
-const middleware = [thunk];
-const store = createStore(
-  searchReducer,
-  DEFAULT_STATE,
-  applyMiddleware(...middleware));
 
 
 /**
@@ -47,19 +34,17 @@ function Search(props) {
 
   return (
     <main>
-      <Provider store={store}>
-        <PageContainer
-          routes={routes}
-          showLanguages
-          toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
-        >
-          <ReactivePanels
-            leftMinWidth={15}
-            open={isOpen}
-            rightMinWidth={35}
-          />
-        </PageContainer>
-      </Provider>
+      <PageContainer
+        routes={routes}
+        showLanguages
+        toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
+      >
+        <ReactivePanels
+          leftMinWidth={15}
+          open={isOpen}
+          rightMinWidth={35}
+        />
+      </PageContainer>
     </main>
   );
 }

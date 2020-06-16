@@ -15,22 +15,9 @@
  * @requires ../../state_management/library
  */
 import React, { useState } from 'react';
-import { Provider } from 'react-redux';
-import { applyMiddleware, createStore } from 'redux';
-import thunk from 'redux-thunk';
 
 import LibraryTable from './LibraryTable';
 import PageContainer from '../common/PageContainer';
-
-import { searchReducer, DEFAULT_STATE } from '../../state_management/search';
-
-
-// Create the ReduxJS store using thunks to enable storing Promises in redux.
-const middleware = [thunk];
-const store = createStore(
-  searchReducer,
-  DEFAULT_STATE,
-  applyMiddleware(...middleware));
 
 
 /**
@@ -47,16 +34,14 @@ function Library(props) {
 
   return (
     <main>
-      <Provider store={store}>
-        <PageContainer
-          routes={routes}
-          showLanguages
-          sideBarOpen={isOpen}
-          toggleOpen={(event) => setIsOpen(prevOpen => !prevOpen)}
-        >
-          <LibraryTable />
-        </PageContainer>
-      </Provider>
+      <PageContainer
+        routes={routes}
+        showLanguages
+        sideBarOpen={isOpen}
+        toggleOpen={(event) => setIsOpen(prevOpen => !prevOpen)}
+      >
+        <LibraryTable />
+      </PageContainer>
     </main>
   );
 }
