@@ -12,17 +12,19 @@
  * @exports fetchResults
  * 
  * @requires NPM:axios
- * @requires ../state_management/search
+ * @requires NPM:lodash
+ * @requires ../state/async
+ * @requires ../state/search
  */
 import axios from 'axios';
 import maxBy from 'lodash/maxBy';
 
-import { initiateAsyncAction, clearAsyncAction,
-         registerErrorAction } from '../state_management/async';
-import { updateResultsAction, updateSearchIDAction,
-         updateSearchParametersAction, updateSearchStatusAction,
-         updateSourceTextAction, updateStopwordsAction,
-         updateTargetTextAction } from '../state_management/search';
+import { initiateAsync, clearAsync,
+         registerError } from '../state_management/async';
+import { updateResults, updateSearchID,
+         updateSearchParameters, updateSearchStatus,
+         updateSourceText, updateStopwords,
+         updateTargetText } from '../state_management/search';
 
 
 /**
@@ -40,7 +42,7 @@ const REST_API = process.env.REACT_APP_REST_API_URL;
  */
 export function updateSourceText(event, value) {
   const realval = value && value.object_id !== undefined ? value : {author: '', title: ''};
-  return dispatch => dispatch(updateSourceTextAction(realval));
+  return dispatch => dispatch(updateSourceText(realval));
 }
 
 
@@ -54,7 +56,7 @@ export function updateSourceText(event, value) {
 export function updateTargetText(event, value) {
   // If an incorrect text object, dispatch a blank text.
   const realval = value && value.object_id !== undefined ? value : {author: '', title: ''};
-  return dispatch => dispatch(updateTargetTextAction(realval));
+  return dispatch => dispatch(updateTargetText(realval));
 }
 
 
@@ -65,7 +67,7 @@ export function updateTargetText(event, value) {
  * @returns {function} Callback that calls dispatch to update state.
  */
 export function updateSearchParameters(params) {
-  return dispatch => dispatch(updateSearchParametersAction(params));
+  return dispatch => dispatch(updateSearchParameters(params));
 }
 
 
@@ -83,7 +85,7 @@ export function fetchStoplist(feature, stopwords, stoplistBasis, pending) {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
       // Update app state to show there is a new async action.
-      dispatch(initiateAsyncAction());
+      dispatch(initiateAsync());
 
       /** Parameters to send to the endpoint. */
       let params = {
@@ -110,14 +112,14 @@ export function fetchStoplist(feature, stopwords, stoplistBasis, pending) {
       })
       .then(response => {
         // On success, update the global state and return the stoplist.
-        dispatch(updateStopwordsAction(response.data.stopwords));
-        dispatch(clearAsyncAction());
+        dispatch(updateStopwords(response.data.stopwords));
+        dispatch(clearAsync());
         return response.data.stopwords
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerErrorAction(error));
-        dispatch(clearAsyncAction());
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       });
     }
   }
@@ -139,8 +141,8 @@ export function initiateSearch(source, target, params, stopwords, pending) {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
       // Update app state to show there is a new async action.
-      dispatch(updateResultsAction());
-      dispatch(initiateAsyncAction());
+      dispatch(updateResults());
+      dispatch(initiateAsync());
 
       // Start a request to the parallels endpoint of the REST API.
       // This creates a Promise that resolves when a reqponse or error is received.
@@ -177,8 +179,8 @@ export function initiateSearch(source, target, params, stopwords, pending) {
         console.log(response.headers.location);
         if (response.headers.location !== undefined) {
           const searchID = response.headers.location.split('/')[5];
-          dispatch(updateSearchIDAction(searchID));
-          dispatch(clearAsyncAction());
+          dispatch(updateSearchID(searchID));
+          dispatch(clearAsync());
           return searchID;
         }
 
@@ -196,8 +198,8 @@ export function initiateSearch(source, target, params, stopwords, pending) {
             });
           }
           
-          dispatch(updateResultsAction(normedParallels));
-          dispatch(clearAsyncAction());
+          dispatch(updateResults(normedParallels));
+          dispatch(clearAsync());
           return normedParallels;
         }
         
@@ -205,8 +207,8 @@ export function initiateSearch(source, target, params, stopwords, pending) {
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerErrorAction(error));
-        dispatch(clearAsyncAction());
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       });
     }
   }
@@ -220,12 +222,12 @@ export function initiateSearch(source, target, params, stopwords, pending) {
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function getSearchStatusAction(searchID, pending) {
+export function getSearchStatus(searchID, pending) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
       // Update app state to show there is a new async action.
-      dispatch(initiateAsyncAction());
+      dispatch(initiateAsync());
 
       // Start a request to the parallels endpoint of the REST API.
       // This creates a Promise that resolves when a reqponse or error is received.
@@ -239,16 +241,16 @@ export function getSearchStatusAction(searchID, pending) {
       .then(response => {
         // On success, update the global state and return the status.
         const done = response.data.status === 'Done';
-        dispatch(updateSearchStatusAction(response.data.status, response.data.progress));
+        dispatch(updateSearchStatus(response.data.status, response.data.progress));
         if (done) {
-          dispatch(clearAsyncAction());
+          dispatch(clearAsync());
         }
         return response.data.status;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerErrorAction(error));
-        dispatch(clearAsyncAction());
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       })
     }
   }
@@ -262,12 +264,12 @@ export function getSearchStatusAction(searchID, pending) {
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function fetchResultsAction(searchID, pending) {
+export function fetchResults(searchID, pending) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
       // Update app state to show there is a new async action.
-      dispatch(initiateAsyncAction());
+      dispatch(initiateAsync());
 
       // Start a request to the parallels endpoint of the REST API.
       // This creates a Promise that resolves when a reqponse or error is received.
@@ -295,14 +297,14 @@ export function fetchResultsAction(searchID, pending) {
           });
         }
         
-        dispatch(updateResultsAction(normedParallels));
-        dispatch(clearAsyncAction());
+        dispatch(updateResults(normedParallels));
+        dispatch(clearAsync());
         return normedParallels;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerErrorAction(error));
-        dispatch(clearAsyncAction());
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       });
     }
   }

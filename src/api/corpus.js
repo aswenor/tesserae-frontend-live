@@ -3,22 +3,19 @@
  * 
  * @author Jeff Kinnison <jkinniso@nd.edu>
  * 
- * @exports fetchLanguagesAction
- * @exports updateLanguageAction
- * @exports fetchTextsAction
- * @exports updateCurrentPageAction
- * @exports updateResultsPerPageAction
+ * @exports fetchLanguages
+ * @exports fetchTexts
  * 
  * @requires NPM:axios
- * @requires ../state_management/search
+ * @requires ../state/async
+ * @requires ../state/corpus
  */
 import axios from 'axios';
-import maxBy from 'lodash/maxBy';
 
-import { initiateAsyncAction, clearAsyncAction,
-         registerErrorAction} from '../state_management/async';
-import { updateAvailableLanguagesAction, updateAvailableTextsAction,
-         updateSelectedLanguageAction } from '../state_management/corpus';
+import { initiateAsync, clearAsync,
+         registerError} from '../state/async';
+import { updateAvailableLanguages, updateAvailableTexts,
+         updateSelectedLanguage } from '../state/corpus';
 
 
 /**
@@ -33,12 +30,12 @@ const REST_API = process.env.REACT_APP_REST_API_URL;
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function fetchLanguagesAction(pending) {
+export function fetchLanguages(pending) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
       // Update app state to show there is a new async action.
-      dispatch(initiateAsyncAction());
+      dispatch(initiateAsync());
       
       // Start a request to the languages endpoint of the REST API.
       // This creates a Promise that resolves when a reqponse or error is received.
@@ -64,14 +61,14 @@ export function fetchLanguagesAction(pending) {
           language = languages.length > 0 ? languages[0] : '';
         }
 
-        dispatch(updateAvailableLanguagesAction(languages, language));
-        dispatch(clearAsyncAction());
+        dispatch(updateAvailableLanguages(languages, language));
+        dispatch(clearAsync());
         return languages;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerErrorAction(error));
-        dispatch(clearAsyncAction());
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       });
     }
   }
@@ -86,7 +83,7 @@ export function fetchLanguagesAction(pending) {
  */
 export function updateLanguage(language) {
   return dispatch => {
-      dispatch(updateSelectedLanguageAction(language));
+      dispatch(updateSelectedLanguage(language));
   }
 }
 
@@ -103,7 +100,7 @@ export function fetchTexts(language, shouldFetch) {
     // Only kick off a request to the REST API if no other requests are active.
     if (shouldFetch) {
       // Update app state to show there is a new async action.
-      dispatch(initiateAsyncAction());
+      dispatch(initiateAsync());
 
       // Start a request to the texts endpoint of the REST API.
       // This creates a Promise that resolves when a reqponse or error is received.
@@ -121,14 +118,14 @@ export function fetchTexts(language, shouldFetch) {
         const texts = response.data.texts.sort((a, b) => {
           return a.author > b.author || (a.author === b.author && a.title > b.title);
         });
-        dispatch(updateAvailableTextsAction(response.data.texts));
-        dispatch(clearAsyncAction());
+        dispatch(updateAvailableTexts(response.data.texts));
+        dispatch(clearAsync());
         return response.data.texts;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerErrorAction(error));
-        dispatch(clearAsyncAction());
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       });
     }
   }
