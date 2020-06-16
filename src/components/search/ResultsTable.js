@@ -24,11 +24,9 @@ import Table from '@material-ui/core/Table';
 import TableContainer from'@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 
-import { fetchResultsAction,
-         getSearchStatusAction,
-         updateCurrentPageAction,
-         updateRowsPerPageAction, 
-         initiateSearchAction } from '../../api/corpus';
+import { fetchResults,
+         getSearchStatus,
+         initiateSearch } from '../../api/search';
 import ResultsPlaceholder from './ResultsPlaceholder';
 import ResultsTableBody from './ResultsTableBody';
 import ResultsTableHeader from './ResultsTableHeader';
@@ -55,17 +53,19 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function ResultsTable(props) {
-  const { asyncPending, currentPage, initiateSearch, results,
-          rowsPerPage, searchParams, shouldInitiateSearch,
-          sourceText, stopwords, targetText, updateCurrentPage,
-          updateRowsPerPage } = props;
+  const { asyncPending, initiateSearch, results,
+          searchParams, sourceText, stopwords, targetText } = props;
   
-  /** Managers for UI sorting state. */
+  /** Managers for UI sorting state and pagination. */
   const [ sortHeader, setSortHeader ] = useState('score');
   const [ sortOrder, setSortOrder ] = useState(1);
+  const [ currentPage, setCurrentPage ] = useState(0);
+  const [ rowsPerPage, setRowsPerPage ] = useState(100);
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
+
+  const shouldInitiateSearch = stopwords.length > 0;
 
   /** Labels for the columns. */
   const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
@@ -127,8 +127,8 @@ function ResultsTable(props) {
               component="div"
               count={results.length}
               labelRowsPerPage="Results per page:"
-              onChangePage={updateCurrentPage}
-              onChangeRowsPerPage={updateRowsPerPage}
+              onChangePage={(event, value) => setCurrentPage(value)}
+              onChangeRowsPerPage={(event) => setRowsPerPage(event.target.value)}
               page={currentPage}
               rowsPerPage={rowsPerPage}
               rowsPerPageOptions={[50, 100, 200, 500]}
@@ -145,11 +145,6 @@ ResultsTable.propTypes = {
    * True if an AJAX request is in progress.
    */
   asyncPending: PropTypes.bool,
-
-  /**
-   * The current page of results to display.
-   */
-  currentPage: PropTypes.number,
 
   /**
    * Callback to kick off a search.
@@ -194,19 +189,9 @@ ResultsTable.propTypes = {
   ),
 
   /**
-   * The number of results to show per table page.
-   */
-  rowsPerPage: PropTypes.number,
-
-  /**
    * Selected parameters for the search.
    */
   searchParams: PropTypes.object,
-
-  /**
-   * True when parameters are selected and the user kicks off a search.
-   */
-  shouldInitiateSearch: PropTypes.bool,
 
   /**
    * The source text to use in the search.
@@ -221,17 +206,7 @@ ResultsTable.propTypes = {
   /**
    * The target text to use in the search.
    */
-  targetText: PropTypes.object,
-
-  /**
-   * Callback to change the currently displayed page.
-   */
-  updateCurrentPage: PropTypes.func,
-
-  /**
-   * Callback to change the number of results displayed per page.
-   */
-  updateRowsPerPage: PropTypes.func
+  targetText: PropTypes.object
 }
 
 
@@ -242,33 +217,24 @@ ResultsTable.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
-  asyncPending: state.asyncPending,
-  currentPage: state.currentPage,
-  pending: state.asyncPending,
-  resultCount: state.resultCount,
-  results: state.results,
-  rowsPerPage: state.rowsPerPage,
-  searchID: state.searchID,
-  searchParams: state.searchParameters,
-  shouldFetchResults: state.shouldFetchResults,
-  shouldInitiateSearch: state.shouldInitiateSearch,
-  sourceText: state.sourceText,
-  stopwords: state.stopwords,
-  status: state.status,
-  targetText: state.targetText,
+  asyncPending: state.async.asyncPending,
+  results: state.search.results,
+  searchID: state.search.searchID,
+  searchParams: state.search.searchParameters,
+  sourceText: state.search.sourceText,
+  stopwords: state.search.stopwords,
+  targetText: state.search.targetText,
 });
 
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
-  initiateSearch: initiateSearchAction,
-  fetchResults: fetchResultsAction,
-  getSearchStatus: getSearchStatusAction,
-  updateCurrentPage: updateCurrentPageAction,
-  updateRowsPerPage: updateRowsPerPageAction
+  initiateSearch: initiateSearch,
+  fetchResults: fetchResults,
+  getSearchStatus: getSearchStatus
 }, dispatch);
 
 
