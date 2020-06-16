@@ -21,7 +21,8 @@ import FormControl from '@material-ui/core/FormControl';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParameters } from '../../../state/search';
+import { fetchStoplist } from '../../../api/search';
+import { updateSearchID, updateSearchParameters, updateStopwords } from '../../../state/search';
 
 
 const sizes = [0, 50, 100, 150, 200];
@@ -42,8 +43,16 @@ const sizes = [0, 50, 100, 150, 200];
  *   );
  */
 function StoplistInput(props) {
+  const { asyncPending, feature, fetchStoplist, language, sourceText, stoplist,
+          stoplistBasis, targetText, updateSearchID, updateSearchParameters,
+          updateStopwords } = props;
+
   const handleChange = (event, newStoplist) => {
+    updateSearchID();
+    updateStopwords();
     updateSearchParameters({stoplist: `${newStoplist}`});
+    const basis = stoplistBasis === 'corpus' ? language : [sourceText.object_id, targetText.object_id];
+    fetchStoplist(feature, stoplist, basis, asyncPending)
   };
 
   const marks = sizes.map(item => ({
@@ -96,7 +105,15 @@ StoplistInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return {  };
+  return {
+    asyncPending: state.async.asyncPending,
+    feature: state.search.searchParameters.feature,
+    language: state.search.language,
+    sourceText: state.search.sourceText,
+    stoplist: state.search.stoplist,
+    stoplistBasis: state.search.stoplistBasis,
+    targetText: state.search.targetText
+   };
 }
 
 
@@ -106,7 +123,10 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParameters
+    fetchStoplist: fetchStoplist,
+    updateSearchID: updateSearchID,
+    updateSearchParameters: updateSearchParameters,
+    updateStopwords: updateStopwords,
   }, dispatch);
 }
 

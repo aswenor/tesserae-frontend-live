@@ -22,7 +22,8 @@ import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchParameters} from '../../../state/search';
+import { fetchStoplist } from '../../../api/search';
+import { updateSearchID, updateSearchParameters, updateStopwords } from '../../../state/search';
 
 
 /**
@@ -51,10 +52,16 @@ const availableStoplistBases = [
  *   );
  */
 function StoplistBasisInput(props) {
-  const { stoplistBasis, updateSearchParameters } = props;
+  const { asyncPending, feature, fetchStoplist, language, sourceText, stoplist,
+          stoplistBasis, targetText, updateSearchID, updateStopwords,
+          updateSearchParameters } = props;
 
   const handleSelect = event => {
+    updateSearchID();
+    updateStopwords();
     updateSearchParameters({stoplistBasis: event.target.value});
+    const basis = event.target.value === 'corpus' ? language : [sourceText.object_id, targetText.object_id];
+    fetchStoplist(feature, stoplist, basis, asyncPending)
   };
 
   const stoplistBases = availableStoplistBases.map(item => {
@@ -113,7 +120,15 @@ StoplistBasisInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return { stoplistBasis: state.search.searchParameters.stoplistBasis };
+  return {
+    asyncPending: state.async.asyncPending,
+    feature: state.search.searchParameters.feature,
+    language: state.search.language,
+    sourceText: state.search.sourceText,
+    stoplist: state.search.searchParameters.stoplist,
+    stoplistBasis: state.search.searchParameters.stoplistBasis,
+    targetText: state.search.targetText
+  };
 }
 
 
@@ -123,7 +138,10 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    updateSearchParameters: updateSearchParameters
+    fetchStoplist: fetchStoplist,
+    updateSearchID: updateSearchID,
+    updateSearchParameters: updateSearchParameters,
+    updateStopwords: updateStopwords,
   }, dispatch);
 }
 
