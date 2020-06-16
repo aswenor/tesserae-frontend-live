@@ -36,7 +36,7 @@ import AdvancedOptionsGroup from './AdvancedOptionsGroup'
 import TextSelectGroup from './TextSelectGroup';
 
 import { fetchTexts } from '../../api/corpus';
-import { fetchStoplist } from '../../api/search';
+import { fetchStoplist, initiateSearch } from '../../api/search';
 import { updateSourceText, updateTargetText } from '../../state/search';
 
 
@@ -172,19 +172,23 @@ const ExpansionPanelDetails = withStyles((theme) => ({
  *   );
  */
 function SearchParametersForm(props) {
-  const { asyncPending, availableTexts, fetchTexts, fetchStoplist, language,
-          searchParameters, sourceText, targetText, updateSource,
-          updateTarget } = props;
+  const { asyncPending, availableTexts, fetchStoplist, fetchTexts,
+          initiateSearch, language, searchParameters, sourceText,
+          stopwords, targetText, updateSource, updateTarget } = props;
 
   const classes = useStyles();
 
   const shouldFetchTexts = !asyncPending && availableTexts.length === 0;
-  const disableSearch = sourceText.object_id === undefined && targetText.object_id === undefined;
+  const disableSearch = stopwords.length === 0
+                        || sourceText.object_id === undefined
+                        || targetText.object_id === undefined;
 
-  /** The actual basis used by the REST API uses language names or text IDs, so this converts. */
-  const basis = (searchParameters !== undefined && searchParameters.stoplistBasis === 'corpus'
-                 ? language
-                 : [sourceText.object_id, targetText.object_id]);
+  if (stopwords.length === 0) {
+    const basis = searchParameters.stoplistBasis === 'corpus'
+                  ? language
+                  : [sourceText.object_id, targetText.object_id];
+    fetchStoplist(searchParameters.feature, searchParameters.stoplist, basis, asyncPending);
+  }
 
   // Most of the content here is the Material-UI Grid model to handle spacing
   // members of the form.
@@ -249,7 +253,7 @@ function SearchParametersForm(props) {
                 <Fab
                   color="primary"
                   disabled={disableSearch}
-                  onClick={() => fetchStoplist(searchParameters.feature, parseInt(searchParameters.stoplist, 10), basis, asyncPending)}
+                  onClick={() => initiateSearch(sourceText, targetText, searchParameters, stopwords, asyncPending)}
                   variant="extended"
                 >
                   <SearchIcon /> Search
@@ -363,6 +367,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchTexts: fetchTexts,
   fetchStoplist: fetchStoplist,
+  initiateSearch: initiateSearch,
   updateSource: (event, text) => updateSourceText(text),
   updateTarget: (event, text) => updateTargetText(text)
 }, dispatch);
