@@ -13,7 +13,7 @@
  * @requires NPM:@material-ui/icons
  * @requires ../../../api/corpus
  */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -27,7 +27,7 @@ import Typography from '@material-ui/core/Typography';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { getSearchStatusAction, fetchResultsAction } from '../../api/corpus';
+import { getSearchStatus, fetchResults } from '../../api/search';
 import { sleep, toTitleCase } from '../../utils';
 
 
@@ -67,19 +67,24 @@ const useStyles = makeStyles(theme => ({
  */
 function ResultsPlaceholder(props) {
   const { asyncPending, fetchResults, getSearchStatus, results, searchID,
-          searchInProgress, searchStatus, searchStatusProgress } = props;
+          searchProgress, searchStatus } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
+  const searchInProgress = searchID !== '' && results.length === 0;
+
   console.log(searchID);
+  console.log(results, searchStatus, searchProgress);
+
   // Either check for the status or get results from the REST API.
-  if (results.length === 0 && searchID !== null) {
+  if (searchInProgress) {
 
     // Ping the REST API for status every few seconds.
     if (searchInProgress && searchStatus.toLowerCase() !== 'done') {
+      console.log('Getting status');
       (async () => {
-        await sleep(100).then(() => {
+        await sleep(250).then(() => {
           getSearchStatus(searchID, asyncPending);
         });
       })();
@@ -87,12 +92,12 @@ function ResultsPlaceholder(props) {
     
     // Retrieve results if the status is "Done"
     if (searchStatus.toLowerCase() === 'done') {
+      console.log('Getting results');
       fetchResults(searchID, asyncPending);
     }
   }
 
-  console.log(searchStatusProgress);
-  const progress = searchStatusProgress.map(item => {
+  const progress = searchProgress.map(item => {
     return (
       <Typography>{toTitleCase(item.stage)}: <LinearProgress value={item.value * 100} variant= "determinate" /></Typography>
     );
@@ -179,19 +184,9 @@ ResultsPlaceholder.propTypes = {
   searchID: PropTypes.string,
 
   /**
-   * Flag showing that a search is in progress. (duh)
-   */
-  searchInProgress: PropTypes.bool,
-
-  /**
-   * Search status string returned from the REST API.
-   */
-  searchStatus: PropTypes.string,
-
-  /**
    * Progress indicators for stages of a search.
    */
-  searchStatusProgress: PropTypes.arrayOf(PropTypes.shape({
+  searchProgress: PropTypes.arrayOf(PropTypes.shape({
     /**
      * Name of the search stage.
      */
@@ -201,7 +196,12 @@ ResultsPlaceholder.propTypes = {
      * Percent completion.
      */
     value : PropTypes.number
-  }))
+  })),
+
+  /**
+   * Search status string returned from the REST API.
+   */
+  searchStatus: PropTypes.string,
 }
 
 
@@ -212,13 +212,11 @@ ResultsPlaceholder.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
-  asyncPending: state.asyncPending,
-  results: state.results,
-  searchID: state.searchID,
-  searchInProgress: state.searchInProgress,
-  searchStatus: state.searchStatus,
-  searchStatusProgress: state.searchStatusProgress,
-  shouldInitiateSearch: state.shouldInitiateSearch
+  asyncPending: state.async.asyncPending,
+  results: state.search.results,
+  searchID: state.search.searchID,
+  searchStatus: state.search.searchStatus,
+  searchProgress: state.search.searchProgress
 });
 
 
@@ -227,8 +225,8 @@ const mapStateToProps = state => ({
  * @param {function} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchResults: fetchResultsAction,
-  getSearchStatus: getSearchStatusAction,
+  fetchResults: fetchResults,
+  getSearchStatus: getSearchStatus,
 }, dispatch)
 
 
