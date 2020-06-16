@@ -31,6 +31,21 @@ import { updateResults, updateSearchID, updateSearchStatus,
 const REST_API = process.env.REACT_APP_REST_API_URL;
 
 
+function normalizeScores(parallels) {
+  const maxScore = Math.max(maxBy(parallels, x => x.score).score, 10);
+  
+  const normedParallels = parallels.map(item => {
+    const newScore = Math.round((item.score * 10) / maxScore);
+    return {
+      ...item,
+      score: newScore <= 10 ? newScore : 10
+    }
+  });
+
+  return normedParallels;
+}
+
+
 /**
  * Fetch the stoplist from the REST API with selected parameters.
  * 
@@ -101,6 +116,7 @@ export function initiateSearch(source, target, params, stopwords, pending) {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
       // Update app state to show there is a new async action.
+      dispatch(updateSearchID());
       dispatch(updateResults());
       dispatch(initiateAsync());
 
@@ -136,38 +152,26 @@ export function initiateSearch(source, target, params, stopwords, pending) {
       })
       .then(response => {
         // On success, update the global state and return the search ID or results.
+        dispatch(clearAsync());
+        
+        let searchID = '';
+
         if (response.headers.location !== undefined) {
-          const searchID = response.headers.location.split('/')[5];
+          searchID = response.headers.location.split('/').slice(-2)[0];
           dispatch(updateSearchID(searchID));
-          dispatch(clearAsync());
-          return searchID;
         }
 
         if (response.data.parallels !== undefined) {
-          let normedParallels = response.data.parallels;
-          let maxScore = maxBy(normedParallels, item => item.score).score;
-          
-          if (maxScore > 10) {
-            normedParallels = response.data.parallels.map(item => {
-              const score = Math.round((item.score * 10) / maxScore);
-              return {
-                ...item,
-                score: score
-              };
-            });
-          }
-          
+          const normedParallels = normalizeScores(response.data.parallels);
           dispatch(updateResults(normedParallels));
-          dispatch(clearAsync());
-          return normedParallels;
         }
         
-        return undefined;
+        return searchID;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
         dispatch(clearAsync());
+        dispatch(registerError(error));
       });
     }
   }
@@ -182,7 +186,6 @@ export function initiateSearch(source, target, params, stopwords, pending) {
  * @returns {function} Callback that calls dispatch to handle communication.
  */
 export function getSearchStatus(searchID, pending) {
-  console.log(searchID);
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (!pending) {
@@ -200,14 +203,14 @@ export function getSearchStatus(searchID, pending) {
       })
       .then(response => {
         // On success, update the global state and return the status.
-        dispatch(updateSearchStatus(response.data.status, response.data.progress));
         dispatch(clearAsync());
+        dispatch(updateSearchStatus(response.data.status, response.data.progress));
         return response.data.status;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
         dispatch(clearAsync());
+        dispatch(registerError(error));
       })
     }
   }
@@ -241,27 +244,15 @@ export function fetchResults(searchID, pending) {
         // On success, update the global state and return the results.
         // Because of strange design constraints and group consensus, normalize
         // all scores to be in range [0, 10].
-        let normedParallels = response.data.parallels;
-        let maxScore = maxBy(normedParallels, item => item.score);
-        
-        if (maxScore > 10) {
-          normedParallels = response.data.parallels.map(item => {
-            const score = Math.round((item.score * 10) / maxScore);
-            return {
-              ...item,
-              score: score
-            };
-          });
-        }
-        
-        dispatch(updateResults(normedParallels));
+        const normedParallels = normalizeScores(response.data.parallels);
         dispatch(clearAsync());
+        dispatch(updateResults(normedParallels, normedParallels.length));
         return normedParallels;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
         dispatch(clearAsync());
+        dispatch(registerError(error));
       });
     }
   }
