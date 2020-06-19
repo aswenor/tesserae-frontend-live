@@ -20,7 +20,6 @@
  * Default state for async communications.
  */
 export const DEFAULT_STATE = {
-  disableSearch: false,
   results: [],
   resultsCount: 0,
   searchID: '',
@@ -37,7 +36,6 @@ export const DEFAULT_STATE = {
   },
   searchProgress: [],
   searchStatus: '',
-  shouldInitiateSearch: false,
   sourceText: {author: '', title: ''},
   stopwords: [],
   targetText: {author: '', title: ''}
@@ -47,6 +45,8 @@ export const DEFAULT_STATE = {
 /**
  * Action identifiers to specify which update occurs.
  */
+const CLEAR_RESULTS = 'CLEAR_RESULTS';
+const CLEAR_SEARCH_METADATA = 'CLEAR_SEARCH_METADATA';
 const RESET_SEARCH = 'RESET_SEARCH';
 const UPDATE_RESULTS = 'UPDATE_RESULTS';
 const UPDATE_SEARCH_ID = 'UPDATE_SEARCH_ID';
@@ -63,6 +63,42 @@ const UPDATE_TARGET_TEXT = 'UPDATE_TARGET_TEXT';
  * 
  * These functions update the application state related to async communucations.
  */
+
+
+/**
+ * Clear current results to make way for a new search.
+ * 
+ * @returns {Object} A redux-style action.
+ */
+export function clearResults() {
+  return {
+    type: CLEAR_RESULTS,
+    payload: {
+      results: DEFAULT_STATE.results,
+      resultsCount: DEFAULT_STATE.resultsCount,
+      searchID: DEFAULT_STATE.searchID,
+      searchProgress: DEFAULT_STATE.searchProgress,
+      searchStatus: DEFAULT_STATE.searchStatus
+    }
+  }
+}
+
+
+/**
+ * Clear out metadata of a search without removing results.
+ * 
+ * @returns {Object} A redux-style action.
+ */
+export function clearSearchMetadata() {
+  return {
+    type: CLEAR_SEARCH_METADATA,
+    payload: {
+      searchID: DEFAULT_STATE.searchID,
+      searchProgress: DEFAULT_STATE.searchProgress,
+      searchStatus: DEFAULT_STATE.searchStatus
+    }
+  };
+}
 
 
 /**
