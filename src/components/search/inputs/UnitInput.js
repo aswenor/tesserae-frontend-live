@@ -22,7 +22,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchID, updateSearchParameters } from '../../../state/search';
+import { clearSearchMetadata, updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -43,7 +43,7 @@ function UnitInput(props) {
   const { unit, updateSearchParameters } = props;
 
   const handleChange = (event, newUnit) => {
-    updateSearchID();
+    clearSearchMetadata();
     updateSearchParameters({unitType: newUnit});
   };
 
@@ -110,6 +110,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    clearSearchMetadata: clearSearchMetadata,
     updateSearchParameters: updateSearchParameters
   }, dispatch);
 }

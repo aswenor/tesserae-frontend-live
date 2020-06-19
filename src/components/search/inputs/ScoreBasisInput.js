@@ -22,7 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchID, updateSearchParameters } from '../../../state/search';
+import { clearSearchMetadata, updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -43,7 +43,7 @@ function ScoreBasisInput(props) {
   const { scoreBasis, updateSearchParameters } = props;
 
   const handleChange = (event, newScoreBasis) => {
-    updateSearchID();
+    clearSearchMetadata();
     updateSearchParameters({scoreBasis: newScoreBasis});
   };
 
@@ -110,6 +110,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    clearSearchMetadata: clearSearchMetadata,
     updateSearchParameters: updateSearchParameters
   }, dispatch);
 }

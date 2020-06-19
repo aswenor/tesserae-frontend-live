@@ -22,7 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 import CollapseBox from '../../common/CollapseBox';
 
 import { fetchStoplist } from '../../../api/search';
-import { updateSearchID, updateSearchParameters, updateStopwords } from '../../../state/search';
+import { clearSearchMetadata, updateSearchParameters, updateStopwords } from '../../../state/search';
 
 
 const sizes = [0, 50, 100, 150, 200];
@@ -44,11 +44,11 @@ const sizes = [0, 50, 100, 150, 200];
  */
 function StoplistInput(props) {
   const { asyncPending, feature, fetchStoplist, language, sourceText, stoplist,
-          stoplistBasis, targetText, updateSearchID, updateSearchParameters,
+          stoplistBasis, targetText, clearSearchMetadata, updateSearchParameters,
           updateStopwords } = props;
 
   const handleChange = (event, newStoplist) => {
-    updateSearchID();
+    clearSearchMetadata();
     updateStopwords();
     updateSearchParameters({stoplist: `${newStoplist}`});
     const basis = stoplistBasis === 'corpus' ? language : [sourceText.object_id, targetText.object_id];
@@ -124,7 +124,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     fetchStoplist: fetchStoplist,
-    updateSearchID: updateSearchID,
+    clearSearchMetadata: clearSearchMetadata,
     updateSearchParameters: updateSearchParameters,
     updateStopwords: updateStopwords,
   }, dispatch);

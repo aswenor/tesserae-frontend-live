@@ -23,7 +23,7 @@ import Select from '@material-ui/core/Select';
 import CollapseBox from '../../common/CollapseBox';
 
 import { fetchStoplist } from '../../../api/search';
-import { updateSearchID, updateSearchParameters, updateStopwords } from '../../../state/search';
+import { clearSearchMetadata, updateSearchParameters, updateStopwords } from '../../../state/search';
 
 
 /**
@@ -53,11 +53,11 @@ const availableStoplistBases = [
  */
 function StoplistBasisInput(props) {
   const { asyncPending, feature, fetchStoplist, language, sourceText, stoplist,
-          stoplistBasis, targetText, updateSearchID, updateStopwords,
+          stoplistBasis, targetText, clearSearchMetadata, updateStopwords,
           updateSearchParameters } = props;
 
   const handleSelect = event => {
-    updateSearchID();
+    clearSearchMetadata();
     updateStopwords();
     updateSearchParameters({stoplistBasis: event.target.value});
     const basis = event.target.value === 'corpus' ? language : [sourceText.object_id, targetText.object_id];
@@ -139,7 +139,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     fetchStoplist: fetchStoplist,
-    updateSearchID: updateSearchID,
+    clearSearchMetadata: clearSearchMetadata,
     updateSearchParameters: updateSearchParameters,
     updateStopwords: updateStopwords,
   }, dispatch);

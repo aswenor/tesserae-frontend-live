@@ -21,7 +21,7 @@ import Slider from '@material-ui/core/Slider';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { updateSearchID, updateSearchParameters } from '../../../state/search';
+import { clearSearchMetadata, updateSearchParameters } from '../../../state/search';
 
 
 const sizes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -44,7 +44,7 @@ function DropScoresInput(props) {
   const { updateSearchParameters } = props;
 
   const handleChange = (event, newMinScore) => {
-    updateSearchID();
+    clearSearchMetadata();
     updateSearchParameters({dropScoresBelow: `${newMinScore}`});
   };
 
@@ -103,6 +103,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    clearSearchMetadata: clearSearchMetadata,
     updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
