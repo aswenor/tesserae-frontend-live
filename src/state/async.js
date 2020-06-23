@@ -15,8 +15,10 @@
  * Default state for async communications.
  */
 export const DEFAULT_STATE = {
-  asyncPending: false,
-  errors: []
+  asyncPending: 0,  // The number of active AJAX requests
+  errors: [],  // Error queue for AJAX requests
+  maxAsyncPending: 10,  // The max allowed active AJAX requests
+  maxErrorQueueSize: 10,  // Maximum error queue size
 };
 
 
@@ -44,9 +46,6 @@ const CLEAR_ERROR = 'CLEAR_ERROR';
 export function initiateAsync() {
   return {
     type: INITIATE_ASYNC,
-    payload: {
-      asyncPending: true
-    }
   }
 }
 
@@ -59,9 +58,6 @@ export function initiateAsync() {
 export function clearAsync() {
   return {
     type: CLEAR_ASYNC,
-    payload: {
-      asyncPending: false
-    }
   }
 }
 
@@ -115,15 +111,26 @@ export function clearError(index) {
 export function asyncReducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
     case INITIATE_ASYNC:
+      return {
+        ...state,
+        asyncPending: Math.min(state.asyncPending + 1, state.maxAsyncPending)
+      };
     case CLEAR_ASYNC:
       return {
         ...state,
-        ...action.payload
+        asyncPending: Math.max(state.asyncPending - 1, 0)
       };
     case REGISTER_ERROR:
+      let errors = [...state.errors, action.payload.error];
+      
+      if (errors.length >= state.errorQueueSize) {
+        const diff = errors.length - state.maxErrorQueueSize;
+        errors = state.errors.slice(diff, errors.length);
+      }
+
       return {
         ...state,
-        errors: [...state.errors, action.payload.error]
+        errors: [...errors]
       }
     case CLEAR_ERROR:
       return {
