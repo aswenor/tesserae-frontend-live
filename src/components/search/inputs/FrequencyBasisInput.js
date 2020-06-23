@@ -40,7 +40,8 @@ import { clearSearchMetadata, updateSearchParameters } from '../../../state/sear
  *   );
  */
 function FrequencyBasisInput(props) {
-  const { frequencyBasis, updateSearchParameters } = props;
+  const { clearSearchMetadata, frequencyBasis,
+          updateSearchParameters } = props;
 
   const handleChange = (event, newFrequencyBasis) => {
     clearSearchMetadata();
@@ -106,7 +107,7 @@ function mapStateToProps(state) {
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({

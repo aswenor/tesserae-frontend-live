@@ -41,7 +41,7 @@ const sizes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
  *   );
  */
 function DropScoresInput(props) {
-  const { updateSearchParameters } = props;
+  const { clearSearchMetadata, updateSearchParameters } = props;
 
   const handleChange = (event, newMinScore) => {
     clearSearchMetadata();

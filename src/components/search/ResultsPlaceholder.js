@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
  *   
  */
 function ResultsPlaceholder(props) {
-  const { asyncPending, fetchResults, getSearchStatus, results, searchID,
+  const { asyncReady, fetchResults, getSearchStatus, results, searchID,
           searchProgress, searchStatus } = props;
 
   /** CSS styles and global theme. */
@@ -81,13 +81,13 @@ function ResultsPlaceholder(props) {
     if (searchStatus.toLowerCase() !== 'done') {
       (async () => {
         await sleep(250).then(() => {
-          getSearchStatus(searchID, asyncPending);
+          getSearchStatus(searchID, asyncReady);
         });
       })();
     }
     // Retrieve results if the status is "Done"
     else {
-      fetchResults(searchID, asyncPending);
+      fetchResults(searchID, asyncReady);
     }
   }
 
@@ -158,9 +158,9 @@ function ResultsPlaceholder(props) {
 
 ResultsPlaceholder.propTypes = {
   /**
-   * Flag denoting that an AJAX call is/not in progress.
+   * Flag determining if an AJAX call may be initiated.
    */
-  asyncPending: PropTypes.bool,
+  asyncReady: PropTypes.bool,
 
   /**
    * Function to get results from the REST API.
@@ -211,7 +211,7 @@ ResultsPlaceholder.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
-  asyncPending: state.async.asyncPending,
+  asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
   results: state.search.results,
   resultCount: state.search.resultCount,
   searchID: state.search.searchID,

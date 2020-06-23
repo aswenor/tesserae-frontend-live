@@ -80,7 +80,7 @@ const localTheme = {
  *   );
  */
 function LanguageSelectMenu(props) {
-  const { availableLanguages, fetchLanguages, language,
+  const { asyncReady, availableLanguages, fetchLanguages, language,
           sideBarOpen, toggleSideBar, updateLanguage } = props;
   
   /** CSS styles and global theme. */
@@ -134,7 +134,7 @@ function LanguageSelectMenu(props) {
 
   // Get the available languages from the REST API if none are found.
   if (availableLanguages.length === 0) {
-    fetchLanguages();
+    fetchLanguages(asyncReady);
   }
 
   if (toggleSideBar) {
@@ -276,6 +276,11 @@ function LanguageSelectMenu(props) {
 
 LanguageSelectMenu.propTypes = {
   /**
+   * Flag determining if an AJAX call may be initiated.
+   */
+  asyncReady: PropTypes.bool,
+
+  /**
    * Languages exposed by the REST API.
    */
   availableLanguages: PropTypes.arrayOf(PropTypes.string),
@@ -304,8 +309,9 @@ LanguageSelectMenu.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
+  asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
   availableLanguages: state.corpus.availableLanguages,
-  language: state.corpus.language
+  language: state.corpus.language,
 });
 
 

@@ -53,7 +53,8 @@ const availableDistanceBases = [
  *   );
  */
 function DistanceBasisInput(props) {
-  const { distanceBasis, updateSearchParameters } = props;
+  const { clearSearchMetadata, distanceBasis,
+          updateSearchParameters } = props;
 
   const handleSelect = event => {
     clearSearchMetadata();

@@ -40,7 +40,8 @@ import { clearSearchMetadata, updateSearchParameters } from '../../../state/sear
  *   );
  */
 function ScoreBasisInput(props) {
-  const { scoreBasis, updateSearchParameters } = props;
+  const { clearSearchMetadata, scoreBasis,
+          updateSearchParameters } = props;
 
   const handleChange = (event, newScoreBasis) => {
     clearSearchMetadata();

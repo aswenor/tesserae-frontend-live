@@ -52,7 +52,7 @@ const availableFeatures = [
  *   );
  */
 function FeatureInput(props) {
-  const { feature, updateSearchParameters } = props;
+  const { clearSearchMetadata, feature, updateSearchParameters } = props;
 
   const handleSelect = event => {
     clearSearchMetadata();
@@ -85,7 +85,7 @@ function FeatureInput(props) {
       >
         <Select
           value={feature}
-          variant="filled"
+          variant="outlined"
         >
           {features}
         </Select>

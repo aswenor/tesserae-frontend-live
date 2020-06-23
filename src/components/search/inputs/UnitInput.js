@@ -40,11 +40,11 @@ import { clearSearchMetadata, updateSearchParameters } from '../../../state/sear
  *   );
  */
 function UnitInput(props) {
-  const { unit, updateSearchParameters } = props;
+  const { clearSearchMetadata, unit, updateSearchParameters } = props;
 
   const handleChange = (event, newUnit) => {
-    clearSearchMetadata();
     updateSearchParameters({unitType: newUnit});
+    clearSearchMetadata();
   };
 
   return (

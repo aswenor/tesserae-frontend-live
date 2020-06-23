@@ -11,8 +11,8 @@
  * @requires NPM:react-redux
  * @requires NPM:@material-ui/core
  * @requires NPM:@material-ui/icons
- * @requires ../AdvancedOptionsGroup
- * @requires ../TextSelectGroup
+ * @requires ./AdvancedOptionsGroup
+ * @requires ./TextSelectGroup
  * @requires ../../api/corpus
  */
 import React from 'react';
@@ -37,7 +37,8 @@ import TextSelectGroup from './TextSelectGroup';
 
 import { fetchTexts } from '../../api/corpus';
 import { fetchStoplist, initiateSearch } from '../../api/search';
-import { updateSourceText, updateTargetText } from '../../state/search';
+import { clearResults, clearSearchMetadata, updateSourceText,
+         updateTargetText } from '../../state/search';
 
 
 const useStyles = makeStyles(theme => ({
@@ -172,13 +173,28 @@ const ExpansionPanelDetails = withStyles((theme) => ({
  *   );
  */
 function SearchParametersForm(props) {
-  const { asyncPending, availableTexts, fetchStoplist, fetchTexts,
-          initiateSearch, language, searchParameters, sourceText,
-          stopwords, targetText, updateSource, updateTarget } = props;
+  const { asyncReady, availableTexts, clearResults, clearSearchMetadata,
+          fetchStoplist, fetchTexts, initiateSearch, language, searchNeeded,
+          searchParameters, sourceText, stopwords, targetText, updateSource,
+          updateTarget } = props;
 
   const classes = useStyles();
 
-  const shouldFetchTexts = !asyncPending && availableTexts.length === 0;
+  const clearAndInitiate = () => {
+    if (searchNeeded) {
+      clearResults();
+      initiateSearch(sourceText, targetText, searchParameters,
+                    stopwords, asyncReady);
+    }
+  };
+
+  const handleTextChange = (text, updateFunc) => {
+    console.log(text);
+    clearSearchMetadata();
+    updateFunc(text);
+  }
+
+  const shouldFetchTexts = asyncReady && availableTexts.length === 0;
   const disableSearch = stopwords.length === 0
                         || sourceText.object_id === undefined
                         || targetText.object_id === undefined;
@@ -187,7 +203,7 @@ function SearchParametersForm(props) {
     const basis = searchParameters.stoplistBasis === 'corpus'
                   ? language
                   : [sourceText.object_id, targetText.object_id];
-    fetchStoplist(searchParameters.feature, searchParameters.stoplist, basis, asyncPending);
+    fetchStoplist(searchParameters.feature, searchParameters.stoplist, basis, asyncReady);
   }
 
   // Most of the content here is the Material-UI Grid model to handle spacing
@@ -223,10 +239,10 @@ function SearchParametersForm(props) {
                 xs={12}
               >
                 <TextSelectGroup
-                  handleTextChange={updateSource}
-                  loading={asyncPending}
+                  handleTextChange={(event, value) => handleTextChange(value, updateSource)}
+                  loading={asyncReady}
                   loadingText={`Loading ${language} corpus`}
-                  onOpen={() => fetchTexts(language, shouldFetchTexts)}
+                  onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
                   selection={sourceText}
                   textList={availableTexts}
                   title="Source Text"
@@ -237,8 +253,8 @@ function SearchParametersForm(props) {
                 xs={12}
               >
                 <TextSelectGroup
-                  handleTextChange={updateTarget}
-                  loading={asyncPending}
+                  handleTextChange={(event, value) => handleTextChange(value, updateTarget)}
+                  loading={asyncReady}
                   loadingText={`Loading ${language} corpus`}
                   onOpen={() => fetchTexts(language, shouldFetchTexts)}
                   selection={targetText}
@@ -253,7 +269,7 @@ function SearchParametersForm(props) {
                 <Fab
                   color="primary"
                   disabled={disableSearch}
-                  onClick={() => initiateSearch(sourceText, targetText, searchParameters, stopwords, asyncPending)}
+                  onClick={clearAndInitiate}
                   variant="extended"
                 >
                   <SearchIcon /> Search
@@ -290,14 +306,24 @@ function SearchParametersForm(props) {
 
 SearchParametersForm.propTypes = {
   /**
-   * Flag indicating that an AJAX call is in progress.
+   * Flag determining if an AJAX call may be initiated.
    */
-  asyncPending: PropTypes.bool,
+  asyncReady: PropTypes.bool,
 
   /**
    * List of texts exposed by the REST API.
    */
   availableTexts: PropTypes.arrayOf(PropTypes.object),
+
+  /**
+   * Function to clear out an existing search.
+   */
+  clearResults: PropTypes.func,
+
+  /**
+   * Function to clear out search ID and status.
+   */
+  clearSearchMetadata: PropTypes.func,
   
   /**
    * Function to retrieve texts from the REST API.
@@ -328,7 +354,7 @@ SearchParametersForm.propTypes = {
    * The currently selected target text.
    */
   targetText: PropTypes.object,
-  
+
   /**
    * Function to select a new source text from the dropdown menu.
    */
@@ -349,9 +375,10 @@ SearchParametersForm.propTypes = {
  */
 const mapStateToProps = (state) => {
   return {
-    asyncPending: state.async.asyncPending,
+    asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
     availableTexts: state.corpus.availableTexts,
     language: state.corpus.language,
+    searchNeeded: state.search.searchID === '',
     searchParameters: state.search.searchParameters,
     sourceText: state.search.sourceText,
     stopwords: state.search.stopwords,
@@ -362,14 +389,16 @@ const mapStateToProps = (state) => {
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
+  clearResults: clearResults,
+  clearSearchMetadata: clearSearchMetadata,
   fetchTexts: fetchTexts,
   fetchStoplist: fetchStoplist,
   initiateSearch: initiateSearch,
-  updateSource: (event, text) => updateSourceText(text),
-  updateTarget: (event, text) => updateTargetText(text)
+  updateSource: updateSourceText,
+  updateTarget: updateTargetText
 }, dispatch);
 
 

@@ -21,8 +21,8 @@ import FormControl from '@material-ui/core/FormControl';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { fetchStoplist } from '../../../api/search';
-import { clearSearchMetadata, updateSearchParameters, updateStopwords } from '../../../state/search';
+import { clearSearchMetadata, clearStopwords,
+         updateSearchParameters } from '../../../state/search';
 
 
 const sizes = [0, 50, 100, 150, 200];
@@ -43,16 +43,12 @@ const sizes = [0, 50, 100, 150, 200];
  *   );
  */
 function StoplistInput(props) {
-  const { asyncPending, feature, fetchStoplist, language, sourceText, stoplist,
-          stoplistBasis, targetText, clearSearchMetadata, updateSearchParameters,
-          updateStopwords } = props;
+  const { clearSearchMetadata, clearStopwords, updateSearchParameters } = props;
 
   const handleChange = (event, newStoplist) => {
-    clearSearchMetadata();
-    updateStopwords();
     updateSearchParameters({stoplist: `${newStoplist}`});
-    const basis = stoplistBasis === 'corpus' ? language : [sourceText.object_id, targetText.object_id];
-    fetchStoplist(feature, stoplist, basis, asyncPending)
+    clearStopwords();
+    clearSearchMetadata();
   };
 
   const marks = sizes.map(item => ({
@@ -87,6 +83,16 @@ function StoplistInput(props) {
 
 StoplistInput.propTypes = {
   /**
+   * Function to clear the search ID and status.
+   */
+  clearSearchMetadata: PropTypes.func,
+
+  /**
+   * Function to clear the current stoplist.
+   */
+  clearStopwords: PropTypes.func,
+
+  /**
    * Stoplist currently selected.
    */
   stoplist: PropTypes.string,
@@ -105,28 +111,19 @@ StoplistInput.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 function mapStateToProps(state) {
-  return {
-    asyncPending: state.async.asyncPending,
-    feature: state.search.searchParameters.feature,
-    language: state.search.language,
-    sourceText: state.search.sourceText,
-    stoplist: state.search.stoplist,
-    stoplistBasis: state.search.stoplistBasis,
-    targetText: state.search.targetText
-   };
+  return {};
 }
 
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    fetchStoplist: fetchStoplist,
     clearSearchMetadata: clearSearchMetadata,
-    updateSearchParameters: updateSearchParameters,
-    updateStopwords: updateStopwords,
+    clearStopwords: clearStopwords,
+    updateSearchParameters: updateSearchParameters
   }, dispatch);
 }
 

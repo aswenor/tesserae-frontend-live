@@ -22,8 +22,8 @@ import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
-import { fetchStoplist } from '../../../api/search';
-import { clearSearchMetadata, updateSearchParameters, updateStopwords } from '../../../state/search';
+import { clearSearchMetadata, clearStopwords,
+         updateSearchParameters } from '../../../state/search';
 
 
 /**
@@ -52,16 +52,13 @@ const availableStoplistBases = [
  *   );
  */
 function StoplistBasisInput(props) {
-  const { asyncPending, feature, fetchStoplist, language, sourceText, stoplist,
-          stoplistBasis, targetText, clearSearchMetadata, updateStopwords,
+  const { clearSearchMetadata, clearStopwords, stoplistBasis,
           updateSearchParameters } = props;
 
   const handleSelect = event => {
+    updateSearchParameters(event.target.value);
+    clearStopwords();
     clearSearchMetadata();
-    updateStopwords();
-    updateSearchParameters({stoplistBasis: event.target.value});
-    const basis = event.target.value === 'corpus' ? language : [sourceText.object_id, targetText.object_id];
-    fetchStoplist(feature, stoplist, basis, asyncPending)
   };
 
   const stoplistBases = availableStoplistBases.map(item => {
@@ -102,6 +99,11 @@ function StoplistBasisInput(props) {
 
 StoplistBasisInput.propTypes = {
   /**
+   * Function to clear the current stoplist.
+   */
+  clearStowords: PropTypes.func,
+
+  /**
    * Stoplist basis currently selected.
    */
   stoplistBasis: PropTypes.string,
@@ -121,27 +123,20 @@ StoplistBasisInput.propTypes = {
  */
 function mapStateToProps(state) {
   return {
-    asyncPending: state.async.asyncPending,
-    feature: state.search.searchParameters.feature,
-    language: state.search.language,
-    sourceText: state.search.sourceText,
-    stoplist: state.search.searchParameters.stoplist,
-    stoplistBasis: state.search.searchParameters.stoplistBasis,
-    targetText: state.search.targetText
+    stoplistBasis: state.search.searchParameters.stoplistBasis
   };
 }
 
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    fetchStoplist: fetchStoplist,
     clearSearchMetadata: clearSearchMetadata,
+    clearStopwords: clearStopwords,
     updateSearchParameters: updateSearchParameters,
-    updateStopwords: updateStopwords,
   }, dispatch);
 }
 
