@@ -47,6 +47,7 @@ export const DEFAULT_STATE = {
  */
 const CLEAR_RESULTS = 'CLEAR_RESULTS';
 const CLEAR_SEARCH_METADATA = 'CLEAR_SEARCH_METADATA';
+const CLEAR_STOPWORDS = 'CLEAR_STOPWORDS';
 const RESET_SEARCH = 'RESET_SEARCH';
 const UPDATE_RESULTS = 'UPDATE_RESULTS';
 const UPDATE_SEARCH_ID = 'UPDATE_SEARCH_ID';
@@ -78,7 +79,7 @@ export function clearResults() {
       resultsCount: DEFAULT_STATE.resultsCount,
       searchID: DEFAULT_STATE.searchID,
       searchProgress: DEFAULT_STATE.searchProgress,
-      searchStatus: DEFAULT_STATE.searchStatus
+      searchStatus: DEFAULT_STATE.searchStatus,
     }
   }
 }
@@ -95,9 +96,24 @@ export function clearSearchMetadata() {
     payload: {
       searchID: DEFAULT_STATE.searchID,
       searchProgress: DEFAULT_STATE.searchProgress,
-      searchStatus: DEFAULT_STATE.searchStatus
+      searchStatus: DEFAULT_STATE.searchStatus,
     }
   };
+}
+
+
+/**
+ * Clear the current stoplist.
+ * 
+ * @returns {Object} A redux-style action.
+ */
+export function clearStopwords() {
+  return {
+    type: CLEAR_STOPWORDS,
+    payload: {
+      stopwords: DEFAULT_STATE.stopwords
+    }
+  }
 }
 
 
@@ -252,6 +268,9 @@ export function updateTargetText(targetText = DEFAULT_STATE.targetText) {
  */
 export function searchReducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
+    case CLEAR_RESULTS:
+    case CLEAR_SEARCH_METADATA:
+    case CLEAR_STOPWORDS:
     case RESET_SEARCH:
     case UPDATE_RESULTS:
     case UPDATE_SEARCH_ID:
