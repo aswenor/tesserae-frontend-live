@@ -31,10 +31,10 @@ const REST_API = process.env.REACT_APP_REST_API_URL;
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function fetchLanguages(pending) {
+export function fetchLanguages(asyncReady) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
-    if (!pending) {
+    if (asyncReady) {
       // Update app state to show there is a new async action.
       dispatch(initiateAsync());
       

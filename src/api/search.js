@@ -55,10 +55,10 @@ function normalizeScores(parallels) {
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function fetchStoplist(feature, stopwords, stoplistBasis, pending) {
+export function fetchStoplist(feature, stopwords, stoplistBasis, asyncReady) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
-    if (!pending) {
+    if (asyncReady) {
       // Update app state to show there is a new async action.
       dispatch(initiateAsync());
 
@@ -111,10 +111,10 @@ export function fetchStoplist(feature, stopwords, stoplistBasis, pending) {
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function initiateSearch(source, target, params, stopwords, pending) {
+export function initiateSearch(source, target, params, stopwords, asyncReady) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
-    if (!pending) {
+    if (asyncReady) {
       // Update app state to show there is a new async action.
       dispatch(updateSearchID());
       dispatch(updateResults());
@@ -185,10 +185,10 @@ export function initiateSearch(source, target, params, stopwords, pending) {
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function getSearchStatus(searchID, pending) {
+export function getSearchStatus(searchID, asyncReady) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
-    if (!pending) {
+    if (asyncReady) {
       // Update app state to show there is a new async action.
       dispatch(initiateAsync());
 
@@ -224,10 +224,10 @@ export function getSearchStatus(searchID, pending) {
  * @param {boolean} pending True if any AJAX calls are in progress.
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function fetchResults(searchID, pending) {
+export function fetchResults(searchID, asyncReady) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
-    if (!pending) {
+    if (asyncReady) {
       // Update app state to show there is a new async action.
       dispatch(initiateAsync());
 
