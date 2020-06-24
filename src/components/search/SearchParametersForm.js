@@ -199,7 +199,7 @@ function SearchParametersForm(props) {
                         || sourceText.object_id === undefined
                         || targetText.object_id === undefined;
 
-  if (stopwords.length === 0) {
+  if (language !== '' && stopwords.length === 0) {
     const basis = searchParameters.stoplistBasis === 'corpus'
                   ? language
                   : [sourceText.object_id, targetText.object_id];
