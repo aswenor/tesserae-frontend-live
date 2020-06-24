@@ -133,12 +133,12 @@ function ResultsPlaceholder(props) {
          :  <Box
               className={classes.spacer}
             >
-              <CircularProgress
+              {/* <CircularProgress
                 className={classes.icon}
                 thickness={2.5}
                 size={'20vh'}
               />
-              <br />
+              <br /> */}
               <Typography
                 align="left"
                 className={classes.text}
