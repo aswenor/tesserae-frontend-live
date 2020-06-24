@@ -31,7 +31,7 @@ import Popper from '@material-ui/core/Popper';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 
 import createTessTheme from '../../theme';
 import { fetchLanguages, updateLanguage } from '../../api/corpus';
@@ -147,7 +147,7 @@ function LanguageSelectMenu(props) {
         size="small"
         variant="contained"
       >
-        <MenuIcon />
+        <MenuOpenIcon />
       </Button>
     );
   }
