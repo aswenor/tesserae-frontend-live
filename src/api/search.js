@@ -132,6 +132,18 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
           responseType: 'json',
           cacheControl: 'no-store',
           data : {
+            method: {
+              name: 'original',
+              feature: params.feature,
+              stopwords: stopwords,
+              freq_basis: params.frequencyBasis,
+              max_distance: parseInt(params.maxDistance, 10),
+              distance_basis: params.distanceBasis
+            },
+            page_number: 0,
+            per_page: 100,
+            sort_by: 'score',
+            sort_order: 'descending',
             source: {
               object_id: source.object_id,
               units: params.unitType
@@ -140,14 +152,6 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
               object_id: target.object_id,
               units: params.unitType
             },
-            method: {
-              name: 'original',
-              feature: params.feature,
-              stopwords: stopwords,
-              freq_basis: params.frequencyBasis,
-              max_distance: parseInt(params.maxDistance, 10),
-              distance_basis: params.distanceBasis
-            }
           }
       })
       .then(response => {
@@ -221,10 +225,16 @@ export function getSearchStatus(searchID, asyncReady) {
  * Fetch available texts of the selected language from the REST API.
  * 
  * @param {String} searchID The ID of the search obained when it was initiated.
- * @param {boolean} pending True if any AJAX calls are in progress.
+ * @param {boolean} asyncReady True if the app is ready to send a request.
+ * @param {number} currentPage The page of results to fetch.
+ * @param {number} rowsPerPage The number of rows to fetch.
+ * @param {String} sortLabel The table header to sort by.
+ * @param {String} sortOrder 'ascending' or 'descending'
  * @returns {function} Callback that calls dispatch to handle communication.
  */
-export function fetchResults(searchID, asyncReady) {
+export function fetchResults(searchID, asyncReady, currentPage = 0,
+                             rowsPerPage = 100, sortLabel = 'score',
+                             sortOrder = 'descending') {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (asyncReady) {
@@ -238,7 +248,14 @@ export function fetchResults(searchID, asyncReady) {
           url: `${REST_API}/parallels/${searchID}`,
           crossDomain: true,
           responseType: 'json',
-          cacheControl: 'no-store'
+          cacheControl: 'no-store',
+          data: {
+            page_number: currentPage,
+            per_page: rowsPerPage,
+            sort_by: sortLabel,
+            sort_order: sortOrder,
+
+          }
       })
       .then(response => {
         // On success, update the global state and return the results.

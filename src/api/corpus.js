@@ -72,7 +72,7 @@ export function fetchLanguages(asyncReady) {
         dispatch(clearAsync());
       });
     }
-  }
+  };
 }
 
 
@@ -130,5 +130,44 @@ export function fetchTexts(language, shouldFetch) {
         dispatch(clearAsync());
       });
     }
-  }
+  };
+}
+
+
+export function ingestText(tessFile, metadata) {
+  return dispatch => {
+    axios({
+
+    }).then(response => {
+
+    }).error(error => {
+
+    });
+  };
+}
+
+
+export function updateTextMetadata(textID, metadata) {
+  return dispatch => {
+    axios({
+
+    }).then(response => {
+
+    }).error(error => {
+
+    });
+  };
+}
+
+
+export function deleteText(textIDs) {
+  return dispatch => {
+    axios({
+
+    }).then(response => {
+
+    }).error(error => {
+
+    });
+  };
 }
