@@ -31,9 +31,7 @@ import { updateResults, updateSearchID, updateSearchStatus,
 const REST_API = process.env.REACT_APP_REST_API_URL;
 
 
-function normalizeScores(parallels) {
-  const maxScore = Math.max(maxBy(parallels, x => x.score).score, 10);
-  
+function normalizeScores(parallels, maxScore = 10) {
   const normedParallels = parallels.map(item => {
     const newScore = Math.round((item.score * 10) / maxScore);
     return {
@@ -166,8 +164,11 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
         }
 
         if (response.data.parallels !== undefined) {
-          const normedParallels = normalizeScores(response.data.parallels);
-          dispatch(updateResults(normedParallels));
+          const maxScore = response.data.max_score;
+          const nResults = response.data.total_count;
+          const normedParallels = normalizeScores(response.data.parallels,
+                                                  maxScore >= 10 ? maxScore : 10);
+          dispatch(updateResults(normedParallels, nResults));
         }
         
         return searchID;
@@ -229,12 +230,12 @@ export function getSearchStatus(searchID, asyncReady) {
  * @param {number} currentPage The page of results to fetch.
  * @param {number} rowsPerPage The number of rows to fetch.
  * @param {String} sortLabel The table header to sort by.
- * @param {String} sortOrder 'ascending' or 'descending'
+ * @param {number} sortOrder 1 (asc) or -1 (desc)
  * @returns {function} Callback that calls dispatch to handle communication.
  */
 export function fetchResults(searchID, asyncReady, currentPage = 0,
                              rowsPerPage = 100, sortLabel = 'score',
-                             sortOrder = 'descending') {
+                             sortOrder = -1) {
   return dispatch => {
     // Only kick off a request to the REST API if no other requests are active.
     if (asyncReady) {
@@ -253,7 +254,7 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
             page_number: currentPage,
             per_page: rowsPerPage,
             sort_by: sortLabel,
-            sort_order: sortOrder,
+            sort_order: sortOrder === -1 ? 'descending' : 'ascending',
 
           }
       })
@@ -261,9 +262,12 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
         // On success, update the global state and return the results.
         // Because of strange design constraints and group consensus, normalize
         // all scores to be in range [0, 10].
-        const normedParallels = normalizeScores(response.data.parallels);
+        const maxScore = response.data.max_score;
+        const nResults = response.data.total_count;
+        const normedParallels = normalizeScores(response.data.parallels,
+                                                maxScore >= 10 ? maxScore : 10);
         dispatch(clearAsync());
-        dispatch(updateResults(normedParallels, normedParallels.length));
+        dispatch(updateResults(normedParallels, nResults));
         return normedParallels;
       })
       .catch(error => {
