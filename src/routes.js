@@ -12,6 +12,7 @@
  */
 import Search from './components/search';
 import Library from './components/library';
+import CorpusManager from './components/corpus_manager';
 
 
 /**
@@ -26,6 +27,7 @@ const routes = [
    * @field {React.Component} component The component to render.
    */
   {link: "/", name: "Search", component: Search},
+  {link: "/corpus-manager", name: "Corpus Management", component: CorpusManager}
   // {link: "/corpora", name: "Corpora", component: Library}
 ];
 
