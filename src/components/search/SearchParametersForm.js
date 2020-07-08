@@ -240,7 +240,7 @@ function SearchParametersForm(props) {
               >
                 <TextSelectGroup
                   handleTextChange={(event, value) => handleTextChange(value, updateSource)}
-                  loading={asyncReady}
+                  loading={availableTexts.length === 0}
                   loadingText={`Loading ${language} corpus`}
                   onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
                   selection={sourceText}
@@ -254,7 +254,7 @@ function SearchParametersForm(props) {
               >
                 <TextSelectGroup
                   handleTextChange={(event, value) => handleTextChange(value, updateTarget)}
-                  loading={asyncReady}
+                  loading={availableTexts.length === 0}
                   loadingText={`Loading ${language} corpus`}
                   onOpen={() => fetchTexts(language, shouldFetchTexts)}
                   selection={targetText}
