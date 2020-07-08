@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Fab from '@material-ui/core/Fab';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -89,7 +90,7 @@ function EditForm(props) {
         <FormControlLabel
           control={
             <TextInput
-              onChange={(event) => onChangeMetadata('author', event.target.value)}
+              onChange={(event) => updateTextMetadata('author', event.target.value)}
               required
               value={newMetadata.author}
             />
@@ -104,7 +105,7 @@ function EditForm(props) {
         <FormControlLabel
           control={
             <TextInput
-              onChange={(event) => onChangeMetadata('title', event.target.value)}
+              onChange={(event) => updateMetadata('title', event.target.value)}
               required
               value={newMetadata.title}
             />
@@ -119,7 +120,7 @@ function EditForm(props) {
         <FormControlLabel
           control={
             <TextInput
-              onChange={(event) => onChangeMetadata('year', event.target.value)}
+              onChange={(event) => updateMetadata('year', event.target.value)}
               type="number"
               value={newMetadata.author}
             />
@@ -134,7 +135,7 @@ function EditForm(props) {
         <FormControlLabel
           control={
             <Select
-              onChange={(event) => onChangeMetadata('is_prose', event.target.value === 'prose')}
+              onChange={(event) => updateMetadata('is_prose', event.target.value === 'prose')}
               value={newMetadata.title}
             >
               <MenuItem value='poetry'>Poetry</MenuItem>
@@ -143,6 +144,17 @@ function EditForm(props) {
           }
           label="Genre"
         />
+      </FormGroup>
+      <FormGroup
+        aria-label="submit-button"
+        row
+      >
+        <Fab
+          disabled={!submitReady}
+          onClick={() => updateTextMetadata(newMetadata)}
+        >
+          {icon} Submit
+        </Fab>
       </FormGroup>
       </FormControl>
     </div>
