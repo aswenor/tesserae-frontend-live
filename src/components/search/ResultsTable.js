@@ -28,6 +28,8 @@ import ResultsPlaceholder from './ResultsPlaceholder';
 import ResultsTableBody from './ResultsTableBody';
 import ResultsTableHeader from './ResultsTableHeader';
 
+import { fetchResults } from '../../api/search';
+
 
 /** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
@@ -50,13 +52,21 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function ResultsTable(props) {
-  const { results, resultsCount } = props;
+  const { asyncReady, results, resultsCount, searchID } = props;
   
   /** Managers for UI sorting state and pagination. */
-  const [ sortHeader, setSortHeader ] = useState('score');
-  const [ sortOrder, setSortOrder ] = useState(1);
-  const [ currentPage, setCurrentPage ] = useState(0);
-  const [ rowsPerPage, setRowsPerPage ] = useState(100);
+  const [ tableMeta, setTableMeta ] = useState({
+    currentPage: 0,
+    rowsPerPage: 100,
+    sortHeader: 'score',
+    sortOrder: -1
+  });
+
+  const handleTableChanges = (label, value) => {
+    const newMeta = {...tableMeta, [label]: value};
+    setTableMeta(newMeta);
+    fetchResults(searchID, asyncReady, ...newMeta);
+  };
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
@@ -65,16 +75,16 @@ function ResultsTable(props) {
   const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
 
   /** Get the indices of results to display in the table. */
-  const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, resultsCount);
+  const start = tableMeta.currentPage * tableMeta.rowsPerPage;
+  const end = Math.min(start + tableMeta.rowsPerPage, resultsCount);
 
   /** Get the results entries by sorting and slicing. */
   const displayResults = results.sort((a, b) => {
-    if (b[sortHeader] < a[sortHeader]) {
-      return -1 * sortOrder;
+    if (b[tableMeta.sortHeader] < a[tableMeta.sortHeader]) {
+      return -1 * tableMeta.sortOrder;
     }
-    else if (b[sortHeader] > a[sortHeader]) {
-      return 1 * sortOrder;
+    else if (b[tableMeta.sortHeader] > a[tableMeta.sortHeader]) {
+      return 1 * tableMeta.sortOrder;
     }
     else {
       return 0;
@@ -103,10 +113,10 @@ function ResultsTable(props) {
               >
                 <ResultsTableHeader
                   labels={headerLabels}
-                  sortHeader={sortHeader}
-                  sortOrder={sortOrder}
-                  updateSortHeader={setSortHeader}
-                  updateSortOrder={setSortOrder}
+                  sortHeader={tableMeta.sortHeader}
+                  sortOrder={tableMeta.sortOrder}
+                  updateSortHeader={value => handleTableChanges('sortHeader', value)}
+                  updateSortOrder={value => handleTableChanges('sortOrder', value)}
                 />
                 <ResultsTableBody results={displayResults} />
               </Table>
@@ -116,10 +126,10 @@ function ResultsTable(props) {
               component="div"
               count={results.length}
               labelRowsPerPage="Results per page:"
-              onChangePage={(event, value) => setCurrentPage(value)}
-              onChangeRowsPerPage={(event) => setRowsPerPage(event.target.value)}
-              page={currentPage}
-              rowsPerPage={rowsPerPage}
+              onChangePage={(event, value) => handleTableChanges('currentPage', value)}
+              onChangeRowsPerPage={(event) => handleTableChanges('rowsPerPage', event.target.value)}
+              page={tableMeta.currentPage}
+              rowsPerPage={tableMeta.rowsPerPage}
               rowsPerPageOptions={[50, 100, 200, 500]}
             />
           </div>
@@ -130,6 +140,11 @@ function ResultsTable(props) {
 
 
 ResultsTable.propTypes = {
+  /**
+   * Whether or not an async request may be initiated.
+   */
+  asyncReady: PropTypes.bool,
+
   /**
    * The number of results returned byt this search.
    */
@@ -175,7 +190,12 @@ ResultsTable.propTypes = {
        */
       target_tag: PropTypes.string,
     })
-  )
+  ),
+
+  /**
+   * Database ID of the search.
+   */
+  searchID: PropTypes.string
 }
 
 
@@ -186,8 +206,10 @@ ResultsTable.propTypes = {
  * @returns {object} Members of the global state to provide as props.
  */
 const mapStateToProps = state => ({
+  asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
   results: state.search.results,
   resultsCount: state.search.resultsCount,
+  searchID: state.search.searchID
 });
 
 
