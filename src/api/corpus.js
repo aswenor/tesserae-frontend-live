@@ -160,7 +160,7 @@ export function updateTextMetadata(textID, metadata) {
 }
 
 
-export function deleteText(textIDs) {
+export function deleteTexts(textIDs) {
   return dispatch => {
     axios({
 
