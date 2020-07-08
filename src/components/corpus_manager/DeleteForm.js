@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import connect from 'react-redux';
-import { findIndex, differenceBy, intersectionBy } from 'lodash';
+import { differenceBy, intersectionBy } from 'lodash';
 
 import makeStyles from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 
+import DeleteFormModal from './DeleteFormModal';
 import DeleteFormTable from './DeleteFormTable';
 import { deleteTexts } from '../../api/corpus';
 
@@ -40,6 +35,7 @@ function DeleteForm(props) {
   const [ selected, setSelected ] = useState([]);
   const [ leftTexts, setLeftTexts] = useState(availableTexts);
   const [ rightTexts, setRightTexts ] = useState([]);
+  const [ modalOpen, setModalOpen ] = useState(false);
 
   const leftSelected = intersectionBy(selected, leftTexts, 'object_id');
   const rightSelected = intersectionBy(selected, rightTexts, 'object_id');
@@ -82,75 +78,91 @@ function DeleteForm(props) {
     setRightTexts([]);
   };
 
+  const handleDelete = () => {
+    deleteTexts(rightTexts.map(x => x.object_id));
+    setModalOpen(false);
+  };
+
   return (
-    <Grid container
-      spacing={2}
-    >
-      <Grid item>
-        <DeleteFormTable
-          onSelect={handleSelect}
-          selected={leftSelected}
-          texts={leftTexts}
-          title={"In Corpus"}
+    <div>
+      <Grid container
+        spacing={2}
+      >
+        <Grid item>
+          <DeleteFormTable
+            onSelect={handleSelect}
+            selected={leftSelected}
+            texts={leftTexts}
+            title={"In Corpus"}
+          />
+        </Grid>
+        <Grid item>
+          <Button
+            aria-label="move all right"
+            className={classes.button}
+            disabled={leftTexts.length === 0}
+            onClick={handleMoveAllRight}
+            size="small"
+            variant="outlined"
+          >
+            ≫
+          </Button>
+          <Button
+            aria-label="move selected right"
+            className={classes.button}
+            disabled={leftSelected.length === 0}
+            onClick={handleMoveSelectedRight}
+            size="small"
+            variant="outlined"
+          >
+            &gt;
+          </Button>
+          <Button
+            aria-label="move selected left"
+            className={classes.button}
+            disabled={rightSelected.length === 0}
+            onClick={handleMoveSelectedLeft}
+            size="small"
+            variant="outlined"
+          >
+            &lt;
+          </Button>
+          <Button
+            aria-label="move all left"
+            className={classes.button}
+            disabled={rightTexts.length === 0}
+            onClick={handleMoveAllLeft}
+            size="small"
+            variant="outlined"
+          >
+            ≪
+          </Button>
+          <Fab
+            aria-label="delete-texts"
+            disabled={rightTexts.length === 0}
+            onClick={() => deleteTexts(rightTexts.map(x =>x.object_id))}
+          >
+            Delete
+          </Fab>
+        </Grid>
+        <Grid item>
+          <DeleteFormTable
+            onSelect={handleSelect}
+            selected={rightSelected}
+            texts={rightTexts}
+            title="To Be Removed"
+          />
+        </Grid>
+      </Grid>
+      { modalOpen &&
+        <DeleteFormModal
+          deleteCount={rightTexts.length}
+          handleClose={() => setModalOpen(false)}
+          handleDelete={handleDelete}
+          open={modalOpen}
         />
-      </Grid>
-      <Grid item>
-        <Button
-          aria-label="move all right"
-          className={classes.button}
-          disabled={leftTexts.length === 0}
-          onClick={handleMoveAllRight}
-          size="small"
-          variant="outlined"
-        >
-          ≫
-        </Button>
-        <Button
-          aria-label="move selected right"
-          className={classes.button}
-          disabled={leftSelected.length === 0}
-          onClick={handleMoveSelectedRight}
-          size="small"
-          variant="outlined"
-        >
-          &gt;
-        </Button>
-        <Button
-          aria-label="move selected left"
-          className={classes.button}
-          disabled={rightSelected.length === 0}
-          onClick={handleMoveSelectedLeft}
-          size="small"
-          variant="outlined"
-        >
-          &lt;
-        </Button>
-        <Button
-          aria-label="move all left"
-          className={classes.button}
-          disabled={rightTexts.length === 0}
-          onClick={handleMoveAllLeft}
-          size="small"
-          variant="outlined"
-        >
-          ≪
-        </Button>
-        <Fab
-          disabled={rightTexts.length === 0}
-          onClick={() => deleteTexts(rightTexts.map(x =>x.object_id))}
-        >
-          Delete
-        </Fab>
-      </Grid>
-      <Grid item>
-        <DeleteFormTable
-          onSelect={handleSelect}
-          selected={rightSelected}
-          texts={rightTexts}
-          title="To Be Removed"
-        />
-      </Grid>
-    </Grid>
+      }
+    </div>
   );
 }
 
