@@ -17,7 +17,9 @@
 import React, { useState } from 'react';
 
 import PageContainer from '../common/PageContainer';
-import ReactivePanels from './ReactivePanels';
+import HorizontalResizePanels from '../common/HorizontalResizePanels';
+import ResultsTable from './ResultsTable';
+import SearchParametersForm from './SearchParametersForm';
 
 
 /**
@@ -39,9 +41,11 @@ function Search(props) {
         showLanguages
         toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
       >
-        <ReactivePanels
+        <HorizontalResizePanels
+          leftChild={<SearchParametersForm />}
           leftMinWidth={20}
           open={isOpen}
+          rightChild={<ResultsTable />}
           rightMinWidth={35}
         />
       </PageContainer>
