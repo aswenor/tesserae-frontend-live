@@ -29,9 +29,6 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
 
-import ResultsTable from './ResultsTable';
-import SearchParametersForm from './SearchParametersForm';
-
 import { getTotalWidth } from '../../utils';
 
 
@@ -170,8 +167,8 @@ ReactivePanel.propTypes = {
  *     </ReactivePanels>
  *   );
  */
-function ReactivePanels(props) {
-  const { leftMinWidth, open, rightMinWidth } = props;
+function HorizontalResizePanels(props) {
+  const { leftChild, leftMinWidth, open, rightChild, rightMinWidth } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
@@ -290,7 +287,7 @@ function ReactivePanels(props) {
         minWidth={leftMinWidthVal}
         width={leftWidthVal}
       >
-        <SearchParametersForm />
+        {leftChild}
       </ReactivePanel>
       {open &&
         <Hidden only={['xs', 'sm']}>
@@ -305,14 +302,19 @@ function ReactivePanels(props) {
         minWidth={rightMinWidthVal}
         width={rightWidthVal}
       >
-        <ResultsTable />
+        {rightChild}
       </ReactivePanel>
     </Box>
   );
 }
 
 
-ReactivePanels.propTypes = {
+HorizontalResizePanels.propTypes = {
+  /**
+   * Component to display on the left panel.
+   */
+  leftChild: PropTypes.element,
+  
   /**
    * Minimum width of the left panel as a percent between 0 and 100.
    */
@@ -322,6 +324,11 @@ ReactivePanels.propTypes = {
    * Whether or not the left panel is open, controlled by LanguagesAppBar.
    */
   open: PropTypes.bool,
+
+  /**
+   * Component to display on the right panel.
+   */
+  rightChild: PropTypes.element,
   
   /**
    * Minimum width of the right panel as a percent between 0 and 100.
@@ -330,4 +337,4 @@ ReactivePanels.propTypes = {
 }
 
 
-export default ReactivePanels;
+export default HorizontalResizePanels;
