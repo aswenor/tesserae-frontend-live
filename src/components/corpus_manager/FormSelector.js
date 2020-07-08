@@ -10,8 +10,18 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.secondary.main,
+    height: '100%'
+  }
+}))
+
+
 function FormSelector(props) {
   const { forms, onSelect, selected } = props;
+
+  const classes = useStyles();
 
   const items = forms.map(item => {
     return (
@@ -29,7 +39,9 @@ function FormSelector(props) {
   });
 
   return (
-    <div>
+    <div
+      className={classes.root}
+    >
       <Toolbar>
         <Typography variant="h4">
           Corpus Management

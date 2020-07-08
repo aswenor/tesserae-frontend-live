@@ -14,12 +14,22 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
-import TextInput from '@material-ui/core/TextInput';
+import TextField from '@material-ui/core/TextField';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import BlockIcon from '@material-ui/icons/Block';
 
 import { ingestText } from '../../api/corpus';
+
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.secondary.main,
+    margin: '5%'
+  }
+}))
 
 
 /**
@@ -35,7 +45,9 @@ import { ingestText } from '../../api/corpus';
  *  );
  */
 function IngestForm(props) {
-  const [ availableLanguages, ingestText ] = props;
+  const { availableLanguages, ingestText } = props;
+
+  const classes = useStyles();
 
   /** Tess filename and updater. */
   const [ fileName, setFileName ] = useState('');
@@ -79,80 +91,64 @@ function IngestForm(props) {
   const icon = (submitReady ? <ArrowUpwardIcon /> : <BlockIcon />)
 
   return (
-    <FormControl
-      color="secondary"
-      component="fieldset"
+    <Paper
+      className={classes.root}
     >
-      <FormLabel
-        component="legend"
-      >
-        Submit a Text for Ingest
-      </FormLabel>
+      <Toolbar>
+        <Typography variant='h5'>
+          Ingest a Text
+        </Typography>
+      </Toolbar>
       <FormGroup
         aria-label="file-browser"
         row
       >
-        <FormControlLabel
-          control={
             <Input
               onChange={setFileName}
               type="file"
               value={fileName}
+              variant="outlined"
             />
-          }
-          label="Browse"
-        />
       </FormGroup>
       <FormGroup
         aria-label="language-input"
         row
       >
-        <FormControlLabel
-          control={
-            <Select
-              onChange={(event) => updateMetadata('language', event.target.value)}
-              required
-              value={metadata.language}
-            >
-              {
-                availableLanguages.map(item => {
-                  return <MenuItem key={item} value={item}>{item}</MenuItem>
-                })
-              }
-            </Select>
+        <Select
+          onChange={(event) => updateMetadata('language', event.target.value)}
+          required
+          value={metadata.language}
+          variant="outlined"
+        >
+          {
+            availableLanguages.map(item => {
+              return <MenuItem key={item} value={item}>{item}</MenuItem>
+            })
           }
-          label="*Language"
-        />
+        </Select>
       </FormGroup>
       <FormGroup
         aria-label="author-input"
         row
       >
-        <FormControlLabel
-          control={
-            <TextInput
+        
+            <TextField
               onChange={(event) => updateMetadata('author', event.target.value)}
               required
               value={metadata.author}
+              variant="outlined"
             />
-          }
-          label="*Author"
-        />
       </FormGroup>
       <FormGroup
         aria-label="title-input"
         row
       >
-        <FormControlLabel
-          control={
-            <TextInput
+            <TextField
               onChange={(event) => updateMetadata('title', event.target.value)}
               required
               value={metadata.title}
+              variant="outlined"
             />
-          }
-          label="*Title"
-        />
       </FormGroup>
       <FormGroup
         aria-label="year-input"
@@ -160,7 +156,7 @@ function IngestForm(props) {
       >
         <FormControlLabel
           control={
-            <TextInput
+            <TextField
               onChange={(event) => updateMetadata('year', event.target.value)}
               type="number"
               value={metadata.author}
@@ -193,11 +189,12 @@ function IngestForm(props) {
         <Fab
           disabled={!submitReady}
           onClick={() => ingestText(fileName, metadata)}
+          variant="extended"
         >
           {icon} Submit
         </Fab>
       </FormGroup>
-    </FormControl>
+    </Paper>
   );
 }
 

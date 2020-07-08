@@ -9,7 +9,7 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHeader from '@material-ui/core/TableHeader';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -70,11 +70,11 @@ function DeleteFormTable(props) {
       </Toolbar>
       <TableContainer>
         <Table>
-          <TableHeader>
+          <TableHead>
             <TableRow>
               {headerCells}
             </TableRow>
-          </TableHeader>
+          </TableHead>
           <TableBody>
             {bodyCells}
           </TableBody>

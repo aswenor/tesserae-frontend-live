@@ -38,7 +38,7 @@ function CorpusManager(props) {
       component: (<DeleteForm />),
       icon: (<DeleteIcon />),
       label: 'delete',
-      title: 'Remove Texts from Corpus',
+      title: 'Remove Texts',
     },
   ];
 
@@ -56,10 +56,10 @@ function CorpusManager(props) {
             <FormSelector
               forms={forms}
               onSelect={setActivePage}
-              selcted={activePage}
+              selected={activePage}
             />
           }
-          leftMinWidth={20}
+          leftMinWidth={35}
           open={isOpen}
           rightChild={currentForm}
           rightMinWidth={35}

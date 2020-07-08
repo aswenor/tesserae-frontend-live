@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import connect from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { differenceBy, intersectionBy } from 'lodash';
 
-import makeStyles from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
@@ -29,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function DeleteForm(props) {
-  const { availableTexts } = props;
+  const { availableTexts, deleteTexts } = props;
   const classes = useStyles();
 
   const [ selected, setSelected ] = useState([]);
@@ -191,5 +192,12 @@ function mapStateToProps(state) {
 }
 
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    deleteTexts: deleteTexts
+  }, dispatch);
+}
+
+
 // Do redux binding here.
-export default connect(mapStateToProps)(DeleteForm);
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteForm);

@@ -10,10 +10,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import TextInput from '@material-ui/core/TextInput';
+import TextField from '@material-ui/core/TextField';
 
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import BlockIcon from '@material-ui/core/Block';
+import BlockIcon from '@material-ui/icons/Block';
 
 import { fetchTexts, updateTextMetadata } from '../../api/corpus';
 import TextSelectGroup from '../search/TextSelectGroup';
@@ -82,14 +82,13 @@ function EditForm(props) {
         textList={availableTexts}
         title="Select a Text to Edit"
       />
-      <FormControl>
       <FormGroup
         aria-label="author-input"
         row
       >
         <FormControlLabel
           control={
-            <TextInput
+            <TextField
               onChange={(event) => updateTextMetadata('author', event.target.value)}
               required
               value={newMetadata.author}
@@ -104,7 +103,7 @@ function EditForm(props) {
       >
         <FormControlLabel
           control={
-            <TextInput
+            <TextField
               onChange={(event) => updateMetadata('title', event.target.value)}
               required
               value={newMetadata.title}
@@ -119,7 +118,7 @@ function EditForm(props) {
       >
         <FormControlLabel
           control={
-            <TextInput
+            <TextField
               onChange={(event) => updateMetadata('year', event.target.value)}
               type="number"
               value={newMetadata.author}
@@ -152,11 +151,11 @@ function EditForm(props) {
         <Fab
           disabled={!submitReady}
           onClick={() => updateTextMetadata(newMetadata)}
+          variant="extended"
         >
           {icon} Submit
         </Fab>
       </FormGroup>
-      </FormControl>
     </div>
   );
 }
