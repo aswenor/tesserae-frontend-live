@@ -42,7 +42,7 @@ export function fetchLanguages(asyncReady) {
       // This creates a Promise that resolves when a reqponse or error is received.
       axios({
         method: 'get',
-        url: `${REST_API}/languages`,
+        url: `${REST_API}/languages/`,
         crossDomain: true,
         responseType: 'json',
       })
@@ -108,7 +108,7 @@ export function fetchTexts(language, shouldFetch) {
       // This creates a Promise that resolves when a reqponse or error is received.
       axios({
         method: 'get',
-        url: `${REST_API}/texts`,
+        url: `${REST_API}/texts/`,
         crossDomain: true,
         responseType: 'json',
         params: {
