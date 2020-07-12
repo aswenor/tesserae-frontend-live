@@ -17,7 +17,6 @@
  * @requires ../state/search
  */
 import axios from 'axios';
-import maxBy from 'lodash/maxBy';
 
 import { initiateAsync, clearAsync,
          registerError } from '../state/async';
@@ -78,7 +77,7 @@ export function fetchStoplist(feature, stopwords, stoplistBasis, asyncReady) {
       // This creates a Promise that resolves when a reqponse or error is received.
       axios({
         method: 'get',
-        url: `${REST_API}/stopwords`,
+        url: `${REST_API}/stopwords/`,
         crossDomain: true,
         responseType: 'json',
         params: params
@@ -246,7 +245,7 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
       // This creates a Promise that resolves when a reqponse or error is received.
       axios({
           method: 'get',
-          url: `${REST_API}/parallels/${searchID}`,
+          url: `${REST_API}/parallels/${searchID}/`,
           crossDomain: true,
           responseType: 'json',
           cacheControl: 'no-store',
