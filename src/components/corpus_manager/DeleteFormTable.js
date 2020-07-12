@@ -21,7 +21,14 @@ const useStyles = makeStyles(theme => ({}));
 function DeleteFormTable(props) {
   const { onSelect, selected, texts, title } = props;
 
-  const classes = useStyles();
+  const classes = useStyles(theme => ({
+    root: {
+      height: '100%'
+    },
+    body: {
+      overflowY: 'scroll',
+    }
+  }));
 
   const headerCells = ['', 'Author', 'Title'].map(item => {
     return (
@@ -69,7 +76,9 @@ function DeleteFormTable(props) {
         </Typography>
       </Toolbar>
       <TableContainer>
-        <Table>
+        <Table
+          stickyHeader
+        >
           <TableHead>
             <TableRow>
               {headerCells}

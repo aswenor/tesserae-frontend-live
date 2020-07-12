@@ -44,7 +44,7 @@ function FormSelector(props) {
     >
       <Toolbar>
         <Typography variant="h4">
-          Corpus Management
+          Corpus
         </Typography>
       </Toolbar>
       <List

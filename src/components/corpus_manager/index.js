@@ -59,7 +59,7 @@ function CorpusManager(props) {
               selected={activePage}
             />
           }
-          leftMinWidth={35}
+          leftMinWidth={20}
           open={isOpen}
           rightChild={currentForm}
           rightMinWidth={35}

@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 
 import DeleteFormModal from './DeleteFormModal';
 import DeleteFormTable from './DeleteFormTable';
-import { deleteTexts } from '../../api/corpus';
+import { deleteTexts, fetchTexts } from '../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({
@@ -30,7 +30,8 @@ const useStyles = makeStyles(theme => ({
 
 
 function DeleteForm(props) {
-  const { availableTexts, deleteTexts } = props;
+  const { asyncReady, availableTexts, deleteTexts,
+          fetchTexts, language } = props;
   const classes = useStyles();
 
   const [ selected, setSelected ] = useState([]);
@@ -40,6 +41,10 @@ function DeleteForm(props) {
 
   const leftSelected = intersectionBy(selected, leftTexts, 'object_id');
   const rightSelected = intersectionBy(selected, rightTexts, 'object_id');
+
+  if (language !== '' && availableTexts.length === 0) {
+    fetchTexts(language, asyncReady);
+  }
 
   const handleSelect = (event) => () => {
     const checked = event.target.clicked;
@@ -87,9 +92,14 @@ function DeleteForm(props) {
   return (
     <div>
       <Grid container
+        alignItems="center"
+        className={classes.root}
+        justify="center"
         spacing={2}
       >
-        <Grid item>
+        <Grid item
+          xs={5}
+        >
           <DeleteFormTable
             onSelect={handleSelect}
             selected={leftSelected}
@@ -97,56 +107,65 @@ function DeleteForm(props) {
             title={"In Corpus"}
           />
         </Grid>
-        <Grid item>
-          <Button
-            aria-label="move all right"
-            className={classes.button}
-            disabled={leftTexts.length === 0}
-            onClick={handleMoveAllRight}
-            size="small"
-            variant="outlined"
+        <Grid item
+          xs={2}
+        >
+          <Grid container
+            alignItems="center"
+            direction="column"
           >
-            ≫
-          </Button>
-          <Button
-            aria-label="move selected right"
-            className={classes.button}
-            disabled={leftSelected.length === 0}
-            onClick={handleMoveSelectedRight}
-            size="small"
-            variant="outlined"
-          >
-            &gt;
-          </Button>
-          <Button
-            aria-label="move selected left"
-            className={classes.button}
-            disabled={rightSelected.length === 0}
-            onClick={handleMoveSelectedLeft}
-            size="small"
-            variant="outlined"
-          >
-            &lt;
-          </Button>
-          <Button
-            aria-label="move all left"
-            className={classes.button}
-            disabled={rightTexts.length === 0}
-            onClick={handleMoveAllLeft}
-            size="small"
-            variant="outlined"
-          >
-            ≪
-          </Button>
-          <Fab
-            aria-label="delete-texts"
-            disabled={rightTexts.length === 0}
-            onClick={() => deleteTexts(rightTexts.map(x =>x.object_id))}
-          >
-            Delete
-          </Fab>
+            <Button
+              aria-label="move all right"
+              className={classes.button}
+              disabled={leftTexts.length === 0}
+              onClick={handleMoveAllRight}
+              size="small"
+              variant="outlined"
+            >
+              ≫
+            </Button>
+            <Button
+              aria-label="move selected right"
+              className={classes.button}
+              disabled={leftSelected.length === 0}
+              onClick={handleMoveSelectedRight}
+              size="small"
+              variant="outlined"
+            >
+              &gt;
+            </Button>
+            <Button
+              aria-label="move selected left"
+              className={classes.button}
+              disabled={rightSelected.length === 0}
+              onClick={handleMoveSelectedLeft}
+              size="small"
+              variant="outlined"
+            >
+              &lt;
+            </Button>
+            <Button
+              aria-label="move all left"
+              className={classes.button}
+              disabled={rightTexts.length === 0}
+              onClick={handleMoveAllLeft}
+              size="small"
+              variant="outlined"
+            >
+              ≪
+            </Button>
+            <Fab
+              aria-label="delete-texts"
+              disabled={rightTexts.length === 0}
+              onClick={() => deleteTexts(rightTexts.map(x =>x.object_id))}
+            >
+              Delete
+            </Fab>
+          </Grid>
         </Grid>
-        <Grid item>
+        <Grid item
+          xs={5}
+        >
           <DeleteFormTable
             onSelect={handleSelect}
             selected={rightSelected}
@@ -187,14 +206,17 @@ DeleteForm.propTypes = {
  */
 function mapStateToProps(state) {
   return {
-    availableTexts: state.corpus.availableTexts
+    asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
+    availableTexts: state.corpus.availableTexts,
+    language: state.corpus.language
   }
 }
 
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    deleteTexts: deleteTexts
+    deleteTexts: deleteTexts,
+    fetchTexts: fetchTexts
   }, dispatch);
 }
 

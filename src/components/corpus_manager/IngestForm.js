@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { isString } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormLabel from '@material-ui/core/FormLabel';
-import Input from '@material-ui/core/Input';
+import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
@@ -27,7 +22,27 @@ import { ingestText } from '../../api/corpus';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.secondary.main,
-    margin: '5%'
+    margin: '5%',
+    paddingBottom: '5%',
+    paddingLeft: '5%',
+    paddingRight: '5%',
+    '& .MuiTextField-root': {
+      backgroundColor: theme.palette.default.main,
+      margin: theme.spacing(1),
+      width: '50%',
+    },
+    '& .MuiSelect-root': {
+      backgroundColor: theme.palette.default.main,
+    },
+    '& .MuiOutlinedSelect-root': {
+      width: '50%'
+    }
+  },
+  select: {
+    width: '50%'
+  },
+  fab: {
+    marginTop: "10px"
   }
 }))
 
@@ -46,6 +61,7 @@ const useStyles = makeStyles(theme => ({
  */
 function IngestForm(props) {
   const { availableLanguages, ingestText } = props;
+  console.log(availableLanguages);
 
   const classes = useStyles();
 
@@ -94,27 +110,29 @@ function IngestForm(props) {
     <Paper
       className={classes.root}
     >
-      <Toolbar>
-        <Typography variant='h5'>
-          Ingest a Text
-        </Typography>
-      </Toolbar>
-      <FormGroup
-        aria-label="file-browser"
-        row
+      <Grid container
+        alignItems="center"
+        direction="column"
+        justify="center"
+        spacing={0}
       >
-            <Input
-              onChange={setFileName}
-              type="file"
-              value={fileName}
-              variant="outlined"
-            />
-      </FormGroup>
-      <FormGroup
-        aria-label="language-input"
-        row
-      >
+        <Toolbar>
+          <Typography variant='h5'>
+            Ingest a Text
+          </Typography>
+        </Toolbar>
+        <TextField
+          id="input-file-select"
+          onChange={setFileName}
+          required
+          type="file"
+          value={fileName}
+          variant="outlined"
+        />
         <Select
+          className={classes.select}
+          id="ingest-language"
+          label="Language"
           onChange={(event) => updateMetadata('language', event.target.value)}
           required
           value={metadata.language}
@@ -126,74 +144,50 @@ function IngestForm(props) {
             })
           }
         </Select>
-      </FormGroup>
-      <FormGroup
-        aria-label="author-input"
-        row
-      >
-        
-            <TextField
-              onChange={(event) => updateMetadata('author', event.target.value)}
-              required
-              value={metadata.author}
-              variant="outlined"
-            />
-      </FormGroup>
-      <FormGroup
-        aria-label="title-input"
-        row
-      >
-            <TextField
-              onChange={(event) => updateMetadata('title', event.target.value)}
-              required
-              value={metadata.title}
-              variant="outlined"
-            />
-      </FormGroup>
-      <FormGroup
-        aria-label="year-input"
-        row
-      >
-        <FormControlLabel
-          control={
-            <TextField
-              onChange={(event) => updateMetadata('year', event.target.value)}
-              type="number"
-              value={metadata.author}
-            />
-          }
+        <TextField
+          id="ingest-author"
+          label="Author"
+          onChange={(event) => updateMetadata('author', event.target.value)}
+          required
+          value={metadata.author}
+          variant="outlined"
+        />
+        <TextField
+          id="ingest-title"
+          label="Title"
+          onChange={(event) => updateMetadata('title', event.target.value)}
+          required
+          value={metadata.title}
+          variant="outlined"
+        />
+        <TextField
+          id="ingest-year"
           label="Year of Publication"
+          onChange={(event) => updateMetadata('year', event.target.value)}
+          type="number"
+          value={metadata.year}
+          variant="outlined"
         />
-      </FormGroup>
-      <FormGroup
-        aria-label="genre-input"
-        row
-      >
-        <FormControlLabel
-          control={
-            <Select
-              onChange={(event) => updateMetadata('is_prose', event.target.value === 'prose')}
-              value={metadata.title}
-            >
-              <MenuItem value='poetry'>Poetry</MenuItem>
-              <MenuItem value='prose'>Prose</MenuItem>
-            </Select>
-          }
+        <Select
+          className={classes.select}
+          id="ingest-genre"
           label="Genre"
-        />
-      </FormGroup>
-      <FormGroup
-        aria-label="submit-button"
-        row
-      >
+          onChange={(event) => updateMetadata('isProse', event.target.value)}
+          value={metadata.isProse}
+          variant="outlined"
+        >
+          <MenuItem value={false}>Poetry</MenuItem>
+          <MenuItem value={true}>Prose</MenuItem>
+        </Select>
         <Fab
+          className={classes.fab}
           disabled={!submitReady}
           onClick={() => ingestText(fileName, metadata)}
           variant="extended"
         >
           {icon} Submit
         </Fab>
-      </FormGroup>
+      </Grid>
     </Paper>
   );
 }
