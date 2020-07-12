@@ -20,6 +20,7 @@ import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
+import { fetchLanguages } from './api/corpus';
 import routes from './routes';
 import { DEFAULT_STATE, tesseraeReducer } from './state';
 
@@ -52,6 +53,10 @@ function App(props) {
       <Route key={item.name} path={item.link} component={item.component} />
     );
   });
+
+  if (store.getState().corpus.availableLanguages.length === 0) {
+    fetchLanguages(true)(store.dispatch);
+  }
 
   return (
     <Provider store={store}>
