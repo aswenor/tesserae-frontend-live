@@ -146,7 +146,7 @@ function highlightMatches(snippet, tag, matchIndices) {
  * @component
  */
 function ResultsTableBody(props) {
-  const { results } = props;
+  const { results, startIdx } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles();
@@ -176,7 +176,7 @@ function ResultsTableBody(props) {
           <Typography
             align="left"
           >
-            {idx + 1}
+            {idx + startIdx + 1}
           </Typography>
         </TableCell>
         <TableCell
@@ -267,7 +267,12 @@ ResultsTableBody.propTypes = {
        */
       target_tag: PropTypes.string,
     })
-  )
+  ),
+
+  /**
+   * The index of the first entry on the page (0-indexed).
+   */
+  startIdx: PropTypes.number
 };
 
 

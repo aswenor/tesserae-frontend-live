@@ -65,7 +65,8 @@ function ResultsTable(props) {
   const handleTableChanges = (label, value) => {
     const newMeta = {...tableMeta, [label]: value};
     setTableMeta(newMeta);
-    fetchResults(searchID, asyncReady, ...newMeta);
+    fetchResults(searchID, asyncReady, newMeta.currentPage,
+                 newMeta.rowsPerPage, newMeta.sortHeader, newMeta.sortOrder);
   };
 
   /** CSS styles and global theme. */
@@ -118,7 +119,10 @@ function ResultsTable(props) {
                   updateSortHeader={value => handleTableChanges('sortHeader', value)}
                   updateSortOrder={value => handleTableChanges('sortOrder', value)}
                 />
-                <ResultsTableBody results={displayResults} />
+                <ResultsTableBody 
+                  results={displayResults}
+                  startIdx={tableMeta.currentPage * tableMeta.rowsPerPage}
+                />
               </Table>
             </TableContainer>
             <TablePagination
