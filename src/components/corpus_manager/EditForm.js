@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Fab from '@material-ui/core/Fab';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -23,23 +24,26 @@ const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.secondary.main,
     margin: '5%',
-    paddingBottom: '5%',
-    paddingLeft: '5%',
-    paddingRight: '5%',
+    padding: theme.spacing(6),
     '& .MuiTextField-root': {
       backgroundColor: theme.palette.default.main,
       margin: theme.spacing(1),
-      width: '50%',
+      width: '75%',
     },
     '& .MuiSelect-root': {
       backgroundColor: theme.palette.default.main,
     },
     '& .MuiOutlinedSelect-root': {
-      width: '50%'
+      width: '75%'
     }
   },
+  divider: {
+    marginBottom: theme.spacing(6),
+    marginTop: theme.spacing(6),
+    width: '90%'
+  },
   select: {
-    width: '50%'
+    width: '75%'
   },
   fab: {
     marginTop: "10px"
@@ -101,72 +105,84 @@ function EditForm(props) {
   const icon = (submitReady ? <ArrowUpwardIcon /> : <BlockIcon />)
 
   return (
-    <Paper
-      className={classes.root}
+    <Grid container
+      alignItems="center"
+      justify="center"
+      display="flex"
     >
-      <Grid container
-        alignItems="center"
-        direction="column"
-        justify="center"
-        spacing={0}
+      <Grid item
+        md={8}
+        xs={12}
       >
-        <TextSelectGroup
-          handleTextChange={onSelectText}
-          loading={availableTexts.length === 0}
-          loadingText="Loading text list..."
-          onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
-          selection={selectedText}
-          textList={availableTexts}
-          title="Select a Text to Edit"
-        />
-        <Typography
-          align="left"
-          className={classes.heading}
-          variant="h5"
+        <Paper
+          className={classes.root}
         >
-          Edit Metadata
-        </Typography>
-        <TextField
-          label="Author"
-          onChange={(event) => updateTextMetadata('author', event.target.value)}
-          required
-          value={newMetadata.author}
-          variant="outlined"
-        />
-        <TextField
-          label="Title"
-          onChange={(event) => updateMetadata('title', event.target.value)}
-          required
-          value={newMetadata.title}
-          variant="outlined"
-        />
-        <TextField
-          label="Year Published"
-          onChange={(event) => updateMetadata('year', event.target.value)}
-          type="number"
-          value={`${newMetadata.year}`}
-          variant="outlined"
-        />
-        <Select
-          className={classes.select}
-          label="Genre"
-          onChange={(event) => updateMetadata('is_prose', event.target.value === 'prose')}
-          value={newMetadata.is_prose}
-          variant="outlined"
-        >
-          <MenuItem value={false}>Poetry</MenuItem>
-          <MenuItem value={true}>Prose</MenuItem>
-        </Select>
-        <Fab
-          className={classes.fab}
-          disabled={!submitReady}
-          onClick={() => updateTextMetadata(newMetadata)}
-          variant="extended"
-        >
-          {icon} Submit
-        </Fab>
+          <Grid container
+            alignItems="center"
+            direction="column"
+            justify="center"
+            spacing={0}
+          >
+            <TextSelectGroup
+              handleTextChange={onSelectText}
+              loading={availableTexts.length === 0}
+              loadingText="Loading text list..."
+              onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
+              selection={selectedText}
+              textList={availableTexts}
+              title="Select a Text to Edit"
+            />
+            <Divider className={classes.divider} />
+            <Typography
+              align="left"
+              className={classes.heading}
+              variant="h5"
+            >
+              Edit Metadata
+            </Typography>
+            <TextField
+              label="Author"
+              onChange={(event) => updateMetadata('author', event.target.value)}
+              required
+              value={newMetadata.author}
+              variant="outlined"
+            />
+            <TextField
+              label="Title"
+              onChange={(event) => updateMetadata('title', event.target.value)}
+              required
+              value={newMetadata.title}
+              variant="outlined"
+            />
+            <TextField
+              label="Year Published"
+              onChange={(event) => updateMetadata('year', event.target.value)}
+              type="number"
+              value={`${newMetadata.year}`}
+              variant="outlined"
+            />
+            <Select
+              className={classes.select}
+              label="Genre"
+              onChange={(event) => updateMetadata('is_prose', event.target.value === 'prose')}
+              value={newMetadata.is_prose}
+              variant="outlined"
+            >
+              <MenuItem value={false}>Poetry</MenuItem>
+              <MenuItem value={true}>Prose</MenuItem>
+            </Select>
+            <Fab
+              className={classes.fab}
+              disabled={!submitReady}
+              onClick={() => updateTextMetadata(newMetadata)}
+              variant="extended"
+            >
+              {icon} Submit
+            </Fab>
+          </Grid>
+        </Paper>
       </Grid>
-    </Paper>
+    </Grid>
   );
 }
 

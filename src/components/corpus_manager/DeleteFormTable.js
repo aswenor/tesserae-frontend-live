@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { findIndex } from 'lodash';
 
@@ -10,25 +10,54 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-const useStyles = makeStyles(theme => ({}));
+import TablePaginationActions from '../common/TablePaginationActions';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    height: '100%'
+  },
+  body: {
+    overflowY: 'scroll',
+  }
+}));
 
 
 function DeleteFormTable(props) {
   const { onSelect, selected, texts, title } = props;
 
-  const classes = useStyles(theme => ({
-    root: {
-      height: '100%'
-    },
-    body: {
-      overflowY: 'scroll',
+  const classes = useStyles();
+
+  const [ paging, setPaging] = useState({
+    currentPage: 0,
+    rowsPerPage: 10,
+    sortHeader: 'author',
+    sortOrder: 1
+  });
+
+  const handlePagingUpdate = (label, value) => {
+    // Create a new paging object by copying the old and overwriting
+    // the updated field.
+    let newPaging = {...paging, [label]: value};
+    
+    // If the sort header was submitted but has not changed, change
+    // the sort direction.
+    if (label === 'sortHeader' && value === paging.sortHeader) {
+      newPaging.sortOrder = -paging.sortOrder;
     }
-  }));
+
+    // If anything other than the current page was changed,
+    // go to the new first page.
+    if (label !== 'currentPage') {
+      newPaging.currentPage = 0;
+    }
+
+    setPaging(newPaging);
+  };
 
   const headerCells = ['', 'Author', 'Title'].map(item => {
     return (
@@ -41,32 +70,37 @@ function DeleteFormTable(props) {
     );
   });
 
-  const bodyCells = texts.map(item => {
-    const idx = findIndex(selected, x => x.object_id === item.object_id);
-    return (
-      <TableRow key={item.object_id}>
-        <TableCell
-          variant="body"
-        >
-          <Checkbox
-            checked={idx >= 0}
-            onChange={onSelect}
-            value={item}
-          />
-        </TableCell>
-        <TableCell
-          variant="body"
-        >
-          {item.author}
-        </TableCell>
-        <TableCell
-          variant="body"
-        >
-          {item.title}
-        </TableCell>
-      </TableRow>
-    );
-  });
+  const start = paging.currentPage * paging.rowsPerPage;
+  const end = start + paging.rowsPerPage;
+
+  const bodyCells = texts
+    .slice(start, end)
+    .map(item => {
+      const idx = findIndex(selected, x => x.object_id === item.object_id);
+      return (
+        <TableRow key={item.object_id}>
+          <TableCell
+            variant="body"
+          >
+            <Checkbox
+              checked={idx >= 0}
+              onChange={onSelect}
+              value={item}
+            />
+          </TableCell>
+          <TableCell
+            variant="body"
+          >
+            {item.author}
+          </TableCell>
+          <TableCell
+            variant="body"
+          >
+            {item.title}
+          </TableCell>
+        </TableRow>
+      );
+    });
 
   return (
     <Paper>
@@ -89,6 +123,15 @@ function DeleteFormTable(props) {
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        ActionsComponent={TablePaginationActions}
+        count={texts.length}
+        onChangePage={handlePagingUpdate}
+        onChangeRowsPerPage={(event) => handlePagingUpdate('rowsPerPage', event.target.value)}
+        page={paging.currentPage}
+        rowsPerPage={paging.rowsPerPage}
+        rowsPerPageOptions={[10, 25, 50]}
+      />
     </Paper>
   );
 }

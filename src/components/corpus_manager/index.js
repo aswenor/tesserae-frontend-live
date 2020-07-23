@@ -3,8 +3,10 @@ import { find } from 'lodash';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import PublishIcon from '@material-ui/icons/Publish';
 
+import CorpusViewer from './CorpusViewer';
 import DeleteForm from './DeleteForm';
 import EditForm from './EditForm';
 import FormSelector from './FormSelector';
@@ -17,11 +19,17 @@ function CorpusManager(props) {
   const { routes } = props;
   
   const [isOpen, setIsOpen] = useState(true);
-  const [ activePage, setActivePage ] = useState('ingest');
+  const [ activePage, setActivePage ] = useState('viewer');
 
   const shouldShowLanguages = activePage !== 'ingest';
 
   const forms = [
+    {
+      component: (<CorpusViewer />),
+      icon: (<LibraryBooksIcon />),
+      label: 'viewer',
+      title: 'Browse the Corpus'
+    },
     {
       component: (<IngestForm />),
       icon: (<PublishIcon />),
