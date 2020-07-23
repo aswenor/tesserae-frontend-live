@@ -20,7 +20,7 @@ import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import { fetchLanguages } from './api/corpus';
+import { fetchLanguages, fetchTexts } from './api/corpus';
 import routes from './routes';
 import { DEFAULT_STATE, tesseraeReducer } from './state';
 
@@ -54,8 +54,15 @@ function App(props) {
     );
   });
 
+  // Automatically fetch available languages on app load.
   if (store.getState().corpus.availableLanguages.length === 0) {
     fetchLanguages(true)(store.dispatch);
+  }
+
+  // Automatically fetch texts on app load.
+  if (store.getState().corpus.language !== '' &&
+      store.getState().corpus.availableTexts.length === 0) {
+    fetchTexts(store.getState().corpus.language, true)(store.dispatch);
   }
 
   return (
