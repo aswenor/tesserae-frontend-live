@@ -47,7 +47,9 @@ export const DEFAULT_STATE = {
  */
 const CLEAR_RESULTS = 'CLEAR_RESULTS';
 const CLEAR_SEARCH_METADATA = 'CLEAR_SEARCH_METADATA';
+const CLEAR_SOURCE_TEXT = 'CLEAR_SOURCE_TEXT';
 const CLEAR_STOPWORDS = 'CLEAR_STOPWORDS';
+const CLEAR_TARGET_TEXT = 'CLEAR_TARGET_TEXT';
 const RESET_SEARCH = 'RESET_SEARCH';
 const UPDATE_RESULTS = 'UPDATE_RESULTS';
 const UPDATE_SEARCH_ID = 'UPDATE_SEARCH_ID';
@@ -103,6 +105,21 @@ export function clearSearchMetadata() {
 
 
 /**
+ * Clear the source text selection.
+ * 
+ * @returns {Object} A redux-style action.
+ */
+export function clearSourceText() {
+  return {
+    type: CLEAR_SOURCE_TEXT,
+    payload: {
+      sourceText: { ...DEFAULT_STATE.sourceText }
+    }
+  };
+}
+
+
+/**
  * Clear the current stoplist.
  * 
  * @returns {Object} A redux-style action.
@@ -114,6 +131,21 @@ export function clearStopwords() {
       stopwords: DEFAULT_STATE.stopwords
     }
   }
+}
+
+
+/**
+ * Clear the target text selection.
+ * 
+ * @returns {Object} A redux-style action.
+ */
+export function clearTargetText() {
+  return {
+    type: CLEAR_TARGET_TEXT,
+    payload: {
+      targetText: { ...DEFAULT_STATE.targetText }
+    }
+  };
 }
 
 
@@ -270,7 +302,9 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
     case CLEAR_RESULTS:
     case CLEAR_SEARCH_METADATA:
+    case CLEAR_SOURCE_TEXT:
     case CLEAR_STOPWORDS:
+    case CLEAR_TARGET_TEXT:
     case RESET_SEARCH:
     case UPDATE_RESULTS:
     case UPDATE_SEARCH_ID:
