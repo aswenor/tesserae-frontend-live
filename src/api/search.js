@@ -245,11 +245,11 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
       // This creates a Promise that resolves when a reqponse or error is received.
       axios({
           method: 'get',
-          url: `${REST_API}/parallels/${searchID}/`,
+          url: `${REST_API}/parallels/${searchID}`,
           crossDomain: true,
           responseType: 'json',
           cacheControl: 'no-store',
-          data: {
+          params: {
             page_number: currentPage,
             per_page: rowsPerPage,
             sort_by: sortLabel,
