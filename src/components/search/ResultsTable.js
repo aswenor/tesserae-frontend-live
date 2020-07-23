@@ -13,7 +13,7 @@
  * @requires ../ResultsPlaceholder
  * @requires ../../api/corpus
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -29,7 +29,8 @@ import ResultsTableBody from './ResultsTableBody';
 import ResultsTableHeader from './ResultsTableHeader';
 
 import { fetchResults } from '../../api/search';
-
+import { resetPagination, updatePagination } from '../../state/pagination';
+import TablePaginationActions from '../common/TablePaginationActions';
 
 /** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
@@ -52,19 +53,30 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function ResultsTable(props) {
-  const { asyncReady, results, resultsCount, searchID } = props;
-  
-  /** Managers for UI sorting state and pagination. */
-  const [ tableMeta, setTableMeta ] = useState({
-    currentPage: 0,
-    rowsPerPage: 100,
-    sortHeader: 'score',
-    sortOrder: -1
-  });
+  const { asyncReady, currentPage, fetchResults, results, resultsCount,
+          rowsPerPage, searchID, sortHeader, sortOrder, updatePagination } = props;
+
+  console.log(searchID);
+
+  // This is an alternative to useState that fires anytime state is updated.
+  // The inner function is only fired when the table stops being rendered,
+  // and is used to 
+  useEffect(() => {
+    console.log(searchID);
+    return () => {
+      resetPagination();
+    }
+  }, [searchID]);
 
   const handleTableChanges = (label, value) => {
-    const newMeta = {...tableMeta, [label]: value};
-    setTableMeta(newMeta);
+    console.log(`fetching results from ${searchID}`);
+    let newMeta = {[label]: value};
+    
+    if (label !== 'currentPage') {
+      newMeta = {...newMeta, currentPage: 0}
+    }
+
+    updatePagination(newMeta);
     fetchResults(searchID, asyncReady, newMeta.currentPage,
                  newMeta.rowsPerPage, newMeta.sortHeader, newMeta.sortOrder);
   };
@@ -76,21 +88,25 @@ function ResultsTable(props) {
   const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
 
   /** Get the indices of results to display in the table. */
-  const start = tableMeta.currentPage * tableMeta.rowsPerPage;
-  const end = Math.min(start + tableMeta.rowsPerPage, resultsCount);
+  const start = currentPage * rowsPerPage;
+  const end = Math.min(start + rowsPerPage, resultsCount);
 
-  /** Get the results entries by sorting and slicing. */
-  const displayResults = results.sort((a, b) => {
-    if (b[tableMeta.sortHeader] < a[tableMeta.sortHeader]) {
-      return -1 * tableMeta.sortOrder;
-    }
-    else if (b[tableMeta.sortHeader] > a[tableMeta.sortHeader]) {
-      return 1 * tableMeta.sortOrder;
-    }
-    else {
-      return 0;
-    }
-  }).slice(start, end);
+  let displayResults = results;
+
+  if (results.length > rowsPerPage) {
+    /** Get the results entries by sorting and slicing. */
+    displayResults = results.sort((a, b) => {
+      if (b[sortHeader] < a[sortHeader]) {
+        return -1 * sortOrder;
+      }
+      else if (b[sortHeader] > a[sortHeader]) {
+        return 1 * sortOrder;
+      }
+      else {
+        return 0;
+      }
+    }).slice(start, end);
+  }
 
   // If a search has not been run and no results are available, display a
   // placeholder that points to the parameters form or shows a spinning
@@ -114,26 +130,26 @@ function ResultsTable(props) {
               >
                 <ResultsTableHeader
                   labels={headerLabels}
-                  sortHeader={tableMeta.sortHeader}
-                  sortOrder={tableMeta.sortOrder}
+                  sortHeader={sortHeader}
+                  sortOrder={sortOrder}
                   updateSortHeader={value => handleTableChanges('sortHeader', value)}
                   updateSortOrder={value => handleTableChanges('sortOrder', value)}
                 />
                 <ResultsTableBody 
                   results={displayResults}
-                  startIdx={tableMeta.currentPage * tableMeta.rowsPerPage}
+                  startIdx={currentPage * rowsPerPage}
                 />
               </Table>
             </TableContainer>
             <TablePagination
+              ActionsComponent={TablePaginationActions}
               className={classes.pagination}
-              component="div"
-              count={results.length}
+              count={resultsCount}
               labelRowsPerPage="Results per page:"
-              onChangePage={(event, value) => handleTableChanges('currentPage', value)}
+              onChangePage={handleTableChanges}
               onChangeRowsPerPage={(event) => handleTableChanges('rowsPerPage', event.target.value)}
-              page={tableMeta.currentPage}
-              rowsPerPage={tableMeta.rowsPerPage}
+              page={currentPage}
+              rowsPerPage={rowsPerPage}
               rowsPerPageOptions={[50, 100, 200, 500]}
             />
           </div>
@@ -211,9 +227,13 @@ ResultsTable.propTypes = {
  */
 const mapStateToProps = state => ({
   asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
+  currentPage: state.pagination.currentPage,
   results: state.search.results,
   resultsCount: state.search.resultsCount,
-  searchID: state.search.searchID
+  rowsPerPage: state.pagination.rowsPerPage,
+  searchID: state.search.searchID,
+  sortHeader: state.pagination.sortHeader,
+  sortOrder: state.pagination.sortOrder,
 });
 
 
@@ -221,7 +241,11 @@ const mapStateToProps = state => ({
  * Add redux store actions to this component's props.
  * @param {function} dispatch The redux dispatch function.
  */
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchResults: fetchResults,
+  resetPagination: resetPagination,
+  updatePagination: updatePagination
+}, dispatch);
 
 
 // Do redux binding here.
