@@ -136,12 +136,27 @@ export function fetchTexts(language, shouldFetch) {
 
 export function ingestText(tessFile, metadata) {
   return dispatch => {
-    axios({
+    dispatch(initiateAsync());
 
+    let data = FormData();
+    data.set('metadata', metadata);
+    data.set('file', tessFile);
+
+    axios({
+      method: 'post',
+      url: `${REST_API}/texts/`,
+      crossDomain: true,
+      responseType: 'json',
+      headers: {
+        'Content-Type': 'multipart/form'
+      },
+      data: data
     }).then(response => {
 
     }).error(error => {
-
+      // On error, update the error log.
+      dispatch(registerError(error));
+      dispatch(clearAsync());
     });
   };
 }
@@ -150,7 +165,11 @@ export function ingestText(tessFile, metadata) {
 export function updateTextMetadata(textID, metadata) {
   return dispatch => {
     axios({
-
+      method: 'patch',
+      url: `${REST_API}/texts/${textID}/`,
+      crossDomain: true,
+      responseType: 'json',
+      data: metadata
     }).then(response => {
 
     }).error(error => {
@@ -162,12 +181,17 @@ export function updateTextMetadata(textID, metadata) {
 
 export function deleteTexts(textIDs) {
   return dispatch => {
-    axios({
+    textIDs.map(item =>
+      axios({
+        method: 'delete',
+        url: `${REST_API}/texts/${item.object_id}/`,
+        crossDomain: true,
+        responseType: 'json',
+      }).then(response => {
+        
+      }).error(error => {
 
-    }).then(response => {
-
-    }).error(error => {
-
-    });
+      })
+    );
   };
 }
