@@ -8,6 +8,8 @@
  * @exports sleep
  */
 
+import { bind } from "lodash";
+
 
 /**
  * Convert a multi-word string to title case.
