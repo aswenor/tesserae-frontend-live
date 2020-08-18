@@ -1,169 +1,148 @@
-/**
- * @fileoverview Dropdown menus for selecting authors and texts to search.
- * 
- * @author [Jeff Kinnison](https://github.com/jeffkinnison)
- * 
- * @exports TextSelectGroup
- * 
- * @requires NPM:react
- * @requires NPM:prop-types
- * @requires NPM:lodash
- * @requires NPM:@material-ui/core
- */
 import React from 'react';
 import PropTypes from 'prop-types';
-import uniqBy from 'lodash/uniqBy';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 
+import { fetchTexts } from '../../api/corpus';
+import { clearSearchMetadata, updateSourceText, updateTargetText } from '../../state/search';
 
-/** CSS styles to apply to the component. */
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-  },
-  heading: {
-    marginBottom: '10px'
-  },
-  select: {
-    marginBottom: '10px',
-    [theme.breakpoints.up('md')]: {
-
-    },
-    [theme.breakpoints.down('sm')]: {
-
-    }
-  }
-}));
+import TextSelectDropdowns from './TextSelectDropdowns';
 
 
 /**
- * Aligned searchable dropdown menus for selecting author and text.
- * 
- * @component
- * 
- * @example
- *   const handleTextChange = (event) => event;
- *   const onOpen = (event) => event;
- *   const selection = {author: 'lucan', title: 'bellum civile'};
- *   const textList = [
- *     {author: 'lucan', title: 'bellum civile'},
- *     {author: 'vergil', title: 'aeneid'}
- *   ];
- *   return (
- *     <TextSelectGroup
- *        handleTextChange={handleTextChange}
- *        loading={false}
- *        loadingText="Loading text list..."
- *        onOpen={onOpen}
- *        selection={selection}
- *        textList={textList}
- *        title="Source Text"
- *     />
- *   )
+ * Set of dropdowns for selecting source and target texts.
+ * @component 
  */
 function TextSelectGroup(props) {
-  const { handleTextChange, loading, loadingText, onOpen,
-          selection, textList, title } = props;
+  const { asyncReady, availableTexts, language, sourceText, targetText,
+          updateSource, updateTarget } = props
 
-  /** CSS styles and global theme. */
-  const classes = useStyles();
+  const handleTextChange = (text, updateFunc) => {
+    console.log(text);
+    clearSearchMetadata();
+    updateFunc(text);
+  }
 
-  /** Text list to select author, the first text in the list by each author. */
-  const authorItems = uniqBy(textList, 'author').sort((a, b) => a.author > b.author);
-
-  /** Text list to select title, filtered by author when an author is selected. */
-  const textItems = textList.filter(t => selection.author === '' || t.author.toLowerCase() === selection.author).sort((a, b) => a.title > b.title);
+  const shouldFetchTexts = asyncReady && availableTexts.length === 0;
 
   return (
-    <div>
-      <Typography
-        align="left"
-        className={classes.heading}
-        variant="h5"
+    <Grid container
+      alignContent="center"
+      alignItems="center"
+      justify="flex-start"
+      spacing={2}
+    >
+      <Grid item
+        align="center"
+        xs={12}
       >
-        {title}
-      </Typography>
-      <Autocomplete
-        className={classes.select}
-        defaultValue={{author: '', title: ''}}
-        getOptionLabel={option => option.author !== undefined ? option.author : ''}
-        loading={loading}
-        loadingText={loadingText}
-        onChange={handleTextChange}
-        onOpen={onOpen}
-        options={authorItems}
-        renderInput={params => (
-          <TextField {...params}
-            fullWidth
-            placeholder={"Select an Author"}
-            variant="outlined"
-          />
-        )}
-        value={selection}
-      />
-      <Autocomplete
-        className={classes.select}
-        defaultValue={{author: '', title: ''}}
-        getOptionLabel={option => option.title !== undefined ? option.title : ''}
-        loading={loading}
-        loadingText={loadingText}
-        onChange={handleTextChange}
-        onOpen={onOpen}
-        options={textItems}
-        renderInput={params => (
-          <TextField {...params}
-            fullWidth
-            placeholder={"Select a Text"}
-            variant="outlined"
-          />
-        )}
-        value={selection}
-      />
-    </div>
+        <TextSelectDropdowns
+          handleTextChange={(event, value) => handleTextChange(value, updateSource)}
+          loading={availableTexts.length === 0}
+          loadingText={`Loading ${language} corpus`}
+          onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
+          selection={sourceText}
+          textList={availableTexts}
+          title="Source Text"
+        />
+      </Grid>
+      <Grid item 
+        align="center"
+        xs={12}
+      >
+        <TextSelectDropdowns
+          handleTextChange={(event, value) => handleTextChange(value, updateTarget)}
+          loading={availableTexts.length === 0}
+          loadingText={`Loading ${language} corpus`}
+          onOpen={() => fetchTexts(language, shouldFetchTexts)}
+          selection={targetText}
+          textList={availableTexts}
+          title="Target Text"
+        />
+      </Grid>
+    </Grid>
   );
 }
 
 
 TextSelectGroup.propTypes = {
   /**
-   * Callback to handle selecting a text in either dropdown.
+   * Flag determining if an AJAX call may be initiated.
    */
-  handleTextChange: PropTypes.func,
+  asyncReady: PropTypes.bool,
 
   /**
-   * Indicates whether or not the texts are loading from the REST API.
+   * List of texts exposed by the REST API.
    */
-  loading: PropTypes.bool,
+  availableTexts: PropTypes.arrayOf(PropTypes.object),
 
   /**
-   * Text to display when the texts are loading from the REST API.
+   * Function to clear out search ID and status.
    */
-  loadingText: PropTypes.string,
+  clearSearchMetadata: PropTypes.func,
+  
+  /**
+   * Function to retrieve texts from the REST API.
+   */
+  fetchTexts: PropTypes.func,
 
   /**
-   * Callback to handle opening either dropdown, e.g. kicking off loading texts.
+   * The current language populating the UI.
    */
-  onOpen: PropTypes.func,
+  language: PropTypes.string,
 
   /**
-   * The current selection, propagated over both dropdowns.
+   * The currently selected source text.
    */
-  selection: PropTypes.object,
+  sourceText: PropTypes.object,
+  
+  /**
+   * The currently selected target text.
+   */
+  targetText: PropTypes.object,
 
   /**
-   * List of texts to distribute over both dropdowns.
+   * Function to select a new source text from the dropdown menu.
    */
-  textList: PropTypes.arrayOf(PropTypes.object),
-
+  updateSource: PropTypes.func,
+  
   /**
-   * Text to display describing the purpose of these dropdowns.
+   * Function to select a new target text from the dropdown menu.
    */
-  title: PropTypes.string
-}
+  updateTarget: PropTypes.func
+};
 
 
-export default TextSelectGroup;
+/**
+ * Add redux store state to this component's props.
+ * 
+ * @param {object} state The global state of the application.
+ * @returns {object} Members of the global state to provide as props.
+ */
+const mapStateToProps = (state) => {
+  return {
+    asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
+    availableTexts: state.corpus.availableTexts,
+    language: state.corpus.language,
+    searchParameters: state.search.searchParameters,
+    sourceText: state.search.sourceText,
+    targetText: state.search.targetText,
+  };
+};
+
+
+/**
+ * Add redux store actions to this component's props.
+ * @param {function} dispatch The redux dispatch function.
+ */
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchTexts: fetchTexts,
+  updateSource: updateSourceText,
+  updateTarget: updateTargetText
+}, dispatch);
+
+
+// Do redux binding here.
+export default connect(mapStateToProps, mapDispatchToProps)(TextSelectGroup);

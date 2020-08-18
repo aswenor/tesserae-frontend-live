@@ -20,25 +20,21 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import Fab from '@material-ui/core/Fab';
-import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
-import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import Grid from '@material-ui/core/Grid';
+import Fab from '@material-ui/core/Fab';import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
 
 import AdvancedOptionsGroup from './AdvancedOptionsGroup'
+import { MarginlessExpansionPanel, MarginlessExpansionPanelSummary,
+         MarginlessExpansionPanelDetails } from '../common/MarginlessExpansionPanel';
 import TextSelectGroup from './TextSelectGroup';
 
-import { fetchTexts } from '../../api/corpus';
 import { fetchStoplist, initiateSearch } from '../../api/search';
-import { clearResults, clearSearchMetadata, updateSourceText,
-         updateTargetText } from '../../state/search';
+import { clearResults, clearSearchMetadata } from '../../state/search';
 
 
 const useStyles = makeStyles(theme => ({
@@ -68,98 +64,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-/**
- * Custom styling to make ExpansionPanel layout more dense.
- * 
- * @component
- * 
- * @example
- *   return (
- *     <ExpansionPanel>
- *       <ExpansionPanelSummary>
- *         <p>Example summary text </p>
- *       </ExpansionPanelSummary>
- *       <ExpansionPanelDetails>
- *         <p>This is the interior text.</p>
- *       </ExpansionPanelDetails>
- *     </ExpansionPanel>
- *   );
- */
-const ExpansionPanel = withStyles(theme => ({
-  root: {
-    border: '1px solid rgba(0, 0, 0, .125)',
-    boxShadow: 'none',
-    backgroundColor: theme.palette.secondary.main,
-    '&:before': {
-      display: 'none',
-    },
-    '&$expanded': {
-      margin: 'auto',
-    },
-  },
-  expanded: {},
-}))(MuiExpansionPanel);
-
-
-/**
- * Custom styling to make ExpansionPanelSummary layout more dense.
- * 
- * @component
- * 
- * @example
- *   return (
- *     <ExpansionPanel>
- *       <ExpansionPanelSummary>
- *         <p>Example summary text </p>
- *       </ExpansionPanelSummary>
- *       <ExpansionPanelDetails>
- *         <p>This is the interior text.</p>
- *       </ExpansionPanelDetails>
- *     </ExpansionPanel>
- *   );
- */
-const ExpansionPanelSummary = withStyles({
-  root: {
-    backgroundColor: 'rgba(0, 0, 0, .03)',
-    borderBottom: '1px solid rgba(0, 0, 0, .125)',
-    marginBottom: -1,
-    minHeight: 56,
-    '&$expanded': {
-      minHeight: 56,
-    },
-  },
-  content: {
-    '&$expanded': {
-      margin: '12px 0',
-    },
-  },
-  expanded: {},
-})(MuiExpansionPanelSummary);
-
-
-/**
- * Custom styling to make ExpansionPanelSummary layout more dense.
- * 
- * @component
- * 
- * @example
- *   return (
- *     <ExpansionPanel>
- *       <ExpansionPanelSummary>
- *         <p>Example summary text </p>
- *       </ExpansionPanelSummary>
- *       <ExpansionPanelDetails>
- *         <p>This is the interior text.</p>
- *       </ExpansionPanelDetails>
- *     </ExpansionPanel>
- *   );
- */
-const ExpansionPanelDetails = withStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiExpansionPanelDetails);
-
 
 /**
  * Form encapsulating all parameter options for a Tesserae search.
@@ -173,10 +77,9 @@ const ExpansionPanelDetails = withStyles((theme) => ({
  *   );
  */
 function SearchParametersForm(props) {
-  const { asyncReady, availableTexts, clearResults, clearSearchMetadata,
-          fetchStoplist, fetchTexts, initiateSearch, language, searchNeeded,
-          searchParameters, sourceText, stopwords, targetText, updateSource,
-          updateTarget } = props;
+  const { asyncReady, clearResults, fetchStoplist, initiateSearch,
+          language, searchNeeded, searchParameters, sourceText,
+          stopwords, targetText } = props;
 
   const classes = useStyles();
 
@@ -188,13 +91,6 @@ function SearchParametersForm(props) {
     }
   };
 
-  const handleTextChange = (text, updateFunc) => {
-    console.log(text);
-    clearSearchMetadata();
-    updateFunc(text);
-  }
-
-  const shouldFetchTexts = asyncReady && availableTexts.length === 0;
   const disableSearch = stopwords.length === 0
                         || sourceText.object_id === undefined
                         || targetText.object_id === undefined;
@@ -221,12 +117,12 @@ function SearchParametersForm(props) {
       <div
         className={classes.root}
       >
-        <ExpansionPanel
+        <MarginlessExpansionPanel
           className={classes.panel}
           expanded={true}
           square
         >
-          <ExpansionPanelDetails
+          <MarginlessExpansionPanelDetails
           >
             <Grid container
               alignContent="center"
@@ -234,33 +130,8 @@ function SearchParametersForm(props) {
               justify="flex-start"
               spacing={2}
             >
-              <Grid item
-                align="center"
-                xs={12}
-              >
-                <TextSelectGroup
-                  handleTextChange={(event, value) => handleTextChange(value, updateSource)}
-                  loading={availableTexts.length === 0}
-                  loadingText={`Loading ${language} corpus`}
-                  onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
-                  selection={sourceText}
-                  textList={availableTexts}
-                  title="Source Text"
-                />
-              </Grid>
-              <Grid item 
-                align="center"
-                xs={12}
-              >
-                <TextSelectGroup
-                  handleTextChange={(event, value) => handleTextChange(value, updateTarget)}
-                  loading={availableTexts.length === 0}
-                  loadingText={`Loading ${language} corpus`}
-                  onOpen={() => fetchTexts(language, shouldFetchTexts)}
-                  selection={targetText}
-                  textList={availableTexts}
-                  title="Target Text"
-                />
+              <Grid item xs={12}>
+                <TextSelectGroup />
               </Grid>
               <Grid item
                 align="center"
@@ -276,13 +147,13 @@ function SearchParametersForm(props) {
                 </Fab>
               </Grid>
             </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel
+          </MarginlessExpansionPanelDetails>
+        </MarginlessExpansionPanel>
+        <MarginlessExpansionPanel
           className={classes.panel}
           square
         >
-          <ExpansionPanelSummary
+          <MarginlessExpansionPanelSummary
             aria-controls="advanced-options-form"
             expandIcon={<ExpandMoreIcon />}
             id="advanced-options-header"
@@ -293,11 +164,11 @@ function SearchParametersForm(props) {
             >
               Advanced Options
             </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          </MarginlessExpansionPanelSummary>
+          <MarginlessExpansionPanelDetails>
             <AdvancedOptionsGroup />
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          </MarginlessExpansionPanelDetails>
+        </MarginlessExpansionPanel>
       </div>
     </Box>
   );
@@ -376,7 +247,6 @@ SearchParametersForm.propTypes = {
 const mapStateToProps = (state) => {
   return {
     asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
-    availableTexts: state.corpus.availableTexts,
     language: state.corpus.language,
     searchNeeded: state.search.searchID === '',
     searchParameters: state.search.searchParameters,
@@ -394,11 +264,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => bindActionCreators({
   clearResults: clearResults,
   clearSearchMetadata: clearSearchMetadata,
-  fetchTexts: fetchTexts,
   fetchStoplist: fetchStoplist,
   initiateSearch: initiateSearch,
-  updateSource: updateSourceText,
-  updateTarget: updateTargetText
 }, dispatch);
 
 
