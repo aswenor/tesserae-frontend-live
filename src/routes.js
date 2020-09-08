@@ -6,14 +6,38 @@
  * @exports App
  * 
  * @requires NPM:react
- * @requires NPM:react-router-dom
- * @requires ./components/common/NavBar/index.js:NavBar
- * @requires ./components/search/index.js:Search
+ * @requires 
  */
-import Search from './components/search';
-import Library from './components/library';
+import React from 'react'
+
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
+import PublishIcon from '@material-ui/icons/Publish';
+
+import CorpusDeleter from './components/corpus_manager/delete';
+import CorpusEditor from './components/corpus_manager/edit';
+import CorpusIngester from './components/corpus_manager/ingest';
 import CorpusManager from './components/corpus_manager';
+import Search from './components/search';
 import Multitext from './components/multitext';
+import CorpusViewer from './components/corpus_manager/CorpusViewer';
+
+
+const mode = String(process.env.REACT_APP_MODE);
+
+
+/**
+ * Routes to corpus management pages conditioned on admin mode.
+ */
+const corpusRoutes = mode.toLowerCase() === 'admin' 
+                     ? [{link: '/corpus', name: 'Corpus', component: CorpusManager}]
+                     : [
+                        {icon: <LibraryBooksIcon />, link: '/corpus', name: 'View the Corpus', component: CorpusManager},
+                        {icon: <PublishIcon />, link: '/corpus/ingest', name: 'Ingest a Text', component: CorpusIngester},
+                        {icon: <EditIcon />, link: '/corpus/edit', name: 'Edit Text Metadata', component: CorpusEditor},
+                        {icon: <DeleteIcon />, link: '/corpus/delete', name: 'Delete a Text', component: CorpusDeleter},
+                       ];
 
 
 /**
@@ -28,9 +52,8 @@ const routes = [
    * @field {React.Component} component The component to render.
    */
   {link: "/", name: "Search", component: Search},
-  {link: "/corpus", name: "Corpus", component: CorpusManager},
+  ...corpusRoutes,
   {link: "/multitext", name: "Multitext", component: Multitext}
-  // {link: "/corpora", name: "Corpora", component: Library}
 ];
 
 
