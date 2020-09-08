@@ -16,7 +16,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { findBy, intersectionBy } from 'lodash';
+import { find, findIndex } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -51,18 +51,18 @@ function AuthorGroup(props) {
    */
   const handleCheck = event => {
     // This prevents the parent TreeView object from closing the tree.
-    event.target.preventDefault();
+    event.preventDefault();
+
+    const checked = event.target.checked;
+    const value = event.target.value;
     
     // The checkbox casts its value to string, so instead of directly storing
     // getting the text object it is looked up from `textList` by object id.
-    const text = findBy(
-      textList,
-      {object_id: event.target.value},
-      'object_id'
-    );
+    const text = find(textList, x => x.object_id === value);
     
     // If the checkbox was checked, add the text, otherwise remove.
-    if (event.target.checked) {
+    if (checked) {
+      console.log('selecting text');
       selectText(text);
     }
     else {
@@ -87,7 +87,7 @@ function AuthorGroup(props) {
                 style={{ display: 'flex', alignItems: 'center' }}
               >
                 <Checkbox
-                  checked={intersectionBy(selectedTexts, item, 'object_id')}
+                  checked={findIndex(selectedTexts, x => x.object_id === item.object_id) >= 0}
                   color="primary"
                   id={`checkbox-${item.object_id}`}
                   onChange={handleCheck}

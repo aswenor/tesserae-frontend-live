@@ -20,7 +20,8 @@ import AdvancedOptionsGroup from '../search/AdvancedOptionsGroup';
 import { MarginlessExpansionPanel, MarginlessExpansionPanelDetails,
          MarginlessExpansionPanelSummary } from '../common/MarginlessExpansionPanel';
 import SelectedMultitextList from './SelectedMultitextList';
-import MultitextSelector from './MultitextSelector';
+import MultitextParametersLeft from './MultitextParametersLeft';
+import MultitextParametersRight from './MultitextParametersRight';
 import TextSelectGroup from '../search/TextSelectGroup';
 
 const useStyles = makeStyles(theme => ({
@@ -58,67 +59,13 @@ function MultitextParametersForm(props) {
         direction="column"
       >
         <Grid item sm={6}>
-          <MarginlessExpansionPanel
-            className={classes.panel}
-            expanded={true}
-            square
-          >
-            <MarginlessExpansionPanelDetails
-            >
-              <Grid container
-                alignContent="center"
-                alignItems="center"
-                justify="flex-start"
-                spacing={2}
-              >
-                <Grid item xs={12}>
-                  <TextSelectGroup />
-                </Grid>
-                <Grid item
-                  align="center"
-                  xs={12}
-                >
-                  <Fab
-                    color="primary"
-                    disabled={disableSearch}
-                    onClick={clearAndInitiate}
-                    variant="extended"
-                  >
-                    <SearchIcon /> Search
-                  </Fab>
-                </Grid>
-                <Grid item xs={12}>
-                  <SelectedMultitextList />
-                </Grid>
-              </Grid>
-            </MarginlessExpansionPanelDetails>
-          </MarginlessExpansionPanel>
-          <MarginlessExpansionPanel
-            className={classes.panel}
-            square
-          >
-            <MarginlessExpansionPanelSummary
-              aria-controls="advanced-options-form"
-              expandIcon={<ExpandMoreIcon />}
-              id="advanced-options-header"
-            >
-              <Typography
-                align="center"
-                variant="h5"
-              >
-                Advanced Options
-              </Typography>
-            </MarginlessExpansionPanelSummary>
-            <MarginlessExpansionPanelDetails>
-              <AdvancedOptionsGroup />
-            </MarginlessExpansionPanelDetails>
-          </MarginlessExpansionPanel>
+          <MultitextParametersLeft />
         </Grid>
         <Divider
           orientation="vertical"
         />
         <Grid item sm={6}>
-          <MultitextSelector />
+          <MultitextParametersRight />
         </Grid>
       </Grid>
 

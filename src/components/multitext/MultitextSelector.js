@@ -26,96 +26,23 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-/**
- * Lexical sort by author then title.
- * 
- * @param {Array} texts The list of texts to sort.
- * @param {String} type One of 'all', 'prose', or 'poetry'.
- * @param {String} authorFilter Pattern to filter by author.
- * @param {String} titleFilter Pattern to filter by title.
- * @returns {Array} The list filtered and sorted by author and title.
- */
-export function filterAndGroupTexts(texts = [], type='all', authorFilter='',
-                                    titleFilter='') {
-  // Filter by prose or poetry on request. If neither was provided as `type`
-  // do not filter.
-  if (type.toLowerCase().search(/prose|poetry/) >= 0) {
-    // Sets up a flag for prose (true) or poetry (false)
-    const typeFlag = type.toLocaleLowerCase() === 'prose';
-    
-    // `is_prose` is a bool indicating a text is prose or poetry,
-    // so filter by equality to `typeFlag`.
-    texts = texts.filter(x => x.is_prose === typeFlag);
-  }
 
-  // If a string is supplied to the author filter, filter by author.
-  if (authorFilter !== '') {
-    texts = texts.filter(x => {
-      return x.author.toLowerCase().search(authorFilter) >= 0;
-    });
-  }
-
-  // If a string is supplied to the title filter, filter by title.
-  if (titleFilter !== '') {
-    texts = texts.filter(x => {
-      return x.title.toLowerCase().search(titleFilter) >= 0;
-    });
-  }
-
-  // Convert the array of texts into an object with texts grouped by author.
-  return groupBy(texts, 'author');
-}
 
 
 function MultitextSelector(props) {
-  const { availableTexts, multitextSelections,
+  const { availableTexts, filter, multitextSelections,
           sourceText, targetText } = props;
 
   const classes = useStyles();
 
-  const [ typeFilter, setTypeFilter ] = useState('all');
-  const [ authorFilter, setAuthorFilter ] = useState('');
-  const [ titleFilter, setTitleFilter ] = useState('');
-
-  const groupedTexts = filterAndGroupTexts(
-    differenceBy(availableTexts, [sourceText, targetText], 'object_id'),
-    typeFilter,
-    authorFilter,
-    titleFilter
-  );
-
-  console.log(groupedTexts);
-
-  const displayTexts = Object.keys(groupedTexts).sort().map(item => {
-    return <AuthorGroup
-      author={item}
-      textList={groupedTexts[item]}
-    />
-  });
+  
 
   return (
-    <Box
+    <div
       className={classes.root}
-      component="section"
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      height={'100%'}
-      width={1}
     >
-      <div
-        className={classes.root}
-      >
-        <MultitextFilter
-          setAuthorFilter={setAuthorFilter}
-          setTitleFilter={setTitleFilter}
-          setTypeFilter={setTypeFilter}
-          typeFilter={typeFilter}
-        />
-        <Divider />
-        {displayTexts}
-      </div>
-    </Box>
+      {displayTexts}
+    </div>
   )
 }
 

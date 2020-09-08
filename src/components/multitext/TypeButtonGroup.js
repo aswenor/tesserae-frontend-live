@@ -46,6 +46,7 @@ function TypeButtonGroup(props) {
       <Button
         className={classes.button}
         color={lowerItem !== typeFilter ? 'default' : 'secondary'}
+        key={item}
         onClick={(event) => setTypeFilter(lowerItem)}
         value={lowerItem}
       >
@@ -59,7 +60,6 @@ function TypeButtonGroup(props) {
       <ThemeProvider theme={localTheme}>
         <ButtonGroup
           className={classes.buttonGroup}
-          fullwidth
         >
           {buttons}
         </ButtonGroup>

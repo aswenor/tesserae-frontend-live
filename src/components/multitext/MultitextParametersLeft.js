@@ -6,7 +6,7 @@ import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMoreIcon';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import AdvancedOptionsGroup from '../search/AdvancedOptionsGroup';
 import { MarginlessExpansionPanel, MarginlessExpansionPanelDetails, 
@@ -15,63 +15,71 @@ import SelectedMultitextList from './SelectedMultitextList';
 import TextSelectGroup from '../search/TextSelectGroup';
 
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    overflowY: 'scroll',
+  },
+  mtContainer: {
+    marginTop: theme.spacing(2)
+  }
+}));
+
+
 function MultitextParametersLeft(props) {
-  const classes = useState();
+  const classes = useStyles();
 
   return (
-    <div
-      className={classes.root}
-    > 
-      <MarginlessExpansionPanel
-        className={classes.panel}
-        expanded={true}
-        square
-      >
-        <MarginlessExpansionPanelDetails>
-          <TextSelectGroup />
-        </MarginlessExpansionPanelDetails>
-      </MarginlessExpansionPanel>
-      <MarginlessExpansionPanel
-        className={classes.panel}
-        expanded={true}
-        square
-      >
-        <MarginlessExpansionPanelSummary
-          aria-controls="multitext-selections-form"
-          expandIcon={<ExpandMoreIcon />}
-          id="multitext-selections-header"
-        >
-          <Typography
-            align="center"
-            variant="h5"
-          >
-            Multitext Selections
-          </Typography>
-        </MarginlessExpansionPanelSummary>
-        <MarginlessExpansionPanelDetails>
-          <SelectedMultitextList />
-        </MarginlessExpansionPanelDetails>
-      </MarginlessExpansionPanel>
-      <MarginlessExpansionPanel
+    <Grid container
+      alignContent="center"
+      alignItems="center"
+      justify="center"
+    >
+      <Grid item xs={12}>
+        <MarginlessExpansionPanel
           className={classes.panel}
+          expanded={true}
           square
         >
-          <MarginlessExpansionPanelSummary
-            aria-controls="advanced-options-form"
-            expandIcon={<ExpandMoreIcon />}
-            id="advanced-options-header"
-          >
-            <Typography
-              align="center"
-              variant="h5"
-            >
-              Advanced Options
-            </Typography>
-          </MarginlessExpansionPanelSummary>
           <MarginlessExpansionPanelDetails>
-            <AdvancedOptionsGroup />
+            <Grid container>
+              <Grid item xs={12}>
+                <TextSelectGroup />
+              </Grid>
+              <Grid item xs={12}
+                className={classes.mtContainer}
+              >
+                <SelectedMultitextList />
+              </Grid>
+            </Grid>
           </MarginlessExpansionPanelDetails>
         </MarginlessExpansionPanel>
-    </div>
+      </Grid>
+      <Grid item xs={12}>
+        <MarginlessExpansionPanel
+            className={classes.panel}
+            square
+          >
+            <MarginlessExpansionPanelSummary
+              aria-controls="advanced-options-form"
+              expandIcon={<ExpandMoreIcon />}
+              id="advanced-options-header"
+            >
+              <Typography
+                align="center"
+                variant="h5"
+              >
+                Advanced Options
+              </Typography>
+            </MarginlessExpansionPanelSummary>
+            <MarginlessExpansionPanelDetails>
+              <AdvancedOptionsGroup />
+            </MarginlessExpansionPanelDetails>
+          </MarginlessExpansionPanel>
+        </Grid>
+    </Grid>
   );
 }
+
+
+export default MultitextParametersLeft;
