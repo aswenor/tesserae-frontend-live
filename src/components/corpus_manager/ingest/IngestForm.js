@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
@@ -18,7 +19,7 @@ import AddIcon from '@material-ui/icons/Add';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import BlockIcon from '@material-ui/icons/Block';
 
-import { ingestText } from '../../api/corpus';
+import { ingestText } from '../../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({
@@ -52,7 +53,10 @@ const useStyles = makeStyles(theme => ({
   uploadField: {
     display: 'none'
   },
-}))
+  uploadContainer: {
+    width: '125%'
+  }
+}));
 
 
 /**
@@ -146,19 +150,19 @@ function IngestForm(props) {
             <Grid container
               alignContent="flex-start"
               alignItems="flex-start"
-              direction="row"
-              justify="flex-start"
+              justify="center"
+              spacing={0}
             >
-              <Grid item xs={3}>
-                <input
-                  accept="image/*,.tess"
-                  className={classes.uploadField}
-                  id="contained-button-file"
-                  onChange={(event) => setFile(event.target.files[0])}
-                  type="file"
-                />
-              </Grid>
               <Grid item xs={9}>
+                <Hidden>
+                  <input
+                    accept="image/*,.tess"
+                    className={classes.uploadField}
+                    id="contained-button-file"
+                    onChange={(event) => setFile(event.target.files[0])}
+                    type="file"
+                  />
+                </Hidden>
                 <label htmlFor="contained-button-file">
                   <Button
                     className={classes.uploadButton}
@@ -171,6 +175,7 @@ function IngestForm(props) {
                   </Button>
                 </label>
                 <TextField
+                  className={classes.uploadContainer}
                   disabled
                   value={file.name}
                   variant="outlined"

@@ -15,10 +15,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-import TablePaginationActions from '../common/TablePaginationActions';
+import TablePaginationActions from '../../common/TablePaginationActions';
 
 const useStyles = makeStyles(theme => ({
   root: {
+    backgroundColor: theme.palette.secondary.main,
     height: '100%'
   },
   body: {
@@ -76,16 +77,17 @@ function DeleteFormTable(props) {
   const bodyCells = texts
     .slice(start, end)
     .map(item => {
-      const idx = findIndex(selected, x => x.object_id === item.object_id);
+      const checked = findIndex(selected, x => x.object_id === item.object_id) >= 0;
       return (
         <TableRow key={item.object_id}>
           <TableCell
             variant="body"
           >
             <Checkbox
-              checked={idx >= 0}
-              onChange={onSelect}
-              value={item}
+              checked={checked}
+              color="primary"
+              onChange={(event) => onSelect(event.target.checked, item)}
+              value={item.object_id}
             />
           </TableCell>
           <TableCell

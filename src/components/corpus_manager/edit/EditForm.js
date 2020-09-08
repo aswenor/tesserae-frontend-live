@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -16,8 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import BlockIcon from '@material-ui/icons/Block';
 
-import { fetchTexts, updateTextMetadata } from '../../api/corpus';
-import TextSelectGroup from '../search/TextSelectGroup';
+import { fetchTexts, updateTextMetadata } from '../../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({
@@ -52,8 +51,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function EditForm(props) {
-  const { asyncReady, availableTexts, fetchTexts, language,
-          updateTextMetadata } = props;
+  const { selectedText, updateTextMetadata } = props;
   
   const classes = useStyles();
 
@@ -62,21 +60,22 @@ function EditForm(props) {
     object_id: '',
     title: '',
     year: undefined,
-    is_prose: false
+    is_prose: true
   };
 
-  const [ selectedText, setSelectedText ] = useState(defaultText);
   const [ newMetadata, setNewMetadata ] = useState({...defaultText});
+  useEffect(() => {
+    if (selectedText.object_id !== newMetadata.object_id) {
+      setNewMetadata({...selectedText});
+    }
+
+    // return () => {
+    //   setNewMetadata({...defaultText});
+    // };
+  }, [selectedText, newMetadata, setNewMetadata]);
   
   /** Flag indicating that all required fields are filled */
   const [ submitReady, setSubmitReady ] = useState(false);
-
-  const shouldFetchTexts = asyncReady && availableTexts.length === 0;
-
-  const onSelectText = (event, value) => {
-    setSelectedText(value);
-    setNewMetadata({...value});
-  };
 
   /**
    * Update the requested metadata field and determine if all are filled.
@@ -89,8 +88,11 @@ function EditForm(props) {
 
     const metadataFilled = (
       newMetadata.author !== '' &&
-      newMetadata.language !== '' &&
-      newMetadata.title === ''
+      newMetadata.title === '' &&
+      newMetadata.author !== selectedText.author ||
+      newMetadata.title !== selectedText.title ||
+      newMetadata.is_prose !== selectedText.is_prose ||
+      newMetadata.year !== selectedText.year
     );
 
     if (metadataFilled) {
@@ -123,16 +125,6 @@ function EditForm(props) {
             justify="center"
             spacing={0}
           >
-            <TextSelectGroup
-              handleTextChange={onSelectText}
-              loading={availableTexts.length === 0}
-              loadingText="Loading text list..."
-              onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
-              selection={selectedText}
-              textList={availableTexts}
-              title="Select a Text to Edit"
-            />
-            <Divider className={classes.divider} />
             <Typography
               align="left"
               className={classes.heading}
@@ -141,31 +133,36 @@ function EditForm(props) {
               Edit Metadata
             </Typography>
             <TextField
-              label="Author"
+              key="author-field"
               onChange={(event) => updateMetadata('author', event.target.value)}
+              placeholder="Author"
               required
               value={newMetadata.author}
               variant="outlined"
             />
             <TextField
-              label="Title"
+              key="title-field"
               onChange={(event) => updateMetadata('title', event.target.value)}
+              placeholder="Title"
               required
               value={newMetadata.title}
               variant="outlined"
             />
             <TextField
-              label="Year Published"
+              key="year-field"
               onChange={(event) => updateMetadata('year', event.target.value)}
+              placeholder="Year Published"
               type="number"
-              value={`${newMetadata.year}`}
+              value={newMetadata.year}
               variant="outlined"
             />
             <Select
               className={classes.select}
-              label="Genre"
-              onChange={(event) => updateMetadata('is_prose', event.target.value === 'prose')}
-              value={newMetadata.is_prose}
+              key="type-field"
+              onChange={(event) => updateMetadata('is_prose', event.target.value)}
+              placeholder="Text Type"
+              renderValue={(value) => value ? 'Prose' : 'Poetry'}
+              value={newMetadata.is_prose ? 'Prose' : 'Poetry'}
               variant="outlined"
             >
               <MenuItem value={false}>Poetry</MenuItem>

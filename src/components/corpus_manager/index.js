@@ -1,75 +1,74 @@
 import React, { useState } from 'react';
-import { find } from 'lodash';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
-import PublishIcon from '@material-ui/icons/Publish';
-
+import CorpusViewerSidebar from './CorpusViewerSidebar';
 import CorpusViewer from './CorpusViewer';
-import DeleteForm from './DeleteForm';
-import EditForm from './EditForm';
-import FormSelector from './FormSelector';
 import HorizontalResizePanels from '../common/HorizontalResizePanels';
-import IngestForm from './IngestForm';
 import PageContainer from '../common/PageContainer';
 
 
+function filterText(text, filter) {
+  console.log(filter);
+
+  let typeFilter = true;
+  if (filter.type.toLowerCase() !== 'all') {
+    const isProse = filter.type === 'prose';
+    typeFilter = isProse === text.is_prose;
+  }
+
+  const authorFilter = (
+    filter.author === '' ||
+    text.author.toLowerCase().search(filter.author) >= 0);
+  const titleFilter = (
+    filter.title === '' ||
+    text.title.toLowerCase().search(filter.title) >= 0);
+  const yearFilter = (
+    filter.year !== undefined &&
+    text.year >= filter.year[0] || text.year <= filter.year[1]
+  );
+
+  console.log(typeFilter, authorFilter, titleFilter, yearFilter);
+
+  return (typeFilter && authorFilter && titleFilter && yearFilter);
+}
+
+
 function CorpusManager(props) {
-  const { routes } = props;
-  
+  const { availableTexts, routes } = props;
+
+  const [ filter, setFilter ] = useState({
+    type: 'all',
+    author: '',
+    title: '',
+    year: [-10000000, 100000000]
+  });
+
   const [isOpen, setIsOpen] = useState(true);
-  const [ activePage, setActivePage ] = useState('viewer');
 
-  const shouldShowLanguages = activePage !== 'ingest';
-
-  const forms = [
-    {
-      component: (<CorpusViewer />),
-      icon: (<LibraryBooksIcon />),
-      label: 'viewer',
-      title: 'Browse the Corpus'
-    },
-    {
-      component: (<IngestForm />),
-      icon: (<PublishIcon />),
-      label: 'ingest',
-      title: 'Add a Text',
-    },
-    {
-      component: (<EditForm />),
-      icon: (<EditIcon />),
-      label: 'edit',
-      title: 'Edit Text Metadata',
-    },
-    {
-      component: (<DeleteForm />),
-      icon: (<DeleteIcon />),
-      label: 'delete',
-      title: 'Remove Texts',
-    },
-  ];
-
-  const currentForm = find(forms, item => item.label == activePage).component;
+  const textList = availableTexts.filter(item => filterText(item, filter));
 
   return (
     <main>
       <PageContainer
         routes={routes}
-        showLanguages={shouldShowLanguages}
+        showLanguages
         toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
       >
         <HorizontalResizePanels
           leftChild={
-            <FormSelector
-              forms={forms}
-              onSelect={setActivePage}
-              selected={activePage}
-            />
+            availableTexts.length > 0
+             ?  <CorpusViewerSidebar
+                  filter={filter}
+                  setFilter={setFilter}
+                  show={availableTexts.length > 0}
+                />
+             : <div></div>
+            
           }
           leftMinWidth={20}
           open={isOpen}
-          rightChild={currentForm}
+          rightChild={<CorpusViewer textList={textList} />}
           rightMinWidth={35}
         />
       </PageContainer>
@@ -78,4 +77,11 @@ function CorpusManager(props) {
 }
 
 
-export default CorpusManager;
+function mapStateToProps(state) {
+  return {
+    availableTexts: state.corpus.availableTexts
+  }
+}
+
+
+export default connect(mapStateToProps)(CorpusManager);

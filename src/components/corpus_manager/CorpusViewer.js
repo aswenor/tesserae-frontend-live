@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { find } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -19,6 +20,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 
 import { fetchTexts } from '../../api/corpus';
+import { addText, removeText } from '../../state/multitext';
 import { clearSourceText, updateSourceText,
          clearTargetText, updateTargetText } from '../../state/search';
 import TablePaginationActions from '../common/TablePaginationActions';
@@ -47,9 +49,10 @@ const useStyles = makeStyles(theme => ({
 
 
 function CorpusViewer(props) {
-  const { asyncReady, availableTexts, clearSourceText, clearTargetText,
-          fetchTexts, language, sourceText, targetText, updateSourceText,
-          updateTargetText } = props;
+  const { addMultitextSelection, asyncReady, clearMultitextSelection,
+          clearSourceText, clearTargetText, fetchTexts, language,
+          multitextSelections, shouldFetch, sourceText, targetText, textList,
+          updateSourceText, updateTargetText } = props;
 
   const classes = useStyles();
   
@@ -60,7 +63,7 @@ function CorpusViewer(props) {
     sortOrder: 1
   });
 
-  if (language !== '' && availableTexts.length === 0) {
+  if (shouldFetch) {
     fetchTexts(language, asyncReady);
   }
 
@@ -85,7 +88,6 @@ function CorpusViewer(props) {
   };
 
   const selectText = (label, checked, value) => {
-    console.log(checked);
     // Update the selected text. If checked, set the source/target.
     // If unchecked, clear the source/target. If already selected
     // (e.g., target checked but already selected as source), clear
@@ -93,7 +95,9 @@ function CorpusViewer(props) {
     if (label === 'source') {
       if (checked) {
         updateSourceText(value);
-       
+
+        clearMultitextSelection(value);
+
         if (value.object_id === targetText.object_id) {
           clearTargetText();
         }
@@ -105,7 +109,9 @@ function CorpusViewer(props) {
     else if (label === 'target') {
       if (checked) {
         updateTargetText(value);
-       
+
+        clearMultitextSelection(value);
+
         if (value.object_id === sourceText.object_id) {
           clearSourceText();
         }
@@ -116,10 +122,28 @@ function CorpusViewer(props) {
     }
   };
 
+  const selectMultitext = (checked, value) => {
+    if (checked) {
+      if (value.object_id === sourceText.object_id) {
+        clearSourceText();
+      }
+      
+      if (value.object_id === targetText.object_id) {
+        clearTargetText();
+      }
+      
+      addMultitextSelection(value);
+    }
+    else {
+      clearMultitextSelection(value);
+    }
+  };
+
   const start = paging.currentPage * paging.rowsPerPage;
   const end = start + paging.rowsPerPage;
 
-  const headCells = ['Source', 'Target', 'Author', 'Title', 'Year', 'Genre'].map((item, idx) => {
+  const headCells = ['Source', 'Target', 'Multitext', 'Author', 'Title', 'Year', 'Genre'].map((item, idx) => {
+    const order = paging.sortOrder === 1 ? 'asc' : 'desc'
     if (idx < 2) {
       return (
         <TableCell
@@ -135,7 +159,7 @@ function CorpusViewer(props) {
         <TableCell
           key={item}
           variant="head"
-          sortDirection={paging.sortHeader === item ? paging.sortOrder : false}
+          sortDirection={paging.sortHeader === item ? order : false}
         >
           <TableSortLabel
             active={paging.sortHeader === item}
@@ -152,12 +176,11 @@ function CorpusViewer(props) {
     }
   });
 
-  const bodyCells = availableTexts.sort(
+  const bodyCells = textList.sort(
     x => x[paging.sortHeader]
   ).slice(
     start, end
   ).map( item => {
-    console.log();
     return (
       <TableRow
         key={item.object_id}
@@ -179,6 +202,16 @@ function CorpusViewer(props) {
             checked={item.object_id === targetText.object_id}
             color="primary"
             onChange={(event) => selectText('target', event.target.checked, item)}
+            value={item}
+          />
+        </TableCell>
+        <TableCell
+          variant="body"
+        >
+          <Checkbox
+            checked={find(multitextSelections, x => x.object_id === item.object_id) !== undefined}
+            color="primary"
+            onChange={(event) => selectMultitext(event.target.checked, item)}
             value={item}
           />
         </TableCell>
@@ -218,7 +251,7 @@ function CorpusViewer(props) {
           className={classes.table}
         >
           <Table
-            stickyheader
+            stickyHeader
           >
             <TableHead>
               <TableRow>
@@ -234,7 +267,7 @@ function CorpusViewer(props) {
         </TableContainer>
         <TablePagination
           ActionsComponent={TablePaginationActions}
-          count={availableTexts.length}
+          count={textList.length}
           page={paging.currentPage}
           onChangePage={handlePagingUpdate}
           onChangeRowsPerPage={(event) => {handlePagingUpdate('rowsPerPage', event.target.value)}}
@@ -254,8 +287,9 @@ CorpusViewer.propTypes = {
 function mapStateToProps(state) {
   return {
     asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
-    availableTexts: state.corpus.availableTexts,
     language: state.corpus.language,
+    multitextSelections: state.multitext.selectedTexts,
+    shouldFetch: state.corpus.language !== '' && state.corpus.availableTexts.length === 0,
     sourceText: state.search.sourceText,
     targetText: state.search.targetText
   };
@@ -264,6 +298,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    addMultitextSelection: addText,
+    clearMultitextSelection: removeText,
     clearSourceText: clearSourceText,
     clearTargetText: clearTargetText,
     fetchTexts: fetchTexts,

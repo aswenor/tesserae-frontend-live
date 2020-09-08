@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { differenceBy, intersectionBy } from 'lodash';
+import { differenceBy, find, intersectionBy } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 
+import CorpusFilter from '../../common/CorpusFilter';
 import DeleteFormModal from './DeleteFormModal';
 import DeleteFormTable from './DeleteFormTable';
-import { deleteTexts, fetchTexts } from '../../api/corpus';
+import { deleteTexts, fetchTexts } from '../../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({
@@ -19,9 +20,10 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
   },
   paper: {
-    width: 200,
+    backgroundColor: theme.palette.secondary.main,
     height: 230,
     overflow: 'auto',
+    width: 200,
   },
   button: {
     margin: theme.spacing(0.5, 0),
@@ -29,15 +31,60 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
+function filterText(text, filter) {
+  console.log(filter);
+
+  let typeFilter = true;
+  if (filter.type.toLowerCase() !== 'all') {
+    const isProse = filter.type === 'prose';
+    typeFilter = isProse === text.is_prose;
+  }
+
+  const authorFilter = (
+    filter.author === '' ||
+    text.author.toLowerCase().search(filter.author) >= 0);
+  const titleFilter = (
+    filter.title === '' ||
+    text.title.toLowerCase().search(filter.title) >= 0);
+  const yearFilter = (
+    filter.year !== undefined &&
+    text.year >= filter.year[0] || text.year <= filter.year[1]
+  );
+
+  console.log(typeFilter, authorFilter, titleFilter, yearFilter);
+
+  return (typeFilter && authorFilter && titleFilter && yearFilter);
+}
+
+
 function DeleteForm(props) {
   const { asyncReady, availableTexts, deleteTexts,
           fetchTexts, language } = props;
+
   const classes = useStyles();
 
+  const defaultFilter = {
+    author: '',
+    title: '',
+    type: 'all',
+    year: [-100000, 100000]
+  };
+
   const [ selected, setSelected ] = useState([]);
-  const [ leftTexts, setLeftTexts] = useState(availableTexts);
+  const [ leftTexts, setLeftTexts] = useState([]);
   const [ rightTexts, setRightTexts ] = useState([]);
   const [ modalOpen, setModalOpen ] = useState(false);
+  const [ filter, setFilter ] = useState(defaultFilter);
+
+  useEffect(() => {
+    if (availableTexts.length === 0) {
+      setFilter(defaultFilter);
+      setLeftTexts(availableTexts);
+    }
+    else if (availableTexts.length > 0 && leftTexts.length === 0) {
+      setLeftTexts(availableTexts);
+    }
+  }, [availableTexts, filter, leftTexts, setFilter, setLeftTexts]);
 
   const leftSelected = intersectionBy(selected, leftTexts, 'object_id');
   const rightSelected = intersectionBy(selected, rightTexts, 'object_id');
@@ -46,15 +93,12 @@ function DeleteForm(props) {
     fetchTexts(language, asyncReady);
   }
 
-  const handleSelect = (event) => () => {
-    const checked = event.target.clicked;
-    const value = event.target.value;
-
+  const handleSelect = (checked, value) => {
     if (checked) {
-      setSelected([value, ...selected]);
+      setSelected(prev => [value, ...prev]);
     }
     else {
-      setSelected(differenceBy(selected, [value], 'object_id'));
+      setSelected(prev => differenceBy(prev, [value], 'object_id'));
     }
   };
 
@@ -92,13 +136,13 @@ function DeleteForm(props) {
   return (
     <div>
       <Grid container
-        alignItems="center"
+        alignItems="flex-start"
         className={classes.root}
         justify="center"
         spacing={2}
       >
         <Grid item
-          xs={5}
+          xs={4}
         >
           <DeleteFormTable
             onSelect={handleSelect}
@@ -108,12 +152,23 @@ function DeleteForm(props) {
           />
         </Grid>
         <Grid item
-          xs={2}
+          xs={4}
         >
           <Grid container
             alignItems="center"
             direction="column"
+            spacing={0}
           >
+            <CorpusFilter
+              authorFilter={filter.author}
+              dateRangeFilter={filter.year}
+              setAuthorFilter={(value) => setFilter(prev => ({...prev, author: value}))}
+              setAuthorFilter={(value) => setFilter(prev => ({...prev, year: value}))}
+              setAuthorFilter={(value) => setFilter(prev => ({...prev, title: value}))}
+              setAuthorFilter={(value) => setFilter(prev => ({...prev, type: value}))}
+              titleFilter={filter.title}
+              typeFilter={filter.type}
+            />
             <Button
               aria-label="move all right"
               className={classes.button}
@@ -158,13 +213,14 @@ function DeleteForm(props) {
               aria-label="delete-texts"
               disabled={rightTexts.length === 0}
               onClick={() => deleteTexts(rightTexts.map(x =>x.object_id))}
+              variant="extended"
             >
               Delete
             </Fab>
           </Grid>
         </Grid>
         <Grid item
-          xs={5}
+          xs={4}
         >
           <DeleteFormTable
             onSelect={handleSelect}
