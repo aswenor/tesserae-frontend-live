@@ -13,7 +13,10 @@ import { differenceBy, uniqBy } from 'lodash';
  * Default state for async communications.
  */
 export const DEFAULT_STATE = {
-  selectedTexts: []
+  results: [],
+  searchID: '',
+  selectedTexts: [],
+  status: '',
 };
 
 
@@ -23,9 +26,15 @@ export const DEFAULT_STATE = {
 
 const ADD_TEXT = 'ADD_TEXT';
 const ADD_TEXTS = 'ADD_TEXTS';
+const CLEAR_RESULTS = 'CLEAR_RESULTS';
+const CLEAR_SEARCH = 'CLEAR_SEARCH';
+const CLEAR_SEARCH_METADATA = 'CLEAR_SEARCH_METADATA';
 const CLEAR_TEXTS = 'CLEAR_TEXTS';
 const REMOVE_TEXT = 'REMOVE_TEXT';
 const REMOVE_TEXTS = 'REMOVE_TEXTS';
+const UPDATE_RESULTS = 'UPDATE_RESULTS';
+const UPDATE_SEARCHID = 'UPDATE_SEARCHID';
+const UPDATE_STATUS = 'UPDATE_STATUS';
 
 
 /**
@@ -61,6 +70,33 @@ export function addTexts(texts) {
       text: texts
     }
   };
+}
+
+
+/**
+ * Remove multitext search results.
+ * 
+ * @returns
+ */
+export function clearResults() {
+  return {
+    type: CLEAR_RESULTS
+  }
+}
+
+
+/**
+ * Clear all search data.
+ * 
+ * @returns
+ */
+export function clearSearch() {
+  return {
+    type: CLEAR_SEARCH,
+    payload: {
+      
+    }
+  }
 }
 
 
@@ -122,7 +158,7 @@ export function multitextReducer(state = DEFAULT_STATE, action = {}) {
       // Concatenate the current selected texts and the texts to be added.
       // To avoid collisions, ensure all texts have a unique object id.
       const concatTexts = uniqBy(
-        [...state.texts, ...action.payload.texts],
+        [...state.selectedTexts, ...action.payload.texts],
         'object_id'
       );
       return {
@@ -139,7 +175,7 @@ export function multitextReducer(state = DEFAULT_STATE, action = {}) {
       // removed by compairng object ids.
       const diffTexts = differenceBy(
         state.selectedTexts,
-        action.payload.selectedTexts,
+        action.payload.texts,
         'object_id'
       );
       return {
