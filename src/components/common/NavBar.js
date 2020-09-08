@@ -14,6 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { differenceBy } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -24,8 +25,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 
 import createTessTheme from '../../theme';
 import PaletteSwapper from './PaletteSwapper';
+import CorpusNavButton from './CorpusNavButton';
 import routes from '../../routes';
 import TessLogoButton from './TessLogoButton';
+
+
+const mode = String(process.env.REACT_APP_MODE);
 
 
 /** CSS styles to apply to the component. */
@@ -76,21 +81,48 @@ function NavBar(props) {
   /** CSS styles and global theme. */
   const classes = useStyles();
 
-  /** Array of links to add to the top bar */
-  const links = routes.map((route, i) => {
-    return (
-      <Button
-        className={classes.button}
-        component={Link}
-        color="default"
-        key={route.link}
-        size="small"
-        to={route.link}
-      >
-        {route.name}
-      </Button>
+  let links = [];
+
+  if (mode !== 'admin') {
+    const corpusRoutes = routes.reverse().filter(item => !item.link.search(/^[/]corpus/));
+    const corpusLinks = (
+      <CorpusNavButton buttonText="Corpus" routes={corpusRoutes} />
     );
-  });
+    /** Array of links to add to the top bar */
+
+    const searchLinks = differenceBy(routes, corpusRoutes).map((route, i) => {
+      return (
+        <Button
+          className={classes.button}
+          component={Link}
+          color="default"
+          key={route.link}
+          size="small"
+          to={route.link}
+        >
+          {route.name}
+        </Button>
+      );
+    });
+
+    links = [corpusLinks, ...searchLinks];
+  }
+  else {
+    links = routes.reverse().map((route, i) => {
+      return (
+        <Button
+          className={classes.button}
+          component={Link}
+          color="default"
+          key={route.link}
+          size="small"
+          to={route.link}
+        >
+          {route.name}
+        </Button>
+      );
+    });
+  }
 
   return (
     <AppBar className={classes.root} position="static">
