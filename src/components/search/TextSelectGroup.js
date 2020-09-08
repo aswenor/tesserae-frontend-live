@@ -16,16 +16,18 @@ import TextSelectDropdowns from './TextSelectDropdowns';
  * @component 
  */
 function TextSelectGroup(props) {
-  const { asyncReady, availableTexts, language, sourceText, targetText,
+  const { asyncReady, availableTexts, fetchTexts, language, sourceText, targetText,
           updateSource, updateTarget } = props
 
   const handleTextChange = (text, updateFunc) => {
-    console.log(text);
     clearSearchMetadata();
     updateFunc(text);
   }
 
-  const shouldFetchTexts = asyncReady && availableTexts.length === 0;
+  const shouldFetchTexts = (asyncReady &&
+                            language !== ''
+                            && availableTexts.length === 0);
+  console.log(shouldFetchTexts);
 
   return (
     <Grid container
@@ -39,10 +41,11 @@ function TextSelectGroup(props) {
         xs={12}
       >
         <TextSelectDropdowns
-          handleTextChange={(event, value) => handleTextChange(value, updateSource)}
+          handleAuthorChange={(value) => handleTextChange(value, updateSource)}
+          handleTitleChange={(value) => handleTextChange(value, updateSource)}
           loading={availableTexts.length === 0}
           loadingText={`Loading ${language} corpus`}
-          onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
+          onOpen={() => {console.log('fetching', language); fetchTexts(language, shouldFetchTexts)}}
           selection={sourceText}
           textList={availableTexts}
           title="Source Text"
@@ -53,10 +56,11 @@ function TextSelectGroup(props) {
         xs={12}
       >
         <TextSelectDropdowns
-          handleTextChange={(event, value) => handleTextChange(value, updateTarget)}
+          handleAuthorChange={(value) => handleTextChange(value, updateTarget)}
+          handleTitleChange={(value) => handleTextChange(value, updateTarget)}
           loading={availableTexts.length === 0}
           loadingText={`Loading ${language} corpus`}
-          onOpen={() => fetchTexts(language, shouldFetchTexts)}
+          onOpen={() => {fetchTexts(language, shouldFetchTexts)}}
           selection={targetText}
           textList={availableTexts}
           title="Target Text"
@@ -137,11 +141,13 @@ const mapStateToProps = (state) => {
  * Add redux store actions to this component's props.
  * @param {function} dispatch The redux dispatch function.
  */
-const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchTexts: fetchTexts,
-  updateSource: updateSourceText,
-  updateTarget: updateTargetText
-}, dispatch);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    fetchTexts: fetchTexts,
+    updateSource: updateSourceText,
+    updateTarget: updateTargetText
+  }, dispatch);
+}
 
 
 // Do redux binding here.

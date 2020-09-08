@@ -12,7 +12,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import uniqBy from 'lodash/uniqBy';
+import { isFunction, isNull, uniqBy } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -67,8 +67,8 @@ const useStyles = makeStyles(theme => ({
  *   )
  */
 function TextSelectDropdowns(props) {
-  const { handleTextChange, loading, loadingText, onOpen,
-          selection, textList, title } = props;
+  const { handleAuthorChange, handleTitleChange, loading, loadingText,
+          onOpen, selection, textList, title } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles();
@@ -96,8 +96,9 @@ function TextSelectDropdowns(props) {
         getOptionLabel={option => option.author !== undefined ? option.author : ''}
         loading={loading}
         loadingText={loadingText}
-        onChange={handleTextChange}
-        onOpen={onOpen}
+        onChange={(event, value) => handleAuthorChange(!isNull(value) ? value : '')}
+        // onInputChange={(event, value) => handleAuthorChange(!isNull(value) ? value : '')}
+        onOpen={(event) => {onOpen()}}
         options={authorItems}
         renderInput={params => (
           <TextField {...params}
@@ -114,8 +115,9 @@ function TextSelectDropdowns(props) {
         getOptionLabel={option => option.title !== undefined ? option.title : ''}
         loading={loading}
         loadingText={loadingText}
-        onChange={handleTextChange}
-        onOpen={onOpen}
+        onChange={(event, value) => handleTitleChange(!isNull(value) ? value : '')}
+        // onInputChange={(event, value) => handleTitleChange(!isNull(value) ? value : '')}
+        onOpen={(event) => {onOpen()}}
         options={textItems}
         renderInput={params => (
           <TextField {...params}
