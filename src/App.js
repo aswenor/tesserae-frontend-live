@@ -48,7 +48,7 @@ function App(props) {
    * @field {string} name The name of the page being linked.
    * 
    */
-  const appRoutes = routes.reverse().map(item => {
+  const appRoutes = routes.slice().sort(x => x.link).reverse().map(item => {
     return (
       <Route key={item.name} path={item.link} component={item.component} />
     );
