@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -24,6 +25,13 @@ import CollapseBox from '../../common/CollapseBox';
 
 import { clearSearchMetadata, clearStopwords,
          updateSearchParameters } from '../../../state/search';
+
+
+const useStyles = makeStyles(theme => ({
+  menu: {
+    backgroundColor: '#ffffff'
+  }
+}));
 
 
 /**
@@ -54,6 +62,8 @@ const availableStoplistBases = [
 function StoplistBasisInput(props) {
   const { clearSearchMetadata, clearStopwords, stoplistBasis,
           updateSearchParameters } = props;
+
+  const classes = useStyles();
 
   const handleSelect = event => {
     updateSearchParameters(event.target.value);
@@ -86,8 +96,9 @@ function StoplistBasisInput(props) {
         margin="dense"
       >
         <Select
+          className={classes.menu}
           value={stoplistBasis}
-          variant="filled"
+          variant="outlined"
         >
           {stoplistBases}
         </Select>

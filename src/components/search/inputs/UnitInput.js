@@ -63,12 +63,14 @@ function UnitInput(props) {
         >
           <ToggleButton
             aria-label="line unit type"
+            selected={unit === 'line'}
             value="line"
           >
             Line
           </ToggleButton>
           <ToggleButton
             aria-label="phrase unit type"
+            selected={unit === 'phrase'}
             value="phrase"
           >
             Phrase

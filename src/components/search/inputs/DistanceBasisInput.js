@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -23,6 +24,13 @@ import Select from '@material-ui/core/Select';
 import CollapseBox from '../../common/CollapseBox';
 
 import { clearSearchMetadata, updateSearchParameters } from '../../../state/search';
+
+
+const useStyles = makeStyles(theme => ({
+  menu: {
+    backgroundColor: '#ffffff'
+  }
+}));
 
 
 /**
@@ -56,6 +64,8 @@ function DistanceBasisInput(props) {
   const { clearSearchMetadata, distanceBasis,
           updateSearchParameters } = props;
 
+  const classes = useStyles();
+
   const handleSelect = event => {
     clearSearchMetadata();
     updateSearchParameters({distanceBasis: event.target.value});
@@ -86,8 +96,9 @@ function DistanceBasisInput(props) {
         margin="dense"
       >
         <Select
+          className={classes.menu}
           value={distanceBasis}
-          vatiant="filled"
+          variant="outlined"
         >
           {distanceBases}
         </Select>
