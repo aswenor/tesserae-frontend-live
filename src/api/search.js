@@ -19,7 +19,7 @@
 import axios from 'axios';
 
 import { initiateAsync, clearAsync,
-         registerError } from '../state/async';
+         registerError, updateSearchInProgress } from '../state/async';
 import { updateResults, updateSearchID, updateSearchStatus,
          updateStopwords } from '../state/search';
 
@@ -135,7 +135,8 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
               stopwords: stopwords,
               freq_basis: params.frequencyBasis,
               max_distance: parseInt(params.maxDistance, 10),
-              distance_basis: params.distanceBasis
+              distance_basis: params.distanceBasis,
+              score_basis: params.scoreBasis
             },
             page_number: 0,
             per_page: 100,
@@ -156,13 +157,17 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
         dispatch(clearAsync());
         
         let searchID = '';
-
-        if (response.headers.location !== undefined) {
-          searchID = response.headers.location.split('/').slice(-2)[0];
+        if (response.request.responseURL !== undefined) {
+          searchID = response.request.responseURL.split('/').slice(-2)[0];
           dispatch(updateSearchID(searchID));
         }
 
-        if (response.data.parallels !== undefined) {
+        if (response.request.location !== undefined && searchID !== '') {
+          searchID = response.request.location.split('/').slice(-2)[0];
+          dispatch(updateSearchID(searchID));
+        }
+
+        if (response.request.parallels !== undefined) {
           const maxScore = response.data.max_score;
           const nResults = response.data.total_count;
           const normedParallels = normalizeScores(response.data.parallels,
@@ -170,6 +175,8 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
           dispatch(updateResults(normedParallels, nResults));
         }
         
+        dispatch(updateSearchInProgress(true));
+
         return searchID;
       })
       .catch(error => {
@@ -208,7 +215,14 @@ export function getSearchStatus(searchID, asyncReady) {
       .then(response => {
         // On success, update the global state and return the status.
         dispatch(clearAsync());
-        dispatch(updateSearchStatus(response.data.status, response.data.progress));
+        if (response.data.status !== undefined) {
+          dispatch(updateSearchStatus(response.data.status, response.data.progress));
+          
+          if (response.data.status.toLowerCase() === 'done') {
+            dispatch(updateSearchInProgress(false));
+          }
+        }
+
         return response.data.status;
       })
       .catch(error => {
