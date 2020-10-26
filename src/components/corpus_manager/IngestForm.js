@@ -19,8 +19,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import BlockIcon from '@material-ui/icons/Block';
 
-import FileUpload from '../../common/FileUpload';
-import { ingestText } from '../../../api/corpus';
+import FileUpload from '../common/FileUpload';
+import { ingestText } from '../../api/corpus';
 
 
 const useStyles = makeStyles(theme => ({
