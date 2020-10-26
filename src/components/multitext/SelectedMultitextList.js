@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,11 +8,15 @@ import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
 
+import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { clearTexts, removeText } from '../../state/multitext';
+import { resetPagination } from '../../state/pagination';
+import MultitextSelectionTable from './MultitextSelectionTable';
 
 
 const classes = makeStyles(theme => ({}));
@@ -20,6 +24,8 @@ const classes = makeStyles(theme => ({}));
 
 function SelectedMultitextList(props) {
   const { clearTexts, removeText, selectedTexts } = props;
+
+  const [ modalOpen, setModalOpen ] = useState(false);
 
   const listItems = selectedTexts.map(item => {
     return (
@@ -52,20 +58,25 @@ function SelectedMultitextList(props) {
 
   return (
     <div>
-          <Typography
-            color="textPrimary"
-            variant="h5"
-          >
-            Multitext Targets
-          { selectedTexts.length > 0 &&
-            <IconButton
-              color="default"
-              onClick={clearTexts}
-            >
-              <CloseIcon />
-            </IconButton>
-          }
-          </Typography>
+      <Typography
+        color="textPrimary"
+        variant="h5"
+      >
+        Multitext Targets
+      <IconButton
+        onClick={() => setModalOpen(prev => !prev)}
+      >
+        <AddIcon />
+      </IconButton>
+      { selectedTexts.length > 0 &&
+        <IconButton
+          color="default"
+          onClick={clearTexts}
+        >
+          <CloseIcon />
+        </IconButton>
+      }
+      </Typography>
       { selectedTexts.length > 0
         ? <List>
             {listItems}
@@ -79,6 +90,15 @@ function SelectedMultitextList(props) {
             </Typography>
           </div>
       }
+      <Modal
+        onClose={(event, reason) => setModalOpen(false)}
+        open={modalOpen}
+        styles={{height: '100%', overflow: 'hidden'}}
+      >
+        <MultitextSelectionTable
+          closeModal={() => setModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }
