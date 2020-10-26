@@ -22,6 +22,9 @@ import Typography from '@material-ui/core/Typography';
 
 /** CSS styles to apply to table cells. */
 const cellStyles = makeStyles(theme => ({
+  root: {
+    zIndex: theme.zIndex.drawer - 1
+  },
   row: {
     borderBottom: '2px solid black'
   },
@@ -70,7 +73,9 @@ function ResultsTableHeader(props) {
   }
 
   return (
-    <TableHead>
+    <TableHead
+      className={classes.root}
+    >
       <TableRow
         className={classes.row}
       >

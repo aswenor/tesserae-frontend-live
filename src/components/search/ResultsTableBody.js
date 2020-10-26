@@ -24,6 +24,7 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles(theme => ({
   root: {
     height: '80%',
+    overflow: 'overlay'
   },
   row: {
     overflowX: 'hidden',

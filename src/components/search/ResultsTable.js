@@ -30,6 +30,7 @@ import ResultsTableHeader from './ResultsTableHeader';
 
 import { fetchResults } from '../../api/search';
 import { resetPagination, updatePagination } from '../../state/pagination';
+import TesseraeTablePagination from '../common/TesseraeTablePagination';
 import TablePaginationActions from '../common/TablePaginationActions';
 
 /** CSS styles to apply to the component. */
@@ -56,17 +57,7 @@ function ResultsTable(props) {
   const { asyncReady, currentPage, fetchResults, results, resultsCount,
           rowsPerPage, searchID, sortHeader, sortOrder, updatePagination } = props;
 
-  console.log(searchID);
-
-  // This is an alternative to useState that fires anytime state is updated.
-  // The inner function is only fired when the table stops being rendered,
-  // and is used to 
-  useEffect(() => {
-    console.log(searchID);
-    return () => {
-      resetPagination();
-    }
-  }, [searchID]);
+  console.log("search", currentPage, rowsPerPage);
 
   const handleTableChanges = (label, value) => {
     console.log(`fetching results from ${searchID}`);
@@ -141,7 +132,14 @@ function ResultsTable(props) {
                 />
               </Table>
             </TableContainer>
-            <TablePagination
+            <TesseraeTablePagination
+              count={resultsCount}
+              fetchResultsOnChange
+              initialRowsPerPage={100}
+              labelRowsPerPage="Results per page:"
+              rowsPerPageOptions={[50, 100, 200, 500]}  
+            />
+            {/* <TablePagination
               ActionsComponent={TablePaginationActions}
               className={classes.pagination}
               count={resultsCount}
@@ -151,7 +149,7 @@ function ResultsTable(props) {
               page={currentPage}
               rowsPerPage={rowsPerPage}
               rowsPerPageOptions={[50, 100, 200, 500]}
-            />
+            /> */}
           </div>
       }
     </Box>
