@@ -19,8 +19,8 @@ import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import { addText, removeText } from '../../state/multitext';
 import { clearSourceText, updateSourceText,
          clearTargetText, updateTargetText } from '../../state/search';
-import ConfirmDelete from './delete/ConfirmDelete';
-import EditForm from './edit/EditForm';
+import ConfirmDelete from './ConfirmDelete';
+import EditForm from './EditForm';
 
 
 function CorpusViewerBodyRow(props) {

@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 
 import AddIcon from '@material-ui/icons/Add';
 
-import IngestForm from './ingest/IngestForm';
+import IngestForm from './IngestForm';
 import { updatePagination } from '../../state/pagination';
 
 

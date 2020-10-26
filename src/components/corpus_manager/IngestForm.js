@@ -19,6 +19,7 @@ import AddIcon from '@material-ui/icons/Add';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import BlockIcon from '@material-ui/icons/Block';
 
+import FileUpload from '../../common/FileUpload';
 import { ingestText } from '../../../api/corpus';
 
 
@@ -47,14 +48,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
     width: '75%'
   },
-  uploadButton: {
-    marginTop: "12px"
-  },
-  uploadField: {
-    display: 'none'
-  },
-  uploadContainer: {
-    width: '125%'
+  upload: {
+    width: '75%'
   }
 }));
 
@@ -147,41 +142,16 @@ function IngestForm(props) {
                 Ingest a Text
               </Typography>
             </Toolbar>
-            <Grid container
-              alignContent="flex-start"
-              alignItems="flex-start"
-              justify="center"
-              spacing={0}
+            <div
+              className={classes.upload}
             >
-              <Grid item xs={9}>
-                <Hidden>
-                  <input
-                    accept="image/*,.tess"
-                    className={classes.uploadField}
-                    id="contained-button-file"
-                    onChange={(event) => setFile(event.target.files[0])}
-                    type="file"
-                  />
-                </Hidden>
-                <label htmlFor="contained-button-file">
-                  <Button
-                    className={classes.uploadButton}
-                    color="primary"
-                    component="span"
-                    size="large"
-                    variant="contained"
-                  >
-                    <AddIcon /> Upload
-                  </Button>
-                </label>
-                <TextField
-                  className={classes.uploadContainer}
-                  disabled
-                  value={file.name}
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
+              <FileUpload
+                buttonIcon={<AddIcon />}
+                buttonText="Upload"
+                file={file}
+                setFile={setFile}
+              />
+            </div>
             <Select
               className={classes.select}
               id="ingest-language"
