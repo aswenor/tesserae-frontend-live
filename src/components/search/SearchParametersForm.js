@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main,
     scrollbarColor: theme.palette.secondary.main,
     scrollbarWidth: 0,
-    overflow: 'overlay',
+    overflow: 'auto',
     '&::-webkit-scrollbar': {
       backgroundColor: theme.palette.secondary.main,
       width: '0em',
