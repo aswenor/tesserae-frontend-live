@@ -4,10 +4,9 @@
  * @author Jeff Kinnison <jkinniso@nd.edu>
  * 
  * @exports DEFAULT_STATE
- * @exports updateAvailableLanguages
- * @exports updateAvailableTexts
- * @exports updateSelectedLanguage
- * @exports corpusReducer
+ * @exports resetPagination
+ * @exports updatePagination
+ * @exports paginationReducer
  */
 
 
@@ -26,7 +25,7 @@ export const DEFAULT_STATE = {
  * Action identifiers to specify which update occurs.
  */
 const RESET_PAGINATION = 'RESET_PAGINATION';
-const UPDATE_PAGINATION = 'UPDATE_AVAILABLE_LANGUAGES';
+const UPDATE_PAGINATION = 'UPDATE_PAGINATION';
 
 
 /**

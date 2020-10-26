@@ -19,6 +19,8 @@ export const DEFAULT_STATE = {
   errors: [],  // Error queue for AJAX requests
   maxAsyncPending: 10,  // The max allowed active AJAX requests
   maxErrorQueueSize: 10,  // Maximum error queue size
+  multitextSearchInProgress: false,
+  searchInProgress: false
 };
 
 
@@ -29,6 +31,8 @@ const INITIATE_ASYNC = 'INITIATE_ASYNC';
 const CLEAR_ASYNC = 'CLEAR_ASYNC';
 const REGISTER_ERROR = 'REGISTER_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
+const UPDATE_MULTITEXT_IN_PROGRESS = 'UPDATE_MULTITEXT_IN_PROGRESS';
+const UPDATE_SEARCH_IN_PROGRESS = 'UPDATE_SEARCH_IN_PROGRESS';
 
 
 /**
@@ -95,6 +99,38 @@ export function clearError(index) {
 
 
 /**
+ * Set or unset the multitextSearchInProgress flag.
+ * 
+ * @param {Boolean} inProgress Updated flag.
+ * @returns {Object} A redux-style action.
+ */
+export function updateMultitextInProgress(inProgress = DEFAULT_STATE.multitextSearchInProgress) {
+  return {
+    type: UPDATE_MULTITEXT_IN_PROGRESS,
+    payload: {
+      multitextSearchInProgress: inProgress
+    }
+  }
+}
+
+
+/**
+ * Set or unset the searchInProgress flag.
+ * 
+ * @param {Boolean} inProgress Updated flag.
+ * @returns {Object} A redux-style action.
+ */
+export function updateSearchInProgress(inProgress = DEFAULT_STATE.searchInProgress) {
+  return {
+    type: UPDATE_SEARCH_IN_PROGRESS,
+    payload: {
+      searchInProgress: inProgress
+    }
+  }
+}
+
+
+/**
  * Reducer
  * 
  * This function commits changes requested by actions.
@@ -137,6 +173,12 @@ export function asyncReducer(state = DEFAULT_STATE, action = {}) {
         ...state,
         errors: state.errors.splice(action.payload.error, 1)
       };
+    case UPDATE_SEARCH_IN_PROGRESS:
+    case UPDATE_MULTITEXT_IN_PROGRESS:
+      return {
+        ...state,
+        ...action.payload
+      }
     default:
       return state;
   }
