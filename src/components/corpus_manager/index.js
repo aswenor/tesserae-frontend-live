@@ -9,8 +9,6 @@ import PageContainer from '../common/PageContainer';
 
 
 function filterText(text, filter) {
-  console.log(filter);
-
   let typeFilter = true;
   if (filter.type.toLowerCase() !== 'all') {
     const isProse = filter.type === 'prose';
@@ -25,10 +23,8 @@ function filterText(text, filter) {
     text.title.toLowerCase().search(filter.title) >= 0);
   const yearFilter = (
     filter.year !== undefined &&
-    text.year >= filter.year[0] || text.year <= filter.year[1]
+    (text.year >= filter.year[0] || text.year <= filter.year[1])
   );
-
-  console.log(typeFilter, authorFilter, titleFilter, yearFilter);
 
   return (typeFilter && authorFilter && titleFilter && yearFilter);
 }
