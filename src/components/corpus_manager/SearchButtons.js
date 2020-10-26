@@ -7,6 +7,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 
+import SearchIcon from '@material-ui/icons/Search';
+
 
 const useStyles = makeStyles(theme => ({
   buttonStyles: {
@@ -29,7 +31,7 @@ function SearchButtons(props) {
       alignItems="center"
       justify="center"
     >
-      <Grid item xs={12}
+      <Grid item xs={6}
         className={classes.buttonStyles}
       >
         <Fab
@@ -39,10 +41,10 @@ function SearchButtons(props) {
           to={'/'}
           variant="extended"
         >
-          Search
+          <SearchIcon />Search
         </Fab>
       </Grid>
-      <Grid item xs={12}
+      <Grid item xs={6}
         className={classes.buttonStyles}
       >
         <Fab
@@ -52,7 +54,7 @@ function SearchButtons(props) {
           to={'/multitext'}
           variant="extended"
         >
-          Multitext
+          <SearchIcon />Multitext
         </Fab>
       </Grid>
     </Grid>
