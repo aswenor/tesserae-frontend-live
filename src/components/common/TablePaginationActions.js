@@ -39,37 +39,25 @@ function TablePaginationActions(props) {
   const classes = useStyles();
   const theme = useTheme();
 
-  const [ expanded, setExpanded ] = useState(false);
-
   const totalPages = Math.ceil(count / rowsPerPage) - 1;
   const prevPage = Math.max(page - 1, 0);
   const nextPage = Math.min(page + 1, totalPages);
 
-  // const pageNos = range(totalPages);
-
-  // let pageButtons = [];
-  // if (!expanded) {
-  //   pageButtons.push();
-  // }
-  // else {
-    
-  // }
-
   return (
-    <div
+    <span
       className={classes.root}
     >
       <IconButton
         aria-label="first page"
         disabled={page === 0}
-        onClick={() => onChangePage('currentPage', 0)}
+        onClick={(event) => onChangePage(event, 0)}
       >
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
       <IconButton
         aria-label="previous page"
         disabled={page === 0}
-        onClick={() => onChangePage('currentPage', prevPage)}
+        onClick={(event) => onChangePage(event, prevPage)}
       >
         {theme.direction === 'rtl'
          ? <KeyboardArrowRightIcon />
@@ -79,7 +67,7 @@ function TablePaginationActions(props) {
       <IconButton
         aria-label="next page"
         disabled={page === totalPages}
-        onClick={() => onChangePage('currentPage', nextPage)}
+        onClick={(event) => onChangePage(event, nextPage)}
       >
         {theme.direction === 'rtl'
          ? <KeyboardArrowLeftIcon />
@@ -89,18 +77,18 @@ function TablePaginationActions(props) {
       <IconButton
         aria-label="last page"
         disabled={page === totalPages}
-        onClick={() => onChangePage('currentPage', totalPages)}
+        onClick={(event) => onChangePage(event, totalPages)}
       >
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
-    </div>
+    </span>
   );
 }
 
 
 TablePaginationActions.propTypes = {
   count: PropTypes.number,
-  currentPage: PropTypes.number,
+  page: PropTypes.number,
   rowsPerPage: PropTypes.number,
   updatePaging: PropTypes.func
 };
