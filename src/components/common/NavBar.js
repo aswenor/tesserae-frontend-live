@@ -14,23 +14,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { differenceBy } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import Toolbar from '@material-ui/core/Toolbar';
 
 import createTessTheme from '../../theme';
-import PaletteSwapper from './PaletteSwapper';
-import CorpusNavButton from './CorpusNavButton';
 import routes from '../../routes';
 import TessLogoButton from './TessLogoButton';
-
-
-const mode = String(process.env.REACT_APP_MODE);
 
 
 /** CSS styles to apply to the component. */
@@ -39,10 +34,16 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     width: '100%'
   },
+  linkBox: {
+    height: '100%',
+    borderLeft: '1px solid black',
+    borderRight: '1px solid black',
+  },
   button: {
     background: '#ffffff',
     border: '1px solid #000000',
     boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
+    marginLeft: '5px'
   },
   header: {
     width: '50vh'
@@ -65,6 +66,7 @@ const localTheme = {
   }
 };
 
+
 /**
  * Top navigation bar with a logo and links to pages in the app.
  *
@@ -76,53 +78,25 @@ const localTheme = {
  *   return <NavBar routes={routes} />
  */
 function NavBar(props) {
-  const { children, updateTheme } = props;
+  const { children } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles();
 
-  let links = [];
-
-  if (mode !== 'admin') {
-    const corpusRoutes = routes.reverse().filter(item => !item.link.search(/^[/]corpus/));
-    const corpusLinks = (
-      <CorpusNavButton buttonText="Corpus" routes={corpusRoutes} />
+  const links = routes.map((route, i) => {
+    return (
+      <Button
+        className={classes.button}
+        component={Link}
+        color="default"
+        key={route.link}
+        size="small"
+        to={route.link}
+      >
+        {route.name}
+      </Button>
     );
-    /** Array of links to add to the top bar */
-
-    const searchLinks = differenceBy(routes, corpusRoutes).map((route, i) => {
-      return (
-        <Button
-          className={classes.button}
-          component={Link}
-          color="default"
-          key={route.link}
-          size="small"
-          to={route.link}
-        >
-          {route.name}
-        </Button>
-      );
-    });
-
-    links = [corpusLinks, ...searchLinks];
-  }
-  else {
-    links = routes.reverse().map((route, i) => {
-      return (
-        <Button
-          className={classes.button}
-          component={Link}
-          color="default"
-          key={route.link}
-          size="small"
-          to={route.link}
-        >
-          {route.name}
-        </Button>
-      );
-    });
-  }
+  });
 
   return (
     <AppBar className={classes.root} position="static">
@@ -132,7 +106,7 @@ function NavBar(props) {
             alignItems="center"
             className={classes.header}
             display="flex"
-            flexGrow={.5}
+            flexGrow={.7}
             justifyContent="flex-start"
           >
             {children}
@@ -141,13 +115,13 @@ function NavBar(props) {
             alignItems="center"
             className={classes.header}
             display="flex"
-            flexGrow={.5}
+            flexGrow={.3}
+            height="100%"
             justifyContent="flex-end"
-            minWidth={.5}
+            minWidth={.3}
           >
-              {links}
-              <PaletteSwapper updateTheme={updateTheme} />
-              <TessLogoButton />
+            {links}
+            <Grid item xs={1}><TessLogoButton /></Grid>
           </Box>
         </Toolbar>
       </ThemeProvider>
