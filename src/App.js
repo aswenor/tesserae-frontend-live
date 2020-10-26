@@ -19,6 +19,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import { sortBy } from 'lodash';
 
 import { fetchLanguages, fetchTexts } from './api/corpus';
 import routes from './routes';
@@ -48,7 +49,8 @@ function App(props) {
    * @field {string} name The name of the page being linked.
    * 
    */
-  const appRoutes = routes.slice().sort(x => x.link).reverse().map(item => {
+  const appRoutes = sortBy(routes.slice(), 'link').reverse().map(item => {
+    console.log(item);
     return (
       <Route key={item.name} path={item.link} component={item.component} />
     );
