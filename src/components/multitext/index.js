@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import PageContainer from '../common/PageContainer';
 import HorizontalResizePanels from '../common/HorizontalResizePanels';
 import MultitextResultsTable from './MultitextResultsTable';
-import MultitextParametersForm from './MultitextParametersForm';
+import MultitextParametersLeft from './MultitextParametersLeft';
 
 import { fetchTexts } from '../../api/corpus';
 
@@ -30,8 +30,8 @@ function Multitext(props) {
         toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
       >
         <HorizontalResizePanels
-          leftChild={<MultitextParametersForm />}
-          leftMinWidth={50}
+          leftChild={<MultitextParametersLeft />}
+          leftMinWidth={25}
           open={isOpen}
           rightChild={<MultitextResultsTable />}
           rightMinWidth={35}
