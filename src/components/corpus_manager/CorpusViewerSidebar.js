@@ -1,35 +1,93 @@
+/**
+ * @fileoverview Sidebar with text filter options.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports CorpusViewerSidebar
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:lodash
+ * @requires NPM:@material-ui/core
+ * @requires ../common/BodyScrollTable
+ * @requires ../common/CorpusFilter
+ * @requires ./SearchButtons
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { isObject } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 
 import CorpusFilter from '../common/CorpusFilter';
 import SearchButtons from './SearchButtons';
 
 
+/** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
   root: {
-    paddingLeft: theme.spacing(3),
-    paddingRight: theme.spacing(3) 
+    backgroundColor: theme.palette.secondary.main,
+    scrollbarColor: theme.palette.secondary.main,
+    scrollbarWidth: 0,
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      backgroundColor: theme.palette.secondary.main,
+      width: '0em',
+      display: 'none'
+    },
+    '&::-webkit-scrollbar-track': {
+      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+      display: 'none',
+      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+      display: 'none',
+      outline: '1px solid slategrey'
+    }
+  },
+  spacer: {
+    marginTop: theme.spacing(3)
   }
 }));
 
 
+/**
+ * Sidebar with text filter options.
+ * 
+ * @component
+ * @example
+ *   let filter = {
+ *     type: 'all',
+ *     author: '',
+ *     title: '',
+ *     year: year: [-10000000, 100000000]
+ *   };
+ * 
+ *   return (
+ *     <CorpusViewerSidebar
+ *       filter={filter}
+ *       setFilter={() => {}}
+ *     />
+ *   );
+ */
 function CorpusViewerSidebar(props) {
   const { filter, setFilter } = props;
 
+  /** CSS styles and global theme. */
   const classes = useStyles();
 
   return (
-    <Grid container
-      alignContent="center"
-      alignItems="center"
+    <Box
       className={classes.root}
-      justify="center"
+      component="section"
+      display="flex"
+      flexDirection="column"
+      flexGrow={1}
+      height={'100%'}
+      width={1}
     >
-      <Grid item xs={12}>
         <CorpusFilter
           authorFilter={filter.author}
           dateRangeFilter={filter.year}
@@ -40,11 +98,9 @@ function CorpusViewerSidebar(props) {
           titleFilter={filter.title}
           typeFilter={filter.type}
         />
-      </Grid>
-      <Grid item xs={12}>
+        <div className={classes.spacer}></div>
         <SearchButtons />
-      </Grid>
-    </Grid>
+    </Box>
   );
 }
 
