@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
 import TextSelectDropdowns from '../search/TextSelectDropdowns';
@@ -13,7 +12,8 @@ import YearSlider from '../common/YearSlider';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: 'flex'
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3)
   },
   spacer: {
     marginTop: '15px',
@@ -30,11 +30,7 @@ function CorpusFilter(props) {
   const classes = useStyles();
 
   return (
-    <Box
-      component="span"
-      padding={20}
-      width={1}
-    >
+    <div className={classes.root}>
       <div className={classes.spacer}></div>
       <Typography variant="h5">Filter Corpus By</Typography>
       <div className={classes.spacer}></div>
@@ -57,7 +53,7 @@ function CorpusFilter(props) {
         setYear={setDateRangeFilter}
         year={dateRangeFilter}
       />
-    </Box>
+    </div>
   );
 }
 
