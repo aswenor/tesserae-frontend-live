@@ -1,30 +1,61 @@
+/**
+ * @fileoverview Styled file upload input.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports FileUpload
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:@material-ui/core
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
 import TextField from '@material-ui/core/TextField';
 
-
+ 
+/** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
   root: {
     padding: 0
   },
   button: {
     margin: 0,
+    marginRight: theme.spacing(1)
   },
   field: {
+    backgroundColor: '#ffffff',
     margin: 0,
   }
 }));
 
 
+/**
+ * Styled file upload input.
+ * 
+ * @component
+ * @example
+ *  import DoneIcon from '@material-ui/core/Done';
+ *  
+ *  let file = '';
+ * 
+ *  return (
+ *    <FileUpload
+ *      buttonIcon={<DoneIcon />}
+ *      buttonText="Browse"
+ *      file={file}
+ *      setFile={(event) => {file = event.target.files[0]}}
+ *    />
+ *  );
+ */
 function FileUpload(props) {
   const { buttonIcon, buttonText, file, setFile } = props;
 
+  /** CSS styles and global theme. */
   const classes = useStyles();
 
   return (
