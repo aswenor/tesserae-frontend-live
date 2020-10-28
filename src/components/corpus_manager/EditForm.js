@@ -4,54 +4,37 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import Fab from '@material-ui/core/Fab';
 import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import BlockIcon from '@material-ui/icons/Block';
+import CloseIcon from '@material-ui/icons/Close';
 
-import { fetchTexts, updateTextMetadata } from '../../../api/corpus';
+import { fetchTexts, updateTextMetadata } from '../../api/corpus';
+import ThemedDialog from '../common/ThemedDialog';
 
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.secondary.main,
-    margin: '5%',
-    padding: theme.spacing(6),
-    '& .MuiTextField-root': {
-      backgroundColor: theme.palette.default.main,
-      margin: theme.spacing(1),
-      width: '75%',
-    },
-    '& .MuiSelect-root': {
-      backgroundColor: theme.palette.default.main,
-    },
-    '& .MuiOutlinedSelect-root': {
-      width: '75%'
-    }
-  },
-  divider: {
-    marginBottom: theme.spacing(6),
-    marginTop: theme.spacing(6),
-    width: '90%'
+  input: {
+    backgroundColor: '#ffffff',
+    marginBottom: theme.spacing(2),
+    width: '100%'
   },
   select: {
-    width: '75%'
+    backgroundColor: '#ffffff',
+    width: '100%'
   },
-  fab: {
-    marginTop: "10px"
+  submitButton: {
+    marginRight: theme.spacing(2)
   }
 }))
 
 
 function EditForm(props) {
-  const { selectedText, updateTextMetadata } = props;
+  const { open, selectedText, closeDialog, updateTextMetadata } = props;
   
   const classes = useStyles();
 
@@ -87,12 +70,12 @@ function EditForm(props) {
     setNewMetadata({...newMetadata, [label]: value});
 
     const metadataFilled = (
-      newMetadata.author !== '' &&
-      newMetadata.title === '' &&
-      newMetadata.author !== selectedText.author ||
+      (newMetadata.author !== '' &&
+      newMetadata.title === '') &&
+      (newMetadata.author !== selectedText.author ||
       newMetadata.title !== selectedText.title ||
       newMetadata.is_prose !== selectedText.is_prose ||
-      newMetadata.year !== selectedText.year
+      newMetadata.year !== selectedText.year)
     );
 
     if (metadataFilled) {
@@ -107,79 +90,76 @@ function EditForm(props) {
   const icon = (submitReady ? <ArrowUpwardIcon /> : <BlockIcon />)
 
   return (
-    <Grid container
-      alignItems="center"
-      justify="center"
-      display="flex"
-    >
-      <Grid item
-        md={8}
-        xs={12}
-      >
-        <Paper
-          className={classes.root}
-        >
-          <Grid container
-            alignItems="center"
-            direction="column"
-            justify="center"
-            spacing={0}
+    <ThemedDialog
+      actions={
+        <div>     
+          <Fab
+            className={classes.submitButton}
+            disabled={!submitReady}
+            onClick={() => updateTextMetadata(newMetadata)}
+            variant="extended"
           >
-            <Typography
-              align="left"
-              className={classes.heading}
-              variant="h5"
-            >
-              Edit Metadata
-            </Typography>
-            <TextField
-              key="author-field"
-              onChange={(event) => updateMetadata('author', event.target.value)}
-              placeholder="Author"
-              required
-              value={newMetadata.author}
-              variant="outlined"
-            />
-            <TextField
-              key="title-field"
-              onChange={(event) => updateMetadata('title', event.target.value)}
-              placeholder="Title"
-              required
-              value={newMetadata.title}
-              variant="outlined"
-            />
-            <TextField
-              key="year-field"
-              onChange={(event) => updateMetadata('year', event.target.value)}
-              placeholder="Year Published"
-              type="number"
-              value={newMetadata.year}
-              variant="outlined"
-            />
-            <Select
-              className={classes.select}
-              key="type-field"
-              onChange={(event) => updateMetadata('is_prose', event.target.value)}
-              placeholder="Text Type"
-              renderValue={(value) => value ? 'Prose' : 'Poetry'}
-              value={newMetadata.is_prose ? 'Prose' : 'Poetry'}
-              variant="outlined"
-            >
-              <MenuItem value={false}>Poetry</MenuItem>
-              <MenuItem value={true}>Prose</MenuItem>
-            </Select>
-            <Fab
-              className={classes.fab}
-              disabled={!submitReady}
-              onClick={() => updateTextMetadata(newMetadata)}
-              variant="extended"
-            >
-              {icon} Submit
-            </Fab>
-          </Grid>
-        </Paper>
-      </Grid>
-    </Grid>
+            {icon} Submit
+          </Fab>
+          <Fab
+            onClick={closeDialog}
+            variant="extended"
+          >
+            <CloseIcon /> Cancel
+          </Fab>
+        </div>
+      }
+      closeDialog={closeDialog}
+      body={
+        <div>
+          <TextField
+            className={classes.input}
+            fullWidth
+            key="author-field"
+            onChange={(event) => updateMetadata('author', event.target.value)}
+            placeholder="Author"
+            required
+            value={newMetadata.author}
+            variant="outlined"
+          />
+          <TextField
+            className={classes.input}
+            fullWidth
+            key="title-field"
+            onChange={(event) => updateMetadata('title', event.target.value)}
+            placeholder="Title"
+            required
+            value={newMetadata.title}
+            variant="outlined"
+          />
+          <TextField
+            className={classes.input}
+            fullWidth
+            key="year-field"
+            onChange={(event) => updateMetadata('year', event.target.value)}
+            placeholder="Year Published"
+            type="number"
+            value={newMetadata.year}
+            variant="outlined"
+          />
+          <Select
+            className={classes.select}
+            fullWidth
+            key="type-field"
+            onChange={(event) => updateMetadata('is_prose', event.target.value)}
+            placeholder="Text Type"
+            renderValue={(value) => value ? 'Prose' : 'Poetry'}
+            value={newMetadata.is_prose}
+            variant="outlined"
+          >
+            <MenuItem value={false}>Poetry</MenuItem>
+            <MenuItem value={true}>Prose</MenuItem>
+          </Select>
+        </div>
+      }
+      open={open}
+      title="Edit Text Metadata"
+    />
   );
 }
 

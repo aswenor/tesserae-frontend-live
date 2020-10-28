@@ -1,95 +1,99 @@
+/**
+ * @fileoverview Form to confirm text deletion.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports CorpusViewerHeader
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:redux
+ * @requires NPM:react-redux
+ * @requires NPM:@material-ui/core
+ * @requires NPM:@material-ui/icons
+ * @requires ../../api/corpus
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+
+import { deleteTexts } from '../../api/corpus';
+import ThemedDialog from '../common/ThemedDialog';
 
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.secondary.main,
-    margin: '5%',
-    padding: theme.spacing(6),
-    [theme.breakpoints.up('md')]: {
-      width: '50%'
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: '95%'
-    },
-  },
-  innerGrid: {
-    marginTop: '10px'
-  },
-  titleText: {
-    marginBottom: '10px'
+  removeButton: {
+    marginRight: theme.spacing(2)
   }
 }));
 
 
+/**
+ * Form to confirm text deletion.
+ * 
+ * @component 
+ */
 function ConfirmDelete(props) {
-  const { closeModal, deleteText, selectedText } = props;
+  const { closeDialog, deleteTexts, open, selectedText } = props;
 
   const classes = useStyles();
 
+  const message = 'Are you sure you want to remove'.concat(
+    ` ${selectedText.author} - ${selectedText.title} `,
+    'from the corpus? This action cannot be undone.'
+  );
+
+  const submitAndClose = () => {
+    deleteTexts([selectedText.object_id]);
+    closeDialog();
+  };
+
   return (
-    <Grid container
-      alignItems="center"
-      justify="center"
-      display="flex"
-    >
-      <Grid item md={4} xs={1}></Grid>
-      <Grid item
-        md={8}
-        xs={10}
-      >
-        <Paper className={classes.root}>
-          <Grid container
-            alignItems="center"
-            direction="column"
-            justify="center"
-            spacing={0}
+    <ThemedDialog
+      actions={
+        <div>
+          <Fab
+            className={classes.removeButton}
+            onClick={submitAndClose}
+            variant="extended"
           >
-            <Typography
-              className={classes.titleText}
-              variant="h4"
-            >
-              Confirm Removal
-            </Typography>        
-            <Typography>
-              Are you sure you want to remove "{selectedText.author}" - "{selectedText.title}"
-              from the corpus? This action cannot be undone.
-            </Typography>
-            <Grid container
-              alignContent="center"
-              alignItems="center"
-              className={classes.innerGrid}
-              justify="center"
-            >
-              <Grid item sm={3} xs={1}></Grid>
-              <Grid item sm={3} xs={12}>
-                <Fab variant="extended">Remove</Fab>
-              </Grid>
-              <Grid item sm={3} xs={12}>
-                <Fab
-                  onClick={closeModal}
-                  variant="extended"
-                >
-                  Cancel
-                </Fab>
-              </Grid>
-              <Grid item sm={3} xs={1}></Grid>
-            </Grid>
-          </Grid>
-        </Paper>
-      </Grid>
-      <Grid item md={2} xs={1}></Grid>
-    </Grid>
+            <DeleteForeverIcon /> Remove
+          </Fab>
+          <Fab
+            onClick={closeDialog}
+            variant="extended"
+          >
+            <CloseIcon /> Cancel
+          </Fab>
+        </div>
+      }
+      body={message}
+      closeDialog={closeDialog}
+      open={open}
+      title="Confirm Removal"
+    />
   );
 }
 
 
-export default ConfirmDelete;
+/**
+ * Add redux store actions to this component's props.
+ * 
+ * @param {function} dispatch The redux dispatch function.
+ */
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    deleteTexts: deleteTexts
+  }, dispatch);
+}
+
+
+// Do redux binding here.
+export default connect(null, mapDispatchToProps)(ConfirmDelete);
