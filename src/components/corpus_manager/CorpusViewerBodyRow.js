@@ -1,3 +1,23 @@
+/**
+ * @fileoverview Row representing one text's metadata and management options.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports CorpusViewerBodyRow
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:react-router-dom
+ * @requires NPM:redux
+ * @requires NPM:react-redux
+ * @requires NPM:lodash
+ * @requires NPM:@material-ui/core
+ * @requires NPM:@material-ui/icons
+ * @requires ./ConfirmDelete
+ * @requires ./EditForm
+ * @requires ../../state/multitext
+ * @requires ../../state/search
+ */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -23,14 +43,66 @@ import ConfirmDelete from './ConfirmDelete';
 import EditForm from './EditForm';
 
 
+/**
+ * Row representing one text's metadata and management options.
+ * 
+ * @component
+ * @example
+ *  let selections = [];
+ *  
+ *  let sourceText = {
+ *    author: 'vergil',
+ *    is_prose: false,
+ *    object_id: '89237645fa965',
+ *    title: 'aeneid',
+ *    year: -25
+ *  };
+ *  
+ *  let targetText = {
+ *    author: 'lucan',
+ *    is_prose: false,
+ *    object_id: 'd76815d1fae4e',
+ *    title: 'bellum civile',
+ *    year: 65
+ *  };
+ *  
+ *  return (
+ *    <CorpusViewerBodyRow
+ *      addMultitextSelection={(value) => {selections.push(value)}}
+ *      clearMultitextSelection={(value) => {selections.splice(selections.indexOf(value), 1)}}
+ *      clearSourceText={() => {sourceText = {};}}
+ *      clearTargetText={() => {targetText = {};}}
+ *      multitextSelections={selections}
+ *      sourceText={sourceText}
+ *      targetText={targetText}
+ *      text={{
+ *        author: 'vergil',
+ *        is_prose: false,
+ *        object_id: '89237645fa965',
+ *        title: 'aeneid',
+ *        year: -25
+ *      }}
+ *      updateSourceText={(value) => sourceText = value;}
+ *      updateTargetText={(value) => targetText = value;}
+ *    />
+ *  );
+ */
 function CorpusViewerBodyRow(props) {
   const { addMultitextSelection, clearMultitextSelection, clearSourceText,
           clearTargetText, multitextSelections, sourceText, targetText, text,
           updateSourceText, updateTargetText } = props;
 
+  /** Flags determining whether the edit or delete modals is visible. */
   const [ editOpen, setEditOpen ] = useState(false);
   const [ deleteOpen, setDeleteOpen ] = useState(false);
 
+  /**
+   * Handle clicking a source or target checkbox.
+   * 
+   * @param {string} label Either 'source' or 'target'
+   * @param {boolean} checked True if the box was checked, false otherwise.
+   * @param {Object} value The text to select/deselect.
+   */
   const selectText = (label, checked, value) => {
     // Update the selected text. If checked, set the source/target.
     // If unchecked, clear the source/target. If already selected
@@ -66,7 +138,15 @@ function CorpusViewerBodyRow(props) {
     }
   };
 
+  /**
+   * Handle clicking the multitext checkbox.
+   * 
+   * @param {boolean} checked True if the box was checked, false otherwise.
+   * @param {Object} value The text to select/deselect.
+   */
   const selectMultitext = (checked, value) => {
+    // If multitext was selected, move the text from source/target to the
+    // multitext selections list (i.e. a text cannot be source and multitext).
     if (checked) {
       if (value.object_id === sourceText.object_id) {
         clearSourceText();
@@ -153,14 +233,11 @@ function CorpusViewerBodyRow(props) {
               onClick={() => {setDeleteOpen(false); setEditOpen(true)}}
             />
           </Tooltip>
-          <Modal
-            aria-describedby="edit-text-metadata"
-            aria-labelledby="edit-text-modal"
-            onClose={() => setEditOpen(false)}
+          <EditForm
+            closeDialog={() => setEditOpen(false)}
             open={editOpen}
-          >
-            <EditForm selectedText={text} />
-          </Modal>
+            selectedText={text}
+          />
         </TableCell>
         <TableCell
           variant="body"
@@ -170,17 +247,11 @@ function CorpusViewerBodyRow(props) {
               onClick={() => {setEditOpen(false); setDeleteOpen(true)}}  
             />
           </Tooltip>
-          <Modal
-            aria-describedby="remove-text-from-corpus"
-            aria-labelledby="remove-text-modal"
-            onClose={() => setDeleteOpen(false)}
+          <ConfirmDelete
+            closeDialog={() => setDeleteOpen(false)}
             open={deleteOpen}
-          >
-            <ConfirmDelete
-              closeModal={() => setDeleteOpen(false)}
-              selectedText={text}
-            />
-          </Modal>
+            selectedText={text}
+          />
         </TableCell>
     </TableRow>
   );
@@ -188,33 +259,103 @@ function CorpusViewerBodyRow(props) {
 
 
 CorpusViewerBodyRow.propTypes = {
+  /**
+   * Add a text to the multitext targets list.
+   */
   addMultitextSelection: PropTypes.func,
+
+  /**
+   * Remove a text from the multitext targets list.
+   */
   clearMultitextSelection: PropTypes.func,
+
+  /**
+   * Deselect the source text.
+   */
   clearSourceText: PropTypes.func,
+
+  /**
+   * Deselect the target text.
+   */
   clearTargetText: PropTypes.func,
+
+  /**
+   * List of multitext targets.
+   */
   multitextSelections: PropTypes.arrayOf(
     PropTypes.shape({
       object_id: PropTypes.string
     })
   ),
+
+  /**
+   * The selected source text.
+   */
   sourceText: PropTypes.shape({
+    /**
+     * Database id of the source text.
+     */
     object_id: PropTypes.string,
   }),
+
+  /**
+   * The selected target text.
+   */
   targetText: PropTypes.shape({
+    /**
+     * Database id of the target text.
+     */
     object_id: PropTypes.string,
   }),
+
+  /**
+   * The text to display in the row.
+   */
   text: PropTypes.shape({
+    /**
+     * Name of the text's author.
+     */
     author: PropTypes.string,
+
+    /**
+     * True if the text is prose, false if poetry.
+     */
     is_prose: PropTypes.bool,
+
+    /**
+     * Database id of the text.
+     */
     object_id: PropTypes.string,
+
+    /**
+     * Title of the text.
+     */
     title: PropTypes.string,
+
+    /**
+     * Year the text was published.
+     */
     year: PropTypes.number
   }),
+
+  /**
+   * Set the source text to a new text.
+   */
   updateSourceText: PropTypes.func,
+
+  /**
+   * Set the target text to a new text.
+   */
   updateTargetText: PropTypes.func
 };
 
 
+/**
+ * Add redux store state to this component's props.
+ * 
+ * @param {object} state The global state of the application.
+ * @returns {object} Members of the global state to provide as props.
+ */
 function mapStateToProps(state) {
   return {
     multitextSelections: state.multitext.selectedTexts,
@@ -224,6 +365,11 @@ function mapStateToProps(state) {
 }
 
 
+/**
+ * Add redux store actions to this component's props.
+ * 
+ * @param {function} dispatch The redux dispatch function.
+ */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     addMultitextSelection: addText,
@@ -236,4 +382,5 @@ function mapDispatchToProps(dispatch) {
 }
 
 
+// Do redux binding here.
 export default connect(mapStateToProps, mapDispatchToProps)(CorpusViewerBodyRow);

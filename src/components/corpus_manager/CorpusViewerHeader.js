@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Header columns with a button to ingest a text.
+ * 
+ * @author [Jeff Kinnison](https://github.com/jeffkinnison)
+ * 
+ * @exports CorpusViewerHeader
+ * 
+ * @requires NPM:react
+ * @requires NPM:prop-types
+ * @requires NPM:react-redux
+ * @requires NPM:react-router-dom
+ * @requires NPM:@material-ui/core
+ * @requires NPM:@material-ui/icons
+ * @requires ./IngestForm
+ * @requires ../../state/pagination
+ */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -16,23 +32,48 @@ import IngestForm from './IngestForm';
 import { updatePagination } from '../../state/pagination';
 
 
+/**
+ * Header columns with a button to ingest a text.
+ * 
+ * @component
+ * @example
+ *  return (
+ *    <CorpusViewerHeader
+ *      sortHeader="author"
+ *      sortOrder={1}
+ *      updatePagination={(value) => {}}
+ *    />
+ *  );
+ */
 function CorpusViewerHeader(props) {
   const { sortHeader, sortOrder, updatePagination } = props; 
 
+  /** Flag indicating that the ingest form should be visible. */
   const [ ingestOpen, setIngestOpen ] = useState(false);
 
+  /**
+   * Update pagination on header click.
+   * 
+   * @param {string} newHeader The column that was clicked.
+   */
   const handleHeaderClick = newHeader => {
+    // If the header did not change, update the sort order.
+    // Otherwise update the header and set the order to ascending. 
     if (newHeader === sortHeader) {
       updatePagination({sortOrder: -sortOrder});
     }
     else {
-      updatePagination({sortHeader: newHeader, sortOrder: -1});
+      updatePagination({sortHeader: newHeader, sortOrder: 1});
     }
   };
 
+  /** The header cells. Some are sortable and others are not. */
   const headCells = ['Source', 'Target', 'Multitext', 'Author', 'Title', 'Year', 'Genre', ''].map((item, idx) => {
     const order = sortOrder === 1 ? 'asc' : 'desc';
-    if ((idx < 2 || idx > 5) && idx !== 7) {
+    // If not sortable, create a standard cell.
+    // If sortable, create a sortable cell.
+    // If at the end of the row, create the ingest button.
+    if ((idx < 3 || idx > 5) && idx !== 7) {
       return (
         <TableCell
           key={item}
@@ -56,12 +97,10 @@ function CorpusViewerHeader(props) {
           >
             <AddIcon /> Add A Text
           </Fab>
-          <Modal
-            onClose={() => setIngestOpen(false)}
+          <IngestForm
+            closeDialog={() => setIngestOpen(false)}
             open={ingestOpen}
-          >
-            <IngestForm />
-          </Modal>
+          />
         </TableCell>
       );
     }
@@ -113,6 +152,12 @@ CorpusViewerHeader.propTypes = {
 };
 
 
+/**
+ * Add redux store state to this component's props.
+ * 
+ * @param {object} state The global state of the application.
+ * @returns {object} Members of the global state to provide as props.
+ */
 function mapStateToProps(state) {
   return {
     sortHeader: state.pagination.sortHeader,
@@ -121,6 +166,10 @@ function mapStateToProps(state) {
 }
 
 
+/**
+ * Add redux store actions to this component's props.
+ * @param {function} dispatch The redux dispatch function.
+ */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     updatePagination: updatePagination
@@ -128,4 +177,5 @@ function mapDispatchToProps(dispatch) {
 }
 
 
+// Do redux binding here.
 export default connect(mapStateToProps, mapDispatchToProps)(CorpusViewerHeader);
