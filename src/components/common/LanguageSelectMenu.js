@@ -144,7 +144,6 @@ function LanguageSelectMenu(props) {
         className={classes.menuButton}
         key="toggler"
         onClick={toggleSideBar}
-        size="small"
         variant="contained"
       >
         <MenuOpenIcon />
@@ -162,7 +161,6 @@ function LanguageSelectMenu(props) {
         color={language === 'latin' ? 'secondary' : 'default'}
         key="latin"
         onClick={event => handleClick('latin')}
-        size="small"
         variant="contained"
       >
         Latin
@@ -183,7 +181,6 @@ function LanguageSelectMenu(props) {
         color={language === 'greek' ? 'secondary' : 'default'}
         key="greek"
         onClick={event => handleClick('greek')}
-        size="small"
         variant="contained"
       >
         Greek
@@ -205,7 +202,6 @@ function LanguageSelectMenu(props) {
         aria-haspopup="menu"
         aria-label="select a language to search"
         onClick={handleToggle}
-        size="small"
       >
         {language !== "greek" && language !== "latin" ? language : 'More...'} <ArrowDropDownIcon />
       </Button>
