@@ -30,6 +30,7 @@ import ResultsTableHeader from './ResultsTableHeader';
 
 import { fetchResults } from '../../api/search';
 import { resetPagination, updatePagination } from '../../state/pagination';
+import BodyScrollTable from '../common/BodyScrollTable';
 import TesseraeTablePagination from '../common/TesseraeTablePagination';
 import TablePaginationActions from '../common/TablePaginationActions';
 
@@ -54,106 +55,46 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function ResultsTable(props) {
-  const { asyncReady, currentPage, fetchResults, results, resultsCount,
-          rowsPerPage, searchID, sortHeader, sortOrder, updatePagination } = props;
+  const { asyncReady, fetchResults, results, resultsCount, searchID,
+          startIdx } = props;
 
-  console.log("search", currentPage, rowsPerPage);
-
-  const handleTableChanges = (label, value) => {
-    console.log(`fetching results from ${searchID}`);
-    let newMeta = {[label]: value};
-    
-    if (label !== 'currentPage') {
-      newMeta = {...newMeta, currentPage: 0}
-    }
-
-    updatePagination(newMeta);
-    fetchResults(searchID, asyncReady, newMeta.currentPage,
-                 newMeta.rowsPerPage, newMeta.sortHeader, newMeta.sortOrder);
+  const onPageChange = (pagination) => {
+    fetchResults(searchID, asyncReady,
+                 pagination.currentPage,
+                 pagination.rowsPerPage,
+                 pagination.sortHeader,
+                 pagination.sortOrder);
   };
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
-  /** Labels for the columns. */
-  const headerLabels = ['', 'Source', 'Target', 'Matched On', 'Score'];
-
-  /** Get the indices of results to display in the table. */
-  const start = currentPage * rowsPerPage;
-  const end = Math.min(start + rowsPerPage, resultsCount);
-
-  let displayResults = results;
-
-  if (results.length > rowsPerPage) {
-    /** Get the results entries by sorting and slicing. */
-    displayResults = results.sort((a, b) => {
-      if (b[sortHeader] < a[sortHeader]) {
-        return -1 * sortOrder;
-      }
-      else if (b[sortHeader] > a[sortHeader]) {
-        return 1 * sortOrder;
-      }
-      else {
-        return 0;
-      }
-    }).slice(start, end);
-  }
+  // Create one row per result.
+  const bodyRows = results.map((item, idx) => {
+    return (
+      <ResultsTableBody
+        idx={startIdx + idx + 1}
+        result={item}
+      />
+    );
+  });
 
   // If a search has not been run and no results are available, display a
   // placeholder that points to the parameters form or shows a spinning
   // load bar. Otherwise, show the results.
   return (
-    <Box
-      display="flex"
-      flexGrow={1}
-      height={'93%'}
-      maxHeight={'93%'}
-      width={1}
-    >
-      { results.length === 0
-        ? <ResultsPlaceholder />
-        : <div>
-            <TableContainer
-              className={classes.root}
-            >
-              <Table
-                stickyHeader
-              >
-                <ResultsTableHeader
-                  labels={headerLabels}
-                  sortHeader={sortHeader}
-                  sortOrder={sortOrder}
-                  updateSortHeader={value => handleTableChanges('sortHeader', value)}
-                  updateSortOrder={value => handleTableChanges('sortOrder', value)}
-                />
-                <ResultsTableBody 
-                  results={displayResults}
-                  startIdx={currentPage * rowsPerPage}
-                />
-              </Table>
-            </TableContainer>
-            <TesseraeTablePagination
-              count={resultsCount}
-              fetchResultsOnChange
-              initialRowsPerPage={100}
-              labelRowsPerPage="Results per page:"
-              rowsPerPageOptions={[50, 100, 200, 500]}  
-            />
-            {/* <TablePagination
-              ActionsComponent={TablePaginationActions}
-              className={classes.pagination}
-              count={resultsCount}
-              labelRowsPerPage="Results per page:"
-              onChangePage={handleTableChanges}
-              onChangeRowsPerPage={(event) => handleTableChanges('rowsPerPage', event.target.value)}
-              page={currentPage}
-              rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={[50, 100, 200, 500]}
-            /> */}
-          </div>
-      }
-    </Box>
-  )
+    results.length === 0
+      ? <ResultsPlaceholder />
+      : <BodyScrollTable
+          bodyCount={resultsCount}
+          bodyRows={bodyRows}
+          headerRow={<ResultsTableHeader />}
+          initialRowsPerPage={100}
+          onPageChange={onPageChange}
+          rowsPerPageLabel="Results per page: "
+          rowsPerPageOptions={[50, 100, 250, 500]}
+        />
+  );
 }
 
 
@@ -213,7 +154,12 @@ ResultsTable.propTypes = {
   /**
    * Database ID of the search.
    */
-  searchID: PropTypes.string
+  searchID: PropTypes.string,
+
+  /**
+   * Starting index of the current results page.
+   */
+  startIdx: PropTypes.number
 }
 
 
@@ -225,13 +171,10 @@ ResultsTable.propTypes = {
  */
 const mapStateToProps = state => ({
   asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
-  currentPage: state.pagination.currentPage,
   results: state.search.results,
   resultsCount: state.search.resultsCount,
-  rowsPerPage: state.pagination.rowsPerPage,
   searchID: state.search.searchID,
-  sortHeader: state.pagination.sortHeader,
-  sortOrder: state.pagination.sortOrder,
+  startIdx: state.pagination.currentPage * state.pagination.rowsPerPage,
 });
 
 
