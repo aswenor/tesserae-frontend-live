@@ -9,7 +9,6 @@
  * @requires NPM:react-redux
  * @requires NPM:@material-ui/core
  * @requires ../../api/corpus
- * @requires ./LanguageSelectMenu
  * @requires ./LoadingScreen
  * @requires ./NavBar
  * @requires ../../theme
@@ -20,12 +19,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import { fetchLanguages, fetchTexts } from '../../api/corpus';
-import LanguageSelectMenu from './LanguageSelectMenu';
 import LoadingScreen from './LoadingScreen';
 import NavBar from './NavBar';
 import createTesseraeTheme from '../../theme';
@@ -34,7 +31,9 @@ import createTesseraeTheme from '../../theme';
 const useStyles = makeStyles(theme => ({
   root: {
     height: '100vh',
+    margin: 0,
     overflow: 'hidden',
+    padding: 0,
     width: '100vw'
   }
 }));
@@ -51,7 +50,7 @@ const useStyles = makeStyles(theme => ({
  */
 function PageContainer(props) {
   const { asyncReady, children, corpusLoaded, fetchLanguages, fetchTexts,
-          language, routes, showLanguages, sideBarOpen, toggleSideBar } = props;
+          language, routes } = props;
 
   const classes = useStyles();
 
@@ -60,16 +59,12 @@ function PageContainer(props) {
   const updateTheme = newTheme => setTheme(newTheme);
 
   if (language === '') {
-    console.log('fetching language');
     fetchLanguages(asyncReady);
   }
 
   if (language !== '' && !corpusLoaded) {
-    console.log('fetching texts');
     fetchTexts(language, asyncReady);
   }
-
-  console.log(language, corpusLoaded);
 
   return (
     <ThemeProvider theme={createTesseraeTheme(userTheme)}>
@@ -81,12 +76,7 @@ function PageContainer(props) {
             <NavBar
               routes={routes}
               updateTheme={updateTheme}
-            >
-                { showLanguages
-                  ? <LanguageSelectMenu sideBarOpen={sideBarOpen} toggleSideBar={toggleSideBar} />
-                  : <div />
-                }
-            </NavBar> 
+            /> 
             {children}
           </div>
         : <LoadingScreen />
@@ -132,25 +122,16 @@ PageContainer.propTypes = {
        */
       name: PropTypes.string
     })
-  ),
-  
-  /**
-   * Whether or not to show languages on the top bar.
-   */
-  showLanguages: PropTypes.bool,
-
-  /**
-   * Whether or not the sidebar is open.
-   */
-  sideBarOpen: PropTypes.bool,
-  
-  /**
-   * Function to toggle the sidebar being open.
-   */
-  toggleSideBar: PropTypes.func
+  )
 }
 
 
+/**
+ * Add redux store state to this component's props.
+ * 
+ * @param {object} state The global state of the application.
+ * @returns {object} Members of the global state to provide as props.
+ */
 function mapStateToProps(state) {
   return {
     asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
@@ -159,7 +140,11 @@ function mapStateToProps(state) {
   };
 }
 
-
+/**
+ * Add redux store actions to this component's props.
+ * 
+ * @param {function} dispatch The redux dispatch function.
+ */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     fetchLanguages: fetchLanguages,
@@ -168,4 +153,5 @@ function mapDispatchToProps(dispatch) {
 }
 
 
+// Do redux binding here.
 export default connect(mapStateToProps, mapDispatchToProps)(PageContainer);
