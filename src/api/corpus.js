@@ -17,6 +17,7 @@ import { initiateAsync, clearAsync,
 import { updateAvailableLanguages, updateAvailableTexts,
          updateSelectedLanguage } from '../state/corpus';
 import { resetSearch } from '../state/search';
+import { addFullText } from '../state/texts';
 
 
 /**
@@ -134,6 +135,38 @@ export function fetchTexts(language, shouldFetch) {
 }
 
 
+export function fetchFullText(textID, unit, asyncReady) {
+  return dispatch => {
+    if (asyncReady) {
+      console.log('fetching the full text');
+      dispatch(initiateAsync());
+
+      axios({
+        method: 'get',
+        url: `${REST_API}/units/`,
+        crossDomain: true,
+        responseType: 'json',
+        params: {
+          unitType: unit,
+          works: textID,
+        }
+      })
+      .then(response => {
+        console.log('response', response)
+        dispatch(addFullText(textID, response.data.units));
+        dispatch(clearAsync());
+        return response.data.units;
+      })
+      .catch(error => {
+        // On error, update the error log.
+        dispatch(registerError(error));
+        dispatch(clearAsync());
+      });
+    }
+  };
+}
+
+
 export function ingestText(tessFile, metadata) {
   return dispatch => {
     dispatch(initiateAsync());
@@ -173,7 +206,9 @@ export function updateTextMetadata(textID, metadata) {
     }).then(response => {
 
     }).error(error => {
-
+      // On error, update the error log.
+      dispatch(registerError(error));
+      dispatch(clearAsync());
     });
   };
 }
@@ -190,7 +225,9 @@ export function deleteTexts(textIDs) {
       }).then(response => {
         
       }).error(error => {
-
+        // On error, update the error log.
+        dispatch(registerError(error));
+        dispatch(clearAsync());
       })
     );
   };
