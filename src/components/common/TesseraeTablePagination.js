@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
 
-import { fetchResults } from '../../api/search';
 import TablePaginationActions from './TablePaginationActions';
 import { updatePagination, resetPagination } from '../../state/pagination';
 
@@ -25,14 +24,11 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function TesseraeTablePagination(props) {
-  const { asyncReady, count, fetchResultsOnChange, fetchResults,
-          initialRowsPerPage, page, resetPagination, rowsPerPage,
-          rowsPerPageLabel, rowsPerPageOptions, searchID, sortHeader,
-          sortOrder, updatePagination } = props;
+  const { count, initialRowsPerPage, onPageChange, pagination,
+          resetPagination, rowsPerPageLabel, rowsPerPageOptions,
+          updatePagination } = props;
   
   const classes = useStyles();
-
-  console.log('RPP: ', rowsPerPage);
 
   useEffect(() => {
     updatePagination({
@@ -42,13 +38,10 @@ function TesseraeTablePagination(props) {
   }, [initialRowsPerPage, updatePagination]);
 
   useEffect(() => {
-    if (fetchResultsOnChange) {
-      fetchResults(searchID, asyncReady, page,
-                   rowsPerPage, sortHeader, sortOrder);
+    if (onPageChange) {
+      onPageChange(pagination);
     }
-  }, [asyncReady, fetchResults, fetchResultsOnChange,
-      page, rowsPerPage, resetPagination, searchID,
-      sortHeader, sortOrder]);
+  }, [onPageChange, pagination, resetPagination]);
 
   const handleChangePage = (event, newPage) => {
     updatePagination({currentPage: newPage});
@@ -66,8 +59,8 @@ function TesseraeTablePagination(props) {
       labelRowsPerPage={rowsPerPageLabel}
       onChangePage={handleChangePage}
       onChangeRowsPerPage={handleChangeRowsPerPage}
-      page={page}
-      rowsPerPage={rowsPerPage}
+      page={pagination.currentPage}
+      rowsPerPage={pagination.rowsPerPage}
       rowsPerPageOptions={rowsPerPageOptions}
     />
   );
@@ -75,29 +68,22 @@ function TesseraeTablePagination(props) {
 
 
 TesseraeTablePagination.propTypes = {
-  count: PropTypes.number,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
+  pagination: PropTypes.shape({
+
+  }),
   updatePagination: PropTypes.func
 };
 
 
 function mapStateToProps(state) {
   return {
-    asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
-    page: state.pagination.currentPage,
-    rowsPerPage: state.pagination.rowsPerPage,
-    searchID: state.search.searchID,
-    sortHeader: state.pagination.sortHeader,
-    sortOrder: state.pagination.sortOrder
+    pagination: state.pagination
   };
 }
 
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    fetchResults: fetchResults,
     resetPagination: resetPagination,
     updatePagination: updatePagination
   }, dispatch);
