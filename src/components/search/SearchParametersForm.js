@@ -29,6 +29,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
 
 import AdvancedOptionsGroup from './AdvancedOptionsGroup'
+import LanguageSelectMenu from '../common/LanguageSelectMenu';
 import { MarginlessExpansionPanel, MarginlessExpansionPanelSummary,
          MarginlessExpansionPanelDetails } from '../common/MarginlessExpansionPanel';
 import TextSelectGroup from './TextSelectGroup';
@@ -79,7 +80,7 @@ const useStyles = makeStyles(theme => ({
 function SearchParametersForm(props) {
   const { asyncReady, clearResults, fetchStoplist, initiateSearch,
           language, searchNeeded, searchParameters, sourceText,
-          stopwords, targetText } = props;
+          stopwords, targetText, toggleSideBar } = props;
 
   const classes = useStyles();
 
@@ -87,11 +88,12 @@ function SearchParametersForm(props) {
     if (searchNeeded) {
       clearResults();
       initiateSearch(sourceText, targetText, searchParameters,
-                    stopwords, asyncReady);
+                    stopwords, true);
     }
   };
 
-  const disableSearch = stopwords.length === 0
+  const disableSearch = !searchNeeded
+                        || stopwords.length === 0
                         || sourceText.object_id === undefined
                         || targetText.object_id === undefined;
 
@@ -130,6 +132,11 @@ function SearchParametersForm(props) {
               justify="flex-start"
               spacing={2}
             >
+              <Grid item xs={12}>
+                <LanguageSelectMenu
+                  toggleSideBar={toggleSideBar}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextSelectGroup />
               </Grid>
@@ -248,7 +255,7 @@ const mapStateToProps = (state) => {
   return {
     asyncReady: state.async.asyncPending < state.async.maxAsyncPending,
     language: state.corpus.language,
-    searchNeeded: state.search.searchID === '',
+    searchNeeded: state.search.searchID === '' && !state.async.searchInProgress,
     searchParameters: state.search.searchParameters,
     sourceText: state.search.sourceText,
     stopwords: state.search.stopwords,
