@@ -17,10 +17,17 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@material-ui/core';
+
 import CorpusViewer from './CorpusViewer';
 import CorpusViewerSidebar from './CorpusViewerSidebar';
 import HorizontalResizePanels from '../common/HorizontalResizePanels';
 import PageContainer from '../common/PageContainer';
+
+
+const useStyles = makeStyles({
+  
+});
 
 
 /**
@@ -113,7 +120,6 @@ function CorpusManager(props) {
   const textList = availableTexts.filter(item => filterText(item, filter));
 
   return (
-    <main>
       <PageContainer
         routes={routes}
         showLanguages
@@ -136,7 +142,6 @@ function CorpusManager(props) {
           rightMinWidth={35}
         />
       </PageContainer>
-    </main>
   );
 }
 

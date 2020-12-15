@@ -21,6 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
 import CorpusFilter from '../common/CorpusFilter';
+import LanguageSelectMenu from '../common/LanguageSelectMenu';
 import SearchButtons from './SearchButtons';
 
 
@@ -80,6 +81,7 @@ function CorpusViewerSidebar(props) {
 
   return (
     <Box
+      alignItems="center"
       className={classes.root}
       component="section"
       display="flex"
@@ -88,18 +90,20 @@ function CorpusViewerSidebar(props) {
       height={'100%'}
       width={1}
     >
-        <CorpusFilter
-          authorFilter={filter.author}
-          dateRangeFilter={filter.year}
-          setAuthorFilter={(value) => setFilter(prev => ({...prev, author: isObject(value) ? value.author : value}))}
-          setDateRangeFilter={(value) => setFilter(prev => ({...prev, year: value}))}
-          setTitleFilter={(value) => setFilter(prev => ({...prev, title: isObject(value) ? value.title : value}))}
-          setTypeFilter={(value) => setFilter(prev => ({...prev, type: value}))}
-          titleFilter={filter.title}
-          typeFilter={filter.type}
-        />
-        <div className={classes.spacer}></div>
-        <SearchButtons />
+      <div className={classes.spacer}></div>
+      <LanguageSelectMenu />
+      <CorpusFilter
+        authorFilter={filter.author}
+        dateRangeFilter={filter.year}
+        setAuthorFilter={(value) => setFilter(prev => ({...prev, author: isObject(value) ? value.author : value}))}
+        setDateRangeFilter={(value) => setFilter(prev => ({...prev, year: value}))}
+        setTitleFilter={(value) => setFilter(prev => ({...prev, title: isObject(value) ? value.title : value}))}
+        setTypeFilter={(value) => setFilter(prev => ({...prev, type: value}))}
+        titleFilter={filter.title}
+        typeFilter={filter.type}
+      />
+      <div className={classes.spacer}></div>
+      <SearchButtons />
     </Box>
   );
 }
