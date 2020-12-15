@@ -139,6 +139,7 @@ const mapStateToProps = (state) => {
 
 /**
  * Add redux store actions to this component's props.
+ * 
  * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
