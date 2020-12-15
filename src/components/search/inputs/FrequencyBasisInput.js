@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -44,8 +44,10 @@ function FrequencyBasisInput(props) {
           updateSearchParameters } = props;
 
   const handleChange = (event, newFrequencyBasis) => {
-    clearSearchMetadata();
-    updateSearchParameters({frequencyBasis: newFrequencyBasis});
+    batch(() => {
+      clearSearchMetadata();
+      updateSearchParameters({frequencyBasis: newFrequencyBasis});
+    });
   };
 
   return (

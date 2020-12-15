@@ -1,5 +1,5 @@
 /**
- * @fileoverview Input widget for selecting the score basis.
+ * @fileoverview Input widget for selecting the feature for score basis.
  * 
  * @author [Jeff Kinnison](https://github.com/jeffkinnison)
  * 
@@ -14,67 +14,94 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 import CollapseBox from '../../common/CollapseBox';
 
 import { clearSearchMetadata, updateSearchParameters } from '../../../state/search';
 
 
+const useStyles = makeStyles(theme => ({
+  menu: {
+    backgroundColor: '#ffffff'
+  }
+}));
+
+
 /**
- * Dropdown menu to select the score basis.
+ * Available features to search. Could also be loaded form the REST API.
+ */
+const availableFeatures = [
+  'Form',
+  'Lemmata',
+  'Semantic',
+  'Lemma + Semantic',
+  'Sound'
+];
+
+
+/**
+ * Dropdown menu to select a search feature.
  * 
  * @component
  * 
  * @example
  *   const updateSearchParameters = update => update;
  *   return (
- *     <ScoreBasisInput
- *       scoreBasis="phrase"
+ *     <FeatureInput
+ *       feature="lemmata"
  *       updateSearchParameters={updateSearchParameters}
  *     />
  *   );
  */
 function ScoreBasisInput(props) {
-  const { clearSearchMetadata, scoreBasis,
-          updateSearchParameters } = props;
+  const { clearSearchMetadata, scoreBasis, updateSearchParameters } = props;
 
-  const handleChange = (event, newScoreBasis) => {
-    clearSearchMetadata();
-    updateSearchParameters({scoreBasis: newScoreBasis});
+  const classes = useStyles();
+
+  const handleSelect = event => {
+    batch(() => {
+      clearSearchMetadata();
+      updateSearchParameters({scoreBasis: event.target.value});
+    });
   };
+
+  const features = availableFeatures.map(item => {
+    const norm = item.toLowerCase();
+    return (
+      <MenuItem
+        dense
+        disableGutters
+        key={norm}
+        selected={norm === scoreBasis}
+        value={norm}
+      >
+        {item}
+      </MenuItem>
+    );
+  });
 
   return (
     <CollapseBox
       headerText="Score Basis"
     >
       <FormControl
+        fullWidth
         margin="dense"
       >
-        <ToggleButtonGroup
-          aria-label="select score basis"
-          exclusive
-          onChange={handleChange}
-          size="small"
+        <Select
+          className={classes.menu}
+          onChange={handleSelect}
           value={scoreBasis}
+          variant="outlined"
         >
-          <ToggleButton
-            aria-label="word score basis"
-            value="stem"
-          >
-            Stem
-          </ToggleButton>
-          <ToggleButton
-            aria-label="word score basis"
-            value="word"
-          >
-            Word
-          </ToggleButton>
-        </ToggleButtonGroup>
+          {features}
+        </Select>
       </FormControl>
     </CollapseBox>
   );
@@ -83,7 +110,7 @@ function ScoreBasisInput(props) {
 
 ScoreBasisInput.propTypes = {
   /**
-   * Score basis currently selected.
+   * Feature currently selected.
    */
   scoreBasis: PropTypes.string,
 
@@ -107,11 +134,11 @@ function mapStateToProps(state) {
 
 /**
  * Add redux store actions to this component's props.
- * @param {funciton} dispatch The redux dispatch function.
+ * @param {function} dispatch The redux dispatch function.
  */
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    clearSearchMetadata: clearSearchMetadata,
+    clearSearchMetadata:  clearSearchMetadata,
     updateSearchParameters: updateSearchParameters
   }, dispatch);
 }

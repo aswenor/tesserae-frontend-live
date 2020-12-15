@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
@@ -66,9 +66,11 @@ function StoplistBasisInput(props) {
   const classes = useStyles();
 
   const handleSelect = event => {
-    updateSearchParameters(event.target.value);
-    clearStopwords();
-    clearSearchMetadata();
+    batch(() => {
+      clearStopwords();
+      clearSearchMetadata();
+      updateSearchParameters({stoplistBasis: event.target.value});
+    });
   };
 
   const stoplistBases = availableStoplistBases.map(item => {
@@ -78,7 +80,6 @@ function StoplistBasisInput(props) {
         dense
         disableGutters
         key={norm}
-        onClick={handleSelect}
         selected={norm === stoplistBasis}
         value={norm}
       >
@@ -97,6 +98,7 @@ function StoplistBasisInput(props) {
       >
         <Select
           className={classes.menu}
+          onChange={handleSelect}
           value={stoplistBasis}
           variant="outlined"
         >

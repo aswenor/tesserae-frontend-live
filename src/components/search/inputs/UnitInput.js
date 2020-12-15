@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import FormControl from '@material-ui/core/FormControl';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -43,8 +43,10 @@ function UnitInput(props) {
   const { clearSearchMetadata, unit, updateSearchParameters } = props;
 
   const handleChange = (event, newUnit) => {
-    updateSearchParameters({unitType: newUnit});
-    clearSearchMetadata();
+    batch(() => {
+      clearSearchMetadata();
+      updateSearchParameters({unitType: newUnit});
+    });
   };
 
   return (

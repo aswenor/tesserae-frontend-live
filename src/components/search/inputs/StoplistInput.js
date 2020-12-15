@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import Slider from '@material-ui/core/Slider';
 import FormControl from '@material-ui/core/FormControl';
@@ -46,9 +46,11 @@ function StoplistInput(props) {
   const { clearSearchMetadata, clearStopwords, updateSearchParameters } = props;
 
   const handleChange = (event, newStoplist) => {
-    updateSearchParameters({stoplist: `${newStoplist}`});
-    clearStopwords();
-    clearSearchMetadata();
+    batch(() => {
+      clearStopwords();
+      clearSearchMetadata();
+      updateSearchParameters({stoplist: `${newStoplist}`});
+    });
   };
 
   const marks = sizes.map(item => ({

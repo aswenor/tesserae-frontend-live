@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
@@ -65,8 +65,10 @@ function FeatureInput(props) {
   const classes = useStyles();
 
   const handleSelect = event => {
-    clearSearchMetadata();
-    updateSearchParameters({feature: event.target.value});
+    batch(() => {
+      clearSearchMetadata();
+      updateSearchParameters({feature: event.target.value});
+    });
   };
 
   const features = availableFeatures.map(item => {
@@ -76,7 +78,6 @@ function FeatureInput(props) {
         dense
         disableGutters
         key={norm}
-        onClick={handleSelect}
         selected={norm === feature}
         value={norm}
       >
@@ -95,6 +96,7 @@ function FeatureInput(props) {
       >
         <Select
           className={classes.menu}
+          onChange={handleSelect}
           value={feature}
           variant="outlined"
         >

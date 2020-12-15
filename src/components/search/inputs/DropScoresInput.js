@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import FormControl from '@material-ui/core/FormControl';
 import Slider from '@material-ui/core/Slider';
@@ -44,8 +44,10 @@ function DropScoresInput(props) {
   const { clearSearchMetadata, updateSearchParameters } = props;
 
   const handleChange = (event, newMinScore) => {
-    clearSearchMetadata();
-    updateSearchParameters({dropScoresBelow: `${newMinScore}`});
+    batch(() => {
+      clearSearchMetadata();
+      updateSearchParameters({dropScoresBelow: `${newMinScore}`});
+    });
   };
 
   const marks = sizes.map(item => ({

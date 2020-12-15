@@ -14,7 +14,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
@@ -67,8 +67,10 @@ function DistanceBasisInput(props) {
   const classes = useStyles();
 
   const handleSelect = event => {
-    clearSearchMetadata();
-    updateSearchParameters({distanceBasis: event.target.value});
+    batch(() => {
+      clearSearchMetadata();
+      updateSearchParameters({distanceBasis: event.target.value});
+    });
   };
 
   const distanceBases = availableDistanceBases.map(item => {
@@ -78,7 +80,6 @@ function DistanceBasisInput(props) {
         dense
         disableGutters
         key={norm}
-        onClick={handleSelect}
         selected={norm === distanceBasis}
         value={norm}
       >
@@ -97,6 +98,7 @@ function DistanceBasisInput(props) {
       >
         <Select
           className={classes.menu}
+          onChange={handleSelect}
           value={distanceBasis}
           variant="outlined"
         >
