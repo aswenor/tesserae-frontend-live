@@ -28,7 +28,7 @@ export const DEFAULT_STATE = {
     feature: 'lemmata',
     stoplist: '10',
     stoplistBasis: 'corpus',
-    scoreBasis: 'word',
+    scoreBasis: 'form',
     frequencyBasis: 'corpus',
     maxDistance: '10 words',
     distanceBasis: 'frequency',
