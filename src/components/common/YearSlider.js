@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { isArray, maxBy, minBy, zip } from 'lodash';
+import { isArray, maxBy, minBy, range, zip } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
@@ -10,7 +10,8 @@ import Slider from '@material-ui/core/Slider';
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
-        marginTop: '40px'
+        marginTop: '40px',
+        width: '97%'
     }
 }));
 
@@ -20,41 +21,26 @@ function YearSlider(props) {
 
     const classes = useStyles();
 
+    const firstTick = Math.floor(minYear / 100) * 100;
+    const lastTick = Math.ceil(maxYear / 100) * 100;
+
     const createLabelText = (value) => (
         value > 0 
         ? `${Math.abs(value)} C.E.`
         : `${Math.abs(value)} B.C.E.`
     );
 
-    const skipZero = (oldVal, newVal) => {
-        if (newVal === 0) {
-            return oldVal < 0 ? 1 : -1;
-        }
-        else {
-            return newVal;
-        }
-    };
-
-    const updateWithZeroSkip = (value) => {
-        if (isArray(value)) {
-            const newYear = zip(year, value).map((x) => skipZero(...x));
-            console.log(newYear);
-            setYear(newYear);
-        }
-        else {
-            setYear(skipZero(value));
-        }
-    }
-
     return (
         <Slider
             aria-labelledby="select date slider"
             className={classes.root}
             getAriaValueText={createLabelText}
-            max={maxYear}
-            min={minYear}
-            // onChange={(event, value) => updateWithZeroSkip(value)}
-            onChangeCommitted={(event, value) => updateWithZeroSkip(value)}
+            marks
+            onChange={(event, value) => {console.log(value); setYear(value)}}
+            min={firstTick}
+            max={lastTick}
+            onChangeCommitted={(event, value) => {console.log(value); setYear(value)}}
+            step={100}
             value={year}
             valueLabelDisplay="on"
             valueLabelFormat={createLabelText}
