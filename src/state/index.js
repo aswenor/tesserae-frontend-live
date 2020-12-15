@@ -20,6 +20,7 @@ import { DEFAULT_STATE as corpusDefault, corpusReducer } from './corpus';
 import { DEFAULT_STATE as multitextDefault, multitextReducer } from './multitext';
 import { DEFAULT_STATE as paginationDefault, paginationReducer } from './pagination';
 import { DEFAULT_STATE as searchDefault, searchReducer } from './search';
+import { DEFAULT_STATE as textsDefault, textsReducer } from './texts';
 
 
 /**
@@ -30,7 +31,8 @@ export const DEFAULT_STATE = {
   corpus: corpusDefault,
   multitext: multitextDefault,
   pagination: paginationDefault,
-  search: searchDefault
+  search: searchDefault,
+  texts: textsDefault,
 }
 
 
@@ -42,5 +44,6 @@ export const tesseraeReducer = combineReducers({
   corpus: corpusReducer,
   multitext: multitextReducer,
   pagination: paginationReducer,
-  search: searchReducer
+  search: searchReducer,
+  texts: textsReducer,
 });
