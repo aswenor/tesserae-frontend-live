@@ -33,6 +33,12 @@ import { updatePagination } from '../../state/pagination';
 
 
 /**
+ * Whether or not we are in admin mode.
+ */
+const MODE = process.env.REACT_APP_MODE.toLowerCase() === 'admin';
+
+
+/**
  * Header columns with a button to ingest a text.
  * 
  * @component
@@ -83,7 +89,7 @@ function CorpusViewerHeader(props) {
         </TableCell>
       );
     }
-    else if (idx === 7) {
+    else if (MODE && idx === 7) {
       return (
         <TableCell
           align="right"

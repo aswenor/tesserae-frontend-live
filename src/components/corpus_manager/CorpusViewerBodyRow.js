@@ -44,6 +44,12 @@ import EditForm from './EditForm';
 
 
 /**
+ * Whether or not we are in admin mode.
+ */
+const MODE = process.env.REACT_APP_MODE.toLowerCase() === 'admin';
+
+
+/**
  * Row representing one text's metadata and management options.
  * 
  * @component
@@ -225,34 +231,38 @@ function CorpusViewerBodyRow(props) {
             </Tooltip>
           </Link>
         </TableCell>
-        <TableCell
-          variant="body"
-        >
-          <Tooltip title="Edit metadata" placement="top">
-            <EditIcon
-              onClick={() => {setDeleteOpen(false); setEditOpen(true)}}
+        {MODE &&
+          <TableCell
+            variant="body"
+          >
+            <Tooltip title="Edit metadata" placement="top">
+              <EditIcon
+                onClick={() => {setDeleteOpen(false); setEditOpen(true)}}
+              />
+            </Tooltip>
+            <EditForm
+              closeDialog={() => setEditOpen(false)}
+              open={editOpen}
+              selectedText={text}
             />
-          </Tooltip>
-          <EditForm
-            closeDialog={() => setEditOpen(false)}
-            open={editOpen}
-            selectedText={text}
-          />
-        </TableCell>
-        <TableCell
-          variant="body"
-        >
-          <Tooltip title="Remove text" placement="top">
-            <DeleteForeverIcon
-              onClick={() => {setEditOpen(false); setDeleteOpen(true)}}  
+          </TableCell>
+        }
+        {MODE &&
+          <TableCell
+            variant="body"
+          >
+            <Tooltip title="Remove text" placement="top">
+              <DeleteForeverIcon
+                onClick={() => {setEditOpen(false); setDeleteOpen(true)}}  
+              />
+            </Tooltip>
+            <ConfirmDelete
+              closeDialog={() => setDeleteOpen(false)}
+              open={deleteOpen}
+              selectedText={text}
             />
-          </Tooltip>
-          <ConfirmDelete
-            closeDialog={() => setDeleteOpen(false)}
-            open={deleteOpen}
-            selectedText={text}
-          />
-        </TableCell>
+          </TableCell>
+        }
     </TableRow>
   );
 }
