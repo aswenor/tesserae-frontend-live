@@ -36,6 +36,8 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     backgroundColor: theme.palette.secondary.main,
+    maxHeight: '90vh',
+    overflowY: 'hidden',
     padding: theme.spacing(2)
   }
 }));
@@ -46,7 +48,10 @@ const styles = (theme) => ({
   root: {
     backgroundColor: theme.palette.secondary.main,
     margin: 0,
-    padding: theme.spacing(2)
+    maxHeight: '80vh',
+    padding: theme.spacing(2),
+    overflowX: 'hidden',
+    overflowY: 'overlay'
   },
   closeButton: {
     position: 'absolute',
@@ -118,7 +123,7 @@ const DialogTitle = withStyles(styles)((props) => {
  *  );
  */
 function ThemedDialog(props) {
-  const { actions, body, closeDialog, maxWidth, open, title } = props;
+  const { actions, body, closeDialog, maxWidth, open, scroll, title } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles();
@@ -132,10 +137,11 @@ function ThemedDialog(props) {
     <Dialog
       aria-labelledby={`responsive-dialog-${title.toLowerCase().replace(/[\s]/, '-')}`}
       fullScreen={fullScreen}
+      className={classes.root}
       maxWidth={maxWidth ? maxWidth : 'sm'}
       onClose={() => closeDialog()}
       open={open}
-      scroll="paper"
+      scroll={scroll ? scroll : 'paper'}
     >
       <DialogTitle
         id={`responsive-dialog-${title.toLowerCase().replace(/[\s]/, '-')}`}
@@ -175,7 +181,7 @@ ThemedDialog.propTypes = {
   /**
    * String or component body of the dialog.
    */
-  body: PropTypes.oneOf([PropTypes.string, PropTypes.element]),
+  body: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   
   /**
    * Function to close the dialog on blur (click off) or button click.
