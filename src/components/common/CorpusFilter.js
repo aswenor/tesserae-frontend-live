@@ -49,10 +49,10 @@ function CorpusFilter(props) {
         selection={{author: authorFilter, title: titleFilter}}
       />
       <div className={classes.spacer}></div>
-      <YearSlider
+      {/* <YearSlider
         setYear={setDateRangeFilter}
         year={dateRangeFilter}
-      />
+      /> */}
     </div>
   );
 }
