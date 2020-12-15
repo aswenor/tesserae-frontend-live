@@ -69,30 +69,22 @@ const useStyles = makeStyles(theme => ({
  *   
  */
 function MultitextResultsPlaceholder(props) {
-  const { asyncReady, fetchMultitextResults, fetchResults,
+  const { asyncReady, fetchMultitextResults,
           getMultitextSearchStatus, getSearchStatus, initiateMultitextSearch,
           multitextResults, multitextSearchID, multitextSearchInProgress, multitextSearchProgress, 
-          multitextSearchStatus, multitextSelections, results, searchID,
+          multitextSearchStatus, multitextSelections, searchID,
           searchInProgress, searchProgress, searchStatus, unit } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
   // Either check for the status or get results from the REST API.
-  if (searchInProgress) {
-
-    // Ping the REST API for status every few seconds.
-    if (searchStatus.toLowerCase() !== 'done') {
-      (async () => {
-        await sleep(250).then(() => {
-          getSearchStatus(searchID, asyncReady);
-        });
-      })();
-    }
-    // Retrieve results if the status is "Done" and kick off the multitext part
-    else {
-      fetchResults(searchID, asyncReady);
-    }
+  if (searchID && searchStatus.toLowerCase() !== 'done') {
+    (async () => {
+      await sleep(250).then(() => {
+        getSearchStatus(searchID, asyncReady);
+      });
+    })();
   }
 
   if (searchStatus.toLowerCase() === 'done' && isEmpty(multitextResults)) {
@@ -140,7 +132,7 @@ function MultitextResultsPlaceholder(props) {
         flexGrow={1}
         flexDirection="row"
       >
-        {!multitextSearchInProgress
+        {!searchInProgress && !multitextSearchInProgress
          ?  <Box
               className={classes.spacer}
             >
@@ -185,19 +177,9 @@ MultitextResultsPlaceholder.propTypes = {
   asyncReady: PropTypes.bool,
 
   /**
-   * Function to get results from the REST API.
-   */
-  fetchResults: PropTypes.func,
-
-  /**
    * Function to get the status of the search from the REST API.
    */
   getSearchStatus: PropTypes.func,
-
-  /**
-   * List of results returned from the search.
-   */
-  results: PropTypes.arrayOf(PropTypes.object),
 
   /**
    * ID assigned to the search by the REST API.
@@ -240,7 +222,6 @@ const mapStateToProps = state => ({
   multitextSearchProgress: state.multitext.progress,
   multitextSearchStatus: state.multitext.status,
   multitextSelections: state.multitext.selectedTexts,
-  results: state.search.results,
   resultCount: state.search.resultCount,
   searchID: state.search.searchID,
   searchInProgress: state.async.searchInProgress,

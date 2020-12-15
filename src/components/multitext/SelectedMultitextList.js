@@ -25,14 +25,18 @@ const classes = makeStyles(theme => ({}));
 function SelectedMultitextList(props) {
   const { clearTexts, removeText, selectedTexts } = props;
 
-  const [ modalOpen, setModalOpen ] = useState(false);
+  const [ dialogOpen, setDialogOpen ] = useState(false);
 
   const listItems = selectedTexts.map(item => {
     return (
       <ListItem
         key={item.object_id}
       >
-        <Grid container>
+        <Grid container
+          alignContent="center"
+          alignItems="center"
+          justify="center"
+        >
           <Grid item xs={5}>
             <Typography color="textPrimary">
               {item.author}
@@ -64,7 +68,7 @@ function SelectedMultitextList(props) {
       >
         Multitext Targets
       <IconButton
-        onClick={() => setModalOpen(prev => !prev)}
+        onClick={() => setDialogOpen(prev => !prev)}
       >
         <AddIcon />
       </IconButton>
@@ -90,15 +94,10 @@ function SelectedMultitextList(props) {
             </Typography>
           </div>
       }
-      <Modal
-        onClose={(event, reason) => setModalOpen(false)}
-        open={modalOpen}
-        styles={{height: '100%', overflow: 'hidden'}}
-      >
-        <MultitextSelectionTable
-          closeModal={() => setModalOpen(false)}
-        />
-      </Modal>
+      <MultitextSelectionTable
+        closeDialog={() => setDialogOpen(false)}
+        open={dialogOpen}
+      />
     </div>
   );
 }

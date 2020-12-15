@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SearchIcon from '@material-ui/icons/Search';
 
 import AdvancedOptionsGroup from '../search/AdvancedOptionsGroup';
-import { updateMultitextInProgress } from '../../state/async';
+import LanguageSelectMenu from '../common/LanguageSelectMenu';
+import { updateSearchInProgress, updateMultitextInProgress } from '../../state/async';
 import { clearResults as clearMultitextResults } from '../../state/multitext';
 import { clearResults, clearSearchMetadata } from '../../state/search';
 import { fetchStoplist, initiateSearch } from '../../api/search';
@@ -24,7 +27,27 @@ import TextSelectGroup from '../search/TextSelectGroup';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.secondary.main,
-    height:'100%',
+    scrollbarColor: theme.palette.secondary.main,
+    scrollbarWidth: 0,
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      backgroundColor: theme.palette.secondary.main,
+      width: '0em',
+      display: 'none'
+    },
+    '&::-webkit-scrollbar-track': {
+      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+      display: 'none',
+      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+      display: 'none',
+      outline: '1px solid slategrey'
+    }
+  },
+  panel: {
+    backgroundColor: theme.palette.secondary.main
   },
   mtContainer: {
     marginTop: theme.spacing(1)
@@ -35,7 +58,8 @@ const useStyles = makeStyles(theme => ({
 function MultitextParametersLeft(props) {
   const { asyncReady, clearMultitextResults, clearResults, fetchStoplist, initiateSearch,
           language, multitextSelections, searchNeeded, searchParameters, sourceText,
-          stopwords, targetText, updateMultitextInProgress } = props;
+          stopwords, targetText, toggleSideBar, updateMultitextInProgress,
+          updateSearchInProgress } = props;
 
   const classes = useStyles();
 
@@ -53,74 +77,88 @@ function MultitextParametersLeft(props) {
 
   const clearAndInitiate = () => {
     if (searchNeeded) {
-      clearResults();
-      clearMultitextResults();
-      updateMultitextInProgress(true);
+      batch(() => {
+        clearResults();
+        clearMultitextResults();
+        updateMultitextInProgress(true);
+      });
       initiateSearch(sourceText, targetText, searchParameters,
                      stopwords, asyncReady);
     }
   };
 
   return (
-    <div className={classes.root}>
-      <Grid container
-        alignContent="center"
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item xs={12}>
-          <MarginlessExpansionPanel
-            className={classes.panel}
-            expanded={true}
-            square
-          >
-            <MarginlessExpansionPanelDetails>
-              <Grid container>
-                <Grid item xs={12}>
-                  <TextSelectGroup />
-                </Grid>
-                <Grid item xs={12}>
-                  <Fab
-                    disabled={disableSearch}
-                    onClick={clearAndInitiate}
-                    variant="extended"
-                  >
-                    Search
-                  </Fab>
-                </Grid>
-                <Grid item xs={12}
-                  className={classes.mtContainer}
-                >
-                  <SelectedMultitextList />
-                </Grid>
-              </Grid>
-            </MarginlessExpansionPanelDetails>
-          </MarginlessExpansionPanel>
-        </Grid>
-        <Grid item xs={12}>
-          <MarginlessExpansionPanel
-              className={classes.panel}
-              square
+    <Box
+      className={classes.root}
+      component="section"
+      display="flex"
+      flexDirection="column"
+      flexGrow={1}
+      height={'100%'}
+      width={1}
+    >
+      <div className={classes.root}>
+        <MarginlessExpansionPanel
+          className={classes.panel}
+          expanded={true}
+          square
+        >
+          <MarginlessExpansionPanelDetails>
+            <Grid container
+              alignContent="center"
+              alignItems="center"
+              justify="flex-start"
+              spacing={2}
             >
-              <MarginlessExpansionPanelSummary
-                aria-controls="advanced-options-form"
-                expandIcon={<ExpandMoreIcon />}
-                id="advanced-options-header"
+              <Grid item xs={12}>
+                <LanguageSelectMenu
+                  toggleSideBar={toggleSideBar}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextSelectGroup />
+              </Grid>
+              <Grid item xs={12}
+                align="center"
               >
-                <Typography
-                  align="center"
-                  variant="h5"
+                <Fab
+                  disabled={disableSearch}
+                  onClick={clearAndInitiate}
+                  variant="extended"
                 >
-                  Advanced Options
-                </Typography>
-              </MarginlessExpansionPanelSummary>
-              <MarginlessExpansionPanelDetails>
-                <AdvancedOptionsGroup />
-              </MarginlessExpansionPanelDetails>
-            </MarginlessExpansionPanel>
-          </Grid>
-      </Grid>
-    </div>
+                  <SearchIcon />Search
+                </Fab>
+              </Grid>
+              <Grid item xs={12}
+                className={classes.mtContainer}
+              >
+                <SelectedMultitextList />
+              </Grid>
+            </Grid>
+          </MarginlessExpansionPanelDetails>
+        </MarginlessExpansionPanel>
+        <MarginlessExpansionPanel
+          className={classes.panel}
+          square
+        >
+          <MarginlessExpansionPanelSummary
+            aria-controls="advanced-options-form"
+            expandIcon={<ExpandMoreIcon />}
+            id="advanced-options-header"
+          >
+            <Typography
+              align="center"
+              variant="h5"
+            >
+              Advanced Options
+            </Typography>
+          </MarginlessExpansionPanelSummary>
+          <MarginlessExpansionPanelDetails>
+            <AdvancedOptionsGroup />
+          </MarginlessExpansionPanelDetails>
+        </MarginlessExpansionPanel>
+      </div>
+    </Box>
   );
 }
 
@@ -218,7 +256,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   clearSearchMetadata: clearSearchMetadata,
   fetchStoplist: fetchStoplist,
   initiateSearch: initiateSearch,
-  updateMultitextInProgress: updateMultitextInProgress
+  updateMultitextInProgress: updateMultitextInProgress,
+  updateSearchInProgress: updateSearchInProgress
 }, dispatch);
 
 

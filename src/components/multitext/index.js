@@ -6,6 +6,7 @@ import PageContainer from '../common/PageContainer';
 import HorizontalResizePanels from '../common/HorizontalResizePanels';
 import MultitextResultsTable from './MultitextResultsTable';
 import MultitextParametersLeft from './MultitextParametersLeft';
+import OpenSidebarButton from '../common/OpenSidebarButton';
 
 import { fetchTexts } from '../../api/corpus';
 
@@ -27,10 +28,17 @@ function Multitext(props) {
       <PageContainer
         routes={routes}
         showLanguages
-        toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
       >
+        <OpenSidebarButton
+          handleClose={(event) => setIsOpen(true)}
+          open={!isOpen}
+        />
         <HorizontalResizePanels
-          leftChild={<MultitextParametersLeft />}
+          leftChild={
+            <MultitextParametersLeft
+              toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
+            />
+          }
           leftMinWidth={25}
           open={isOpen}
           rightChild={<MultitextResultsTable />}

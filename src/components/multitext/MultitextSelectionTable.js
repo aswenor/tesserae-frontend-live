@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { differenceBy, isObject, sortBy } from 'lodash'; 
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
@@ -19,69 +20,111 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 
 import CorpusFilter from '../common/CorpusFilter';
+import HorizontalResizePanels from '../common/HorizontalResizePanels';
 import MultitextSelectionTableBodyRow from './MultitextSelectionTableBodyRow';
 import MultitextSelectionTableHeader from './MultitextSelectionTableHeader';
 import TablePaginationActions from '../common/TablePaginationActions';
+import ThemedDialog from '../common/ThemedDialog';
 
 
 const useStyles = makeStyles(theme => ({
   root: {
-    backgroundColor: theme.palette.secondary.main,
-    height: '100%',
-    maxHeight: '100%',
-    padding: theme.spacing(2),
-    [theme.breakpoints.up('md')]: {
-      marginLeft: '20%',
-      overflow: 'hidden',
-      paddingLeft: theme.spacing(3),
-      width: '60%'
+    display: 'flex',
+    maxHeight: '80vh',
+    overflowX: 'hidden',
+    overflowY: 'overlay',
+    paddingTop: props => props.rowsPerPage > 10 ? theme.spacing(3) : 0,
+    [theme.breakpoints.only('xl')]: {
+      width: '50vw'
     },
-    [theme.breakpoints.down('sm')]: {
-      width: '90%'
+    [theme.breakpoints.only('lg')]: {
+      width: '75vw'
     },
-  },
-  divider: {
-    marginTop: 0,
-    marginBottom: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    width: '10px',
-    [theme.breakpoints.up('md')]: {
-      float: 'left'
+    [theme.breakpoints.down('md')]: {
+      width: '95vw'
     }
+  },
+  tableBox: {
+    display: 'flex',
+    height: '100%',
+    margin: 0,
+    maxHeight:'95vh',
+    overflowX: 'hidden',
+    overflowY: "overlay",
+    padding: 0,
+    width: '100%',
   },
   table: {
     display: 'flex',
     height: '100%',
     margin: 0,
-    overflow: "overlay",
+    overflowX: 'hidden',
+    overflowY: "overlay",
     padding: 0,
-    width: '100%',
+    [theme.breakpoints.up('lg')]: {
+      width: '100%',
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '95%'
+    }
   },
   body: {
-    height: '100%'
+    height: '90%',
+    maxHeight: '80%',
+  },
+  pagination: {
+    overflow: "hidden",
+    [theme.breakpoints.up('lg')]: {
+      width: '100%',
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '95%'
+    }
   }
 }));
 
 
+/**
+ * Filter a list of text by multiple metadata constraints.
+ * 
+ * @param {Object} text The text to filter.
+ * @param {string} text.author The author of the text.
+ * @param {boolean} text.is_prose Whether the text is prose or poetry.
+ * @param {string} text.title The title of the text.
+ * @param {number} text.year The year the text was published.
+ * @param {Object} filter The user-selected filter values.
+ * @param {string} filter.author String pattern to filter author by.
+ * @param {boolean} filter.type "All", "Prose", or "Poetry".
+ * @param {string} filter.title String pattern to filter title by.
+ * @param {number[]} filter.year Lower/upper bounds on the publication year.
+ * @returns {boolean} True if the text meets all of the filter criteria.
+ */
 function filterText(text, filter) {
+  // If 'all', ignore. Otherwise, determine if the type is 'prose', then
+  // determine if the text's flag matches the selected type.
   let typeFilter = true;
   if (filter.type.toLowerCase() !== 'all') {
     const isProse = filter.type === 'prose';
     typeFilter = isProse === text.is_prose;
   }
 
+  // Search the text's author for the pattern if a pattern was supplied.
   const authorFilter = (
     filter.author === '' ||
     text.author.toLowerCase().search(filter.author) >= 0);
+  
+  // Search the text's title for the pattern if a pattern was supplied.
   const titleFilter = (
     filter.title === '' ||
     text.title.toLowerCase().search(filter.title) >= 0);
+
+  // Determine if the publication year falls in the supplied bounds.
   const yearFilter = (
     filter.year !== undefined &&
     (text.year >= filter.year[0] || text.year <= filter.year[1])
   );
 
+  // Include the text ONLY if it meets all of the criteria.
   return (typeFilter && authorFilter && titleFilter && yearFilter);
 }
 
@@ -112,12 +155,13 @@ function sortTexts(textList, page, rows, header, order) {
 
 
 function MultitextSelectionTable(props) {
-  const { closeModal, textList } = props;
+  const { closeDialog, open, textList } = props;
 
-  console.log('textlist', textList)
-        
-  const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   
+  const [ bodyRows, setBodyRows ] = useState([]);
+
   const [ filter, setFilter ] = useState({
     type: 'all',
     author: '',
@@ -132,130 +176,105 @@ function MultitextSelectionTable(props) {
     sortOrder: 1,
   });
 
+  useEffect(() => {
+    console.log('changing page');
+    const start = pagination.currentPage * pagination.rowsPerPage;
+    const end = start + pagination.rowsPerPage;
+    setBodyRows(
+      textList.filter(item => filterText, filter)
+      .slice(start, end) 
+      .map(item => {
+      return (
+        <MultitextSelectionTableBodyRow
+          text={item}
+        />
+      );
+    }));
+  }, [filter, pagination, setBodyRows, textList]);
+
+  const classes = useStyles(pagination);
+
   const onChangePage = (event, page) => {
     setPagination(prev => ({...prev, currentPage: page}));
   }
 
-  const onChangeRowsPerPage = (event) => {
-    setPagination(prev => (
-      {...prev, currentPage: 0, rowsPerPage: event.target.value}));
-  }
-
-  const bodyRows = sortTexts(
-      textList.filter(item => filterText, filter), 
-      pagination.currentPage,
-      pagination.rowsPerPage,
-      pagination.sortHeader,
-      pagination.sortOrder)
-    .map(item => {
-    return (
-      <MultitextSelectionTableBodyRow
-        text={item}
-      />
-    );
-  });
-
   return (
-    <Paper
-      className={classes.root}
-    >
-      <Toolbar>
-        <Box
-          alignContent="center"
-          alignItems="center"
-          justifyContent="center"
-          justifyItems="center"
-          width={0.99}
+    <ThemedDialog
+      actions={null}
+      body={
+        <Grid container
+          alignContent="flex-start"
+          alignItems="flex-start"
+          className={classes.root}
+          justify="center"
         >
-          <Typography align="center" variant="h4">
-            Select Multitext Targets
-          </Typography>
-        </Box>
-        <Box
-          alignContent="center"
-          alignItems="center"
-          justifyContent="center"
-          justifyItems="center"
-          width={0.01}
-        >
-          <CloseIcon
-            onClick={closeModal}
-          />
-        </Box>
-      </Toolbar>
-      <Grid container
-        alignContent="flex-start"
-        alignItems="flex-start"
-        justify="center"
-        spacing={2}
-        styles={{overflow: 'hidden'}}
-      >
-        <Grid item md={4} xs={12}>
-          <CorpusFilter
-            authorFilter={filter.author}
-            dateRangeFilter={filter.year}
-            setAuthorFilter={(value) => setFilter(prev => ({...prev, author: isObject(value) ? value.author : value}))}
-            setDateRangeFilter={(value) => setFilter(prev => ({...prev, year: value}))}
-            setTitleFilter={(value) => setFilter(prev => ({...prev, title: isObject(value) ? value.title : value}))}
-            setTypeFilter={(value) => setFilter(prev => ({...prev, type: value}))}
-            titleFilter={filter.title}
-            typeFilter={filter.type}
-          />
-        </Grid>
-        <Grid item md={1}>
-          <Divider
-            className={classes.divider}
-            orientation="vertical"
-          />
-        </Grid>
-        <Grid item md={7} xs={12}
-          styles={{overflow: 'hidden'}}
-        >
-          <Box
-            alignContent="flex-start"
-            alignItems="flex-start"
-            justifyContent="flex-start"
-            justifyItems="flewx-start"
-            display="flex"
-            flexDirection="column"
-            m={0}
-            width={1}
-          >
-            <TableContainer
-              className={classes.root}
-            >
-              <Table
-                stickyHeader
-              >
-                <TableHead>
-                  <MultitextSelectionTableHeader
-                    setPagination={setPagination}
-                    sortHeader={pagination.sortHeader}
-                    sortOrder={pagination.sortOrder}
-                  />
-                </TableHead>
-                <TableBody
-                  className={classes.body}
-                >
-                  {bodyRows}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              ActionsComponent={TablePaginationActions}
-              className={classes.root}
-              count={textList.length}
-              labelRowsPerPage="Rows per page:"
-              onChangePage={onChangePage}
-              onChangeRowsPerPage={onChangeRowsPerPage}
-              page={pagination.currentPage}
-              rowsPerPage={pagination.rowsPerPage}
-              rowsPerPageOptions={[10, 25, 50, 100]}
+          <Grid item lg={4} md={11}>
+            <CorpusFilter
+              authorFilter={filter.author}
+              dateRangeFilter={filter.year}
+              setAuthorFilter={(value) => setFilter(prev => ({...prev, author: isObject(value) ? value.author : value}))}
+              setDateRangeFilter={(value) => setFilter(prev => ({...prev, year: value}))}
+              setTitleFilter={(value) => setFilter(prev => ({...prev, title: isObject(value) ? value.title : value}))}
+              setTypeFilter={(value) => setFilter(prev => ({...prev, type: value}))}
+              titleFilter={filter.title}
+              typeFilter={filter.type}
             />
-          </Box>
+            </Grid>
+            <Grid item lg={8} md={12}>
+            <Box
+              alignContent="flex-start"
+              alignItems="flex-start"
+              className={classes.tableBox}
+              justifyContent="flex-start"
+              justifyItems="flewx-start"
+              display="flex"
+              flexDirection="column"
+              m={0}
+              p={0}
+              width={.66}
+            >
+              <TableContainer
+                className={classes.table}
+              >
+                <Table
+                  size={matches ? 'small' : 'medium'}
+                  stickyHeader
+                >
+                  <TableHead>
+                    <MultitextSelectionTableHeader
+                      setPagination={setPagination}
+                      sortHeader={pagination.sortHeader}
+                      sortOrder={pagination.sortOrder}
+                      textList={bodyRows}
+                    />
+                  </TableHead>
+                  <TableBody
+                    className={classes.body}
+                  >
+                    {bodyRows}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                ActionsComponent={TablePaginationActions}
+                className={classes.pagination}
+                count={textList.length}
+                labelRowsPerPage="Rows per page:"
+                onChangePage={onChangePage}
+                page={pagination.currentPage}
+                rowsPerPage={pagination.rowsPerPage}
+                rowsPerPageOptions={[10]}
+              />
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Paper>
+      }
+      closeDialog={closeDialog}
+      maxWidth="xl"
+      open={open}
+      scroll="body"
+      title="Select Multitext Targets"
+    />
   );
 }
 

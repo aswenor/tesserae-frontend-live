@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { uniq } from 'lodash';
+import { flatten, sortBy, uniq } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -152,6 +152,8 @@ function MultitextResultsTableRow(props) {
   const sourceSnippet = highlightMatches(source_snippet, source_tag, sourceIndices);
   const targetSnippet = highlightMatches(target_snippet, target_tag, targetIndices);
 
+  const subtableEntries = sortBy(flatten(multiresults.map(item => item.units)), 'score').reverse();
+
   return (
     <React.Fragment
       key={object_id}
@@ -219,7 +221,7 @@ function MultitextResultsTableRow(props) {
                 >
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                 </IconButton>
-                More
+                More ({subtableEntries.length})
               </Typography>
             : <Typography>
                 No multitext matches.
@@ -232,7 +234,7 @@ function MultitextResultsTableRow(props) {
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
             <Collapse in={open}>
               <Box m={1}>
-                <MultitextResultsSubtable multiresults={multiresults} />
+                <MultitextResultsSubtable multiresults={subtableEntries} />
               </Box>
             </Collapse>
           </TableCell>

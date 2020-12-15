@@ -73,7 +73,7 @@ function MultitextSelectionTableHeader(props) {
                       ? (sortOrder === 1 ? 'asc' : 'desc')
                       : 'asc'
           }
-          onClick={() => handleHeaderClick("author".toLowerCase())}
+          onClick={() => handleHeaderClick("author")}
         >  
           <Typography><b>Author</b></Typography>
         </TableSortLabel>
@@ -88,21 +88,13 @@ function MultitextSelectionTableHeader(props) {
                       ? (sortOrder === 1 ? 'asc' : 'desc')
                       : 'asc'
           }
-          onClick={() => handleHeaderClick("title".toLowerCase())}
+          onClick={() => handleHeaderClick("title")}
         >  
           <Typography><b>Title</b></Typography>
         </TableSortLabel>
       </TableCell>
     </TableRow>
   );
-}
-
-
-function mapStateToProps(state) {
-  return {
-    sortHeader: state.pagination.sortHeader,
-    sortOrder: state.pagination.sortOrder
-  }
 }
 
 
@@ -114,4 +106,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(MultitextSelectionTableHeader);
+export default connect(null, mapDispatchToProps)(MultitextSelectionTableHeader);

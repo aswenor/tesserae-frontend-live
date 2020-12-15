@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { flatten } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -13,6 +12,9 @@ import Typography from '@material-ui/core/Typography';
 
 /** CSS styles to apply to table cells. */
 const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.secondary.main
+  },
   row: {
     overflowX: 'hidden',
   },
@@ -31,20 +33,11 @@ function MultitextResultsSubtable(props) {
   const { multiresults } = props;
 
   const classes = useStyles();
-  
-  const entries = flatten(multiresults.map(item => item.units));
-
-  if (multiresults.length > 0) {
-    console.log('multitext peek');
-    console.log(multiresults);
-    console.log(multiresults.map(x => x.units));
-    console.log(entries);
-  }
-
 
   return (
     <Table
       aria-label="multitext-results"
+      className={classes.root}
       size="small"
     >
       <TableHead>
@@ -58,23 +51,23 @@ function MultitextResultsSubtable(props) {
           <TableCell
             className={classes.numberCell}
           >
-            <Typography>Locus</Typography>
+            <Typography><b>Locus</b></Typography>
           </TableCell>
           <TableCell
             className={classes.snippetCell}
           >
-            <Typography>Snippet</Typography>
+            <Typography><b>Snippet</b></Typography>
           </TableCell>
           <TableCell
             align="right"
             className={classes.numberCell}
           >
-            <Typography>Score</Typography>
+            <Typography><b>Score</b></Typography>
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        { entries.map((item, idx) => {
+        { multiresults.map((item, idx) => {
             return (
               <TableRow 
                 className={classes.row}

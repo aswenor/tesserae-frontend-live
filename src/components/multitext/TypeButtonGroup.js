@@ -17,22 +17,17 @@ const useStyles = makeStyles(theme => ({
   },
   buttonGroup: {
     backgroundColor: theme.palette.default.main
-  },
-  selected: {
-    border: '1px solid #000000',
-    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
-    backgroundColor: theme.palette.secondary.main
   }
 }));
 
 
-const localTheme = createTessTheme({
+const localTheme = {
   palette: {
     default: '#ffffff',
     primary: '#757575',
     secondary: '#757575'
   }
-});
+};
 
 
 function TypeButtonGroup(props) {
@@ -45,10 +40,10 @@ function TypeButtonGroup(props) {
     return (
       <Button
         className={classes.button}
-        color={lowerItem !== typeFilter ? 'default' : 'secondary'}
+        color={lowerItem === typeFilter ? 'secondary' : 'default'}
         key={item}
         onClick={(event) => setTypeFilter(lowerItem)}
-        value={lowerItem}
+        variant="contained"
       >
         {item}
       </Button>
@@ -57,7 +52,7 @@ function TypeButtonGroup(props) {
 
   return (
     <Box>
-      <ThemeProvider theme={localTheme}>
+      <ThemeProvider theme={createTessTheme(localTheme)}>
         <ButtonGroup
           className={classes.buttonGroup}
         >
