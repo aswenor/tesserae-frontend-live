@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 
 import PageContainer from '../common/PageContainer';
 import HorizontalResizePanels from '../common/HorizontalResizePanels';
+import OpenSidebarButton from '../common/OpenSidebarButton';
 import ResultsTable from './ResultsTable';
 import SearchParametersForm from './SearchParametersForm';
 
@@ -41,8 +42,16 @@ function Search(props) {
         showLanguages
         toggleSideBar={(event) => setIsOpen(prevOpen => !prevOpen)}
       >
+        <OpenSidebarButton
+          handleClose={(event) => setIsOpen(true)}
+          open={!isOpen}
+        />
         <HorizontalResizePanels
-          leftChild={<SearchParametersForm />}
+          leftChild={
+            <SearchParametersForm
+              toggleSideBar={(event) => setIsOpen(false)}
+            />
+          }
           leftMinWidth={20}
           open={isOpen}
           rightChild={<ResultsTable />}
