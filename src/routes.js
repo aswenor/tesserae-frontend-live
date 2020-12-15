@@ -11,8 +11,9 @@
 import React from 'react'
 
 import CorpusManager from './components/corpus_manager';
-import Search from './components/search';
 import Multitext from './components/multitext';
+import ReaderRouter from './components/reader';
+import Search from './components/search';
 
 
 /**
@@ -26,9 +27,10 @@ const routes = [
    * @field {string} name The name of the page being linked.
    * @field {React.Component} component The component to render.
    */
-  {link: '/corpus', name: 'Corpus', component: CorpusManager},
-  {link: "/", name: "Search", component: Search},
-  {link: "/multitext", name: "Multitext", component: Multitext}
+  {link: '/corpus', name: 'Corpus', component: CorpusManager, display: true},
+  {link: "/", name: "Search", component: Search, display: true},
+  {link: "/multitext", name: "Multitext", component: Multitext, display: true},
+  {link: "/reader", name: "Reader", component: ReaderRouter, display: false},
 ];
 
 
