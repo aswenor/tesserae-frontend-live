@@ -20,7 +20,6 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
 import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Hidden from '@material-ui/core/Hidden';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
@@ -67,15 +66,15 @@ const useStyles = makeStyles(theme => ({
  */
 function ResultsPlaceholder(props) {
   const { asyncReady, fetchResults, getSearchStatus, results, searchID,
-          searchProgress, searchStatus } = props;
+          searchInProgress, searchProgress, searchStatus } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
 
-  const searchInProgress = searchID && results.length === 0;
+  console.log('searchID: ', searchID);
 
   // Either check for the status or get results from the REST API.
-  if (searchInProgress) {
+  if (searchID && searchInProgress) {
 
     // Ping the REST API for status every few seconds.
     if (searchStatus.toLowerCase() !== 'done') {
@@ -100,7 +99,7 @@ function ResultsPlaceholder(props) {
         <LinearProgress value={item.value * 100} variant= "determinate" />
       </div>
     );
-  })
+  });
 
 
   // If a search is not in progress, an arrow pointing to the side bar is shown.
@@ -133,12 +132,6 @@ function ResultsPlaceholder(props) {
          :  <Box
               className={classes.spacer}
             >
-              {/* <CircularProgress
-                className={classes.icon}
-                thickness={2.5}
-                size={'20vh'}
-              />
-              <br /> */}
               <Typography
                 align="left"
                 className={classes.text}
@@ -215,6 +208,7 @@ const mapStateToProps = state => ({
   results: state.search.results,
   resultCount: state.search.resultCount,
   searchID: state.search.searchID,
+  searchInProgress: state.async.searchInProgress,
   searchStatus: state.search.searchStatus,
   searchProgress: state.search.searchProgress
 });
@@ -222,12 +216,13 @@ const mapStateToProps = state => ({
 
 /**
  * Add redux store actions to this component's props.
+ * 
  * @param {function} dispatch The redux dispatch function.
  */
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchResults: fetchResults,
   getSearchStatus: getSearchStatus,
-}, dispatch)
+}, dispatch);
 
 
 // Do redux binding here.
