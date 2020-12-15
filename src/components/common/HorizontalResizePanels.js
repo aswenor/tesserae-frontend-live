@@ -35,15 +35,16 @@ import { getTotalWidth } from '../../utils';
 /** CSS styles to apply to the component. */
 const useStyles = makeStyles(theme => ({
   root: {
+    margin: 0,
     overflow: 'hidden',
     paddingTop: 0,
-    paddingmarginBottom: 0,
-    paddingmarginLeft: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
     paddingRight: 0,
     width: '100vw',
     [theme.breakpoints.up('md')]: {
       display: 'flex',
-      height: '93vh',
+      height: '95vh',
     },
     [theme.breakpoints.down('xs')]: {
       display: 'inline-block',
@@ -82,8 +83,8 @@ const panelStyles = makeStyles(theme => ({
     [theme.breakpoints.up('md')]: {
       display : props => props.width > 0 ? 'auto' : 'hidden',
       float: 'left',
-      overflowX: 'auto',
-      overflowY: 'auto',
+      overflowX: 'overlay',
+      overflowY: 'overlay',
       width: props => props.width,
       minWidth: props => props.width > 0 ? props.minWidth : 0
     },
@@ -189,13 +190,13 @@ function HorizontalResizePanels(props) {
    * Right panel current width.
    * @type {number}
    */
-  const [ rightWidth, setRightWidth ] = useState(100 - leftMinWidth);
+  const [ rightWidth, setRightWidth ] = useState(110 - leftMinWidth);
   
   /**
    * Width CSS unit to use.
    * @type {String}
    */
-  const [ unit, setUnit ] = useState('%');
+  const [ unit, setUnit ] = useState('vw');
 
   // Format the widths with their CSS units to be valid CSS.
   const totalWidth = getTotalWidth();
