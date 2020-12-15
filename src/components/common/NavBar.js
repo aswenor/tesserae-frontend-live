@@ -9,6 +9,8 @@
  * @requires NPM:prop-types
  * @requires NPM:react-router-dom
  * @requires NPM:@material-ui/core
+ * @requires ../../theme
+ * @requires ../../routes
  */
 
 import React from 'react';
@@ -19,13 +21,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import Toolbar from '@material-ui/core/Toolbar';
 
 import createTessTheme from '../../theme';
 import routes from '../../routes';
-import TessLogoButton from './TessLogoButton';
 
 
 /** CSS styles to apply to the component. */
@@ -46,14 +46,20 @@ const useStyles = makeStyles(theme => ({
     marginLeft: '5px'
   },
   header: {
-    width: '50vh'
+    width: '50vw'
+  },
+  headerLeft: {
+    width: '50vw'
   },
   logo: {
+    backgroundColor: '#ffffff',
+    border: '1px solid black',
+    borderRadius: '5px',
     height: '100%',
+    margin: '10px',
     maxHeight: '50px',
+    padding: 0,
     width: 'auto',
-    margin: 0,
-    padding: 0
   }
 }));
 
@@ -78,12 +84,10 @@ const localTheme = {
  *   return <NavBar routes={routes} />
  */
 function NavBar(props) {
-  const { children } = props;
-
   /** CSS styles and global theme. */
   const classes = useStyles();
 
-  const links = routes.map((route, i) => {
+  const links = routes.filter(x => x.display).map((route, i) => {
     return (
       <Button
         className={classes.button}
@@ -109,7 +113,15 @@ function NavBar(props) {
             flexGrow={.7}
             justifyContent="flex-start"
           >
-            {children}
+            <Link
+              to="/"
+            >
+              <img 
+                alt="Tesserae Version 5"
+                className={classes.logo}
+                src="Tesserae.png"
+              />
+            </Link>
           </Box>
           <Box
             alignItems="center"
@@ -121,7 +133,6 @@ function NavBar(props) {
             minWidth={.3}
           >
             {links}
-            <Grid item xs={1}><TessLogoButton /></Grid>
           </Box>
         </Toolbar>
       </ThemeProvider>
@@ -136,6 +147,11 @@ NavBar.propTypes = {
    */
   routes: PropTypes.arrayOf(
     PropTypes.shape({
+      /**
+       * Flag to ignore the link in the nav bar.
+       */
+      display: PropTypes.bool,
+      
       /**
        * URL of this link.
        */
