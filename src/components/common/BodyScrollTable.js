@@ -36,11 +36,13 @@ function BodyScrollTable(props) {
     <Box
       alignContent="flex-start"
       alignItems="flex-start"
+      className={classes.root}
       justifyContent="flex-start"
       justifyItems="flewx-start"
       display="flex"
       flexDirection="column"
       m={0}
+      p={0}
       width={1}
     >
       <TableContainer
