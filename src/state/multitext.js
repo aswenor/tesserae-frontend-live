@@ -13,6 +13,7 @@ import { differenceBy, uniqBy } from 'lodash';
  * Default state for async communications.
  */
 export const DEFAULT_STATE = {
+  maxScore: 10,
   message: '',
   progress: [],
   results: [],
@@ -161,13 +162,15 @@ export function removeTexts(texts) {
  * Update multitext search results.
  * 
  * @param {Object[]} results The multitext search results to display.
+ * @param {number} maxScore The maximum reported score in the results.
  * @returns {Object} A redux-style action.
  */
-export function updateResults(results) {
+export function updateResults(results, maxScore) {
   return {
     type: UPDATE_RESULTS,
     payload: {
-      results: results
+      results: results,
+      maxScore: maxScore
     }
   }; 
 }
