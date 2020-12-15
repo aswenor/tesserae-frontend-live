@@ -10,6 +10,7 @@
  * @requires NPM:redux
  * @requires NPM:react-redux
  * @requires NPM:redux-thunk
+ * @requires NPM:lodash
  * @requires ./components/common/NavBar/index.js:NavBar
  * @requires ./components/search/index.js:Search
  */
@@ -43,14 +44,13 @@ const store = createStore(
  */
 function App(props) {
   /**
-   * Routes to different pages in the Tesserae application.
+   * Routes to different pages in the Tesserae application sorted by URL.
    * 
    * @field {string} link The URL path to the page.
    * @field {string} name The name of the page being linked.
    * 
    */
   const appRoutes = sortBy(routes.slice(), 'link').reverse().map(item => {
-    console.log(item);
     return (
       <Route key={item.name} path={item.link} component={item.component} />
     );
@@ -67,6 +67,7 @@ function App(props) {
     fetchTexts(store.getState().corpus.language, true)(store.dispatch);
   }
 
+  // Wrap the app in the Redux context (Provider) and the Router.
   return (
     <Provider store={store}>
       <Router>
