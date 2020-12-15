@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
  */
 function ResultsTable(props) {
   const { asyncReady, fetchResults, results, resultsCount, searchID,
-          startIdx } = props;
+          searchStatus, startIdx } = props;
 
   const onPageChange = (pagination) => {
     fetchResults(searchID, asyncReady,
@@ -65,6 +65,12 @@ function ResultsTable(props) {
                  pagination.sortHeader,
                  pagination.sortOrder);
   };
+
+  console.log('results', results);
+
+  if (searchStatus.toLowerCase() === 'done' && results.length === 0) {
+    fetchResults(searchID, asyncReady);
+  }
 
   /** CSS styles and global theme. */
   const classes = useStyles(props);
@@ -174,6 +180,7 @@ const mapStateToProps = state => ({
   results: state.search.results,
   resultsCount: state.search.resultsCount,
   searchID: state.search.searchID,
+  searchStatus: state.search.searchStatus,
   startIdx: state.pagination.currentPage * state.pagination.rowsPerPage,
 });
 

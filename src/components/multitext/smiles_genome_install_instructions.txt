@@ -1,0 +1,47 @@
+# SMILES String from Genome Install Instructions
+
+## Python Setup
+
+[Install anaconda for Python 3.x](https://www.anaconda.com/products/individual)
+
+```bash
+conda create -n druid python
+conda activate druid
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda install biopython hmmer2 hmmer diamond fasttree prodigal blast muscle glimmerhmm
+```
+
+## Sources
+
+```bash
+git clone https://github.com/DruID-developers/smiles_string_from_genomes
+git clone https://github.com/hyattpd/Prodigal
+```
+
+## Installing antiSMASH and hmmer
+
+```bash
+conda install helperlibs jinja2 pysvg-py3 bcbio-gff pyScss
+wget https://dl.secondarymetabolites.org/releases/5.1.1/antismash-5.1.1.tar.gz
+tar xf antismash-5.1.1.tar.gz
+cd antismash-5.1.1
+pip install --no-deps .
+download-antismash-databases
+```
+
+## Installing Prodigal
+
+```bash
+cd Prodigal
+make install INSTALLDIR="$CONDA_PREFIX/bin"
+```
+
+
+
+## Finishing Up
+
+```bash
+conda deactivate
+```

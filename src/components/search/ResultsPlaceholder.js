@@ -74,7 +74,7 @@ function ResultsPlaceholder(props) {
   console.log('searchID: ', searchID);
 
   // Either check for the status or get results from the REST API.
-  if (searchID && searchInProgress) {
+  if (searchID !== '' && searchInProgress) {
 
     // Ping the REST API for status every few seconds.
     if (searchStatus.toLowerCase() !== 'done') {
@@ -84,8 +84,9 @@ function ResultsPlaceholder(props) {
         });
       })();
     }
+    
     // Retrieve results if the status is "Done"
-    else {
+    if (searchStatus.toLowerCase() === 'done') {
       fetchResults(searchID, asyncReady);
     }
   }

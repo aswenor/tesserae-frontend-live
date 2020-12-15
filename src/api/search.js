@@ -161,36 +161,41 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
             },
           }      
       })
+      .catch(data => data.response)
       .then(response => {
         // On success, update the global state and return the search ID or results.
+        console.log(response, response.headers.location);
         let searchID = [];
-        if (response.location !== undefined) {
+        if (response.headers.location !== undefined) {
           searchID = response.headers.location.match(/parallels[/]([\w\d]+)/);
         }
         else if (response.request.responseURL !== undefined) {
           searchID = response.request.responseURL.match(/parallels[/]([\w\d]+)/);
+          // console.log()
+        }
+        console.log(searchID);
+
+        dispatch(clearAsync());
+        if (searchID.length > 1 && searchID[1] !== '') {
+          dispatch(updateSearchID(searchID[1]));
         }
 
-        batch(() => {
-          dispatch(clearAsync());
-          if (searchID.length > 1 && searchID[1] !== '') {
-            dispatch(updateSearchID(searchID[1]));
-          }
-
-          if (response.data.parallels !== undefined) {
-            const maxScore = response.data.max_score;
-            const nResults = response.data.total_count;
-            const normedParallels = normalizeScores(response.data.parallels,
-                                                    maxScore >= 10 ? maxScore : 10);
-            dispatch(updateResults(normedParallels, nResults));
-            dispatch(updateSearchInProgress(false));
-          }
-        });
+        // batch(() => {
+        //   if (response.data.parallels !== undefined) {
+        //     const maxScore = response.data.max_score;
+        //     const nResults = response.data.total_count;
+        //     const normedParallels = normalizeScores(response.data.parallels,
+        //                                             maxScore >= 10 ? maxScore : 10);
+        //     dispatch(updateResults(normedParallels, nResults));
+        //     dispatch(updateSearchInProgress(false));
+        //   }
+        // });
 
         return searchID[1];
       })
       .catch(error => {
         // On error, update the error log.
+        console.log(error);
         batch(() => {
           dispatch(clearAsync());
           dispatch(registerError(error));
@@ -226,16 +231,11 @@ export function getSearchStatus(searchID, asyncReady) {
       })
       .then(response => {
         // On success, update the global state and return the status.
-        batch(() => {
-          dispatch(clearAsync());
-          if (response.data.status !== undefined) {
-            dispatch(updateSearchStatus(response.data.status, response.data.progress));
-            
-            if (response.data.status.toLowerCase() === 'done') {
-              dispatch(updateSearchInProgress(false));
-            }
-          }
-        });
+
+        dispatch(clearAsync());
+        if (response.data.status !== undefined) {
+          dispatch(updateSearchStatus(response.data.status, response.data.progress));
+        }
 
         return response.data.status;
       })
@@ -296,11 +296,10 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
         const normedParallels = normalizeScores(response.data.parallels,
                                                 maxScore >= 10 ? maxScore : 10);
 
-        batch(() => {
-          dispatch(clearAsync());
-          dispatch(updateResults(normedParallels, nResults));
-          dispatch(updateSearchInProgress(false));
-        });
+        dispatch(clearAsync());
+        dispatch(updateResults(normedParallels, nResults));
+        dispatch(updateSearchInProgress(false));
+        
         return normedParallels;
       })
       .catch(error => {
