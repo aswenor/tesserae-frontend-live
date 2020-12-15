@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { batch } from 'react-redux';
 import { forIn, maxBy } from 'lodash';
 
 import { initiateAsync, clearAsync,
@@ -30,7 +31,10 @@ export function initiateSearch(searchID, multitextSelections, unit, asyncReady) 
     // Only kick off a request to the REST API if no other requests are active.
     if (asyncReady) {
       // Update app state to show there is a new async action.
-      dispatch(initiateAsync());
+      batch(() => {
+        dispatch(initiateAsync());
+        dispatch(updateMultitextInProgress(true));
+      });
       console.log('initiating multitext', searchID, multitextSelections, unit);
 
       // Start a request to the parallels endpoint of the REST API.
@@ -51,29 +55,37 @@ export function initiateSearch(searchID, multitextSelections, unit, asyncReady) 
           }
       })
       .then(response => {
-        let searchID = '';
-        dispatch(clearAsync());
-        
+        let searchID = [];
+
         if (response.headers.location !== undefined) {
-          searchID = response.headers.location.split('/').slice(-2)[0];
-          dispatch(updateSearchID(searchID));
-          console.log('after location', searchID, response.headers.location.split('/').slice(-2)[0]);
+          searchID = response.headers.location.match(/multitexts[/]([\w\d+])/);
         }
-
-        if (response.request.responseURL !== undefined && searchID === '') {
-          searchID = response.request.responseURL.split('/').slice(-2)[0];
-          dispatch(updateSearchID(searchID));
-          console.log('after responseurl', searchID, response.request.responseURL.split('/').slice(-2)[0]);
+        else if (response.request.responseURL !== undefined) {
+          searchID = response.request.responseURL.match(/multitexts[/]([\w\d+])/);
         }
-
-        dispatch(updateMultitextInProgress(true));
         
-        return searchID;
+        batch(() => {
+          dispatch(clearAsync());
+
+          if (searchID.length > 1 && searchID[1] !== '') {
+            dispatch(updateSearchID(searchID[1]));
+          }
+
+          if (response.data.multiresults !== undefined) {
+            dispatch(updateResults(response.data.multiresults, response.data.max_score));
+            dispatch(updateMultitextInProgress(false));
+          }
+        });
+        
+        return searchID[1];
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(clearAsync());
-        dispatch(registerError(error));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(updateMultitextInProgress(false));
+          dispatch(registerError(error));
+        });
       });
     }
   };
@@ -118,8 +130,10 @@ export function getSearchStatus(searchID, asyncReady) {
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(clearAsync());
-        dispatch(registerError(error));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(registerError(error));
+        });
       })
     }
   }
@@ -166,20 +180,15 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
         // On success, update the global state and return the results.
         // Because of strange design constraints and group consensus, normalize
         // all scores to be in range [0, 10].
-        let results = response.data.multiresults;
-        // let normedResults = {};
-        // forIn(results, (value, key) => {
-        //   const maxScore = maxBy(value, 'score');
-        //   normedResults[key] = normalizeScores(value, maxScore > 10 ? maxScore : 10);
-        // });
-        // dispatch(clearAsync());
-        dispatch(updateResults(results));
-        return results;
+        dispatch(updateResults(response.data.multiresults, response.data.max_score));
+        return response.data.multiresults;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(clearAsync());
-        dispatch(registerError(error));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(registerError(error));
+        });
       });
     }
   }

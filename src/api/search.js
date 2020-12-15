@@ -17,6 +17,7 @@
  * @requires ../state/search
  */
 import axios from 'axios';
+import { batch } from 'react-redux';
 
 import { initiateAsync, clearAsync,
          registerError, updateSearchInProgress } from '../state/async';
@@ -84,14 +85,18 @@ export function fetchStoplist(feature, stopwords, stoplistBasis, asyncReady) {
       })
       .then(response => {
         // On success, update the global state and return the stoplist.
-        dispatch(updateStopwords(response.data.stopwords));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(updateStopwords(response.data.stopwords));
+          dispatch(clearAsync());
+        });
         return response.data.stopwords
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(registerError(error));
+          dispatch(clearAsync());
+        });
       });
     }
   }
@@ -113,9 +118,12 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
     // Only kick off a request to the REST API if no other requests are active.
     if (asyncReady) {
       // Update app state to show there is a new async action.
-      dispatch(updateSearchID());
-      dispatch(updateResults());
-      dispatch(initiateAsync());
+      batch(() => {
+        dispatch(updateSearchID());
+        dispatch(updateResults());
+        dispatch(updateSearchInProgress(true));
+        dispatch(initiateAsync());
+      });
 
       // Start a request to the parallels endpoint of the REST API.
       // This creates a Promise that resolves when a reqponse or error is received.
@@ -124,7 +132,8 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
           url: `${REST_API}/parallels/`,
           crossDomain: true,
           headers: {
-            contentType: 'x-www-form-urlencoded'
+            contentType: 'x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
           },
           responseType: 'json',
           cacheControl: 'no-store',
@@ -150,39 +159,42 @@ export function initiateSearch(source, target, params, stopwords, asyncReady) {
               object_id: target.object_id,
               units: params.unitType
             },
-          }
+          }      
       })
       .then(response => {
         // On success, update the global state and return the search ID or results.
-        dispatch(clearAsync());
-        
-        let searchID = '';
-        if (response.request.responseURL !== undefined) {
-          searchID = response.request.responseURL.split('/').slice(-2)[0];
-          dispatch(updateSearchID(searchID));
+        let searchID = [];
+        if (response.location !== undefined) {
+          searchID = response.headers.location.match(/parallels[/]([\w\d]+)/);
+        }
+        else if (response.request.responseURL !== undefined) {
+          searchID = response.request.responseURL.match(/parallels[/]([\w\d]+)/);
         }
 
-        if (response.request.location !== undefined && searchID !== '') {
-          searchID = response.request.location.split('/').slice(-2)[0];
-          dispatch(updateSearchID(searchID));
-        }
+        batch(() => {
+          dispatch(clearAsync());
+          if (searchID.length > 1 && searchID[1] !== '') {
+            dispatch(updateSearchID(searchID[1]));
+          }
 
-        if (response.request.parallels !== undefined) {
-          const maxScore = response.data.max_score;
-          const nResults = response.data.total_count;
-          const normedParallels = normalizeScores(response.data.parallels,
-                                                  maxScore >= 10 ? maxScore : 10);
-          dispatch(updateResults(normedParallels, nResults));
-        }
-        
-        dispatch(updateSearchInProgress(true));
+          if (response.data.parallels !== undefined) {
+            const maxScore = response.data.max_score;
+            const nResults = response.data.total_count;
+            const normedParallels = normalizeScores(response.data.parallels,
+                                                    maxScore >= 10 ? maxScore : 10);
+            dispatch(updateResults(normedParallels, nResults));
+            dispatch(updateSearchInProgress(false));
+          }
+        });
 
-        return searchID;
+        return searchID[1];
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(clearAsync());
-        dispatch(registerError(error));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(registerError(error));
+        });
       });
     }
   }
@@ -214,21 +226,25 @@ export function getSearchStatus(searchID, asyncReady) {
       })
       .then(response => {
         // On success, update the global state and return the status.
-        dispatch(clearAsync());
-        if (response.data.status !== undefined) {
-          dispatch(updateSearchStatus(response.data.status, response.data.progress));
-          
-          if (response.data.status.toLowerCase() === 'done') {
-            dispatch(updateSearchInProgress(false));
+        batch(() => {
+          dispatch(clearAsync());
+          if (response.data.status !== undefined) {
+            dispatch(updateSearchStatus(response.data.status, response.data.progress));
+            
+            if (response.data.status.toLowerCase() === 'done') {
+              dispatch(updateSearchInProgress(false));
+            }
           }
-        }
+        });
 
         return response.data.status;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(clearAsync());
-        dispatch(registerError(error));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(registerError(error));
+        });
       })
     }
   }
@@ -236,7 +252,7 @@ export function getSearchStatus(searchID, asyncReady) {
 
 
 /**
- * Fetch available texts of the selected language from the REST API.
+ * Fetch available search results from the REST API.
  * 
  * @param {String} searchID The ID of the search obained when it was initiated.
  * @param {boolean} asyncReady True if the app is ready to send a request.
@@ -279,14 +295,20 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
         const nResults = response.data.total_count;
         const normedParallels = normalizeScores(response.data.parallels,
                                                 maxScore >= 10 ? maxScore : 10);
-        dispatch(clearAsync());
-        dispatch(updateResults(normedParallels, nResults));
+
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(updateResults(normedParallels, nResults));
+          dispatch(updateSearchInProgress(false));
+        });
         return normedParallels;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(clearAsync());
-        dispatch(registerError(error));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(registerError(error));
+        });
       });
     }
   }
