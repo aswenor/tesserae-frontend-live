@@ -54,26 +54,25 @@ export function initiateSearch(searchID, multitextSelections, unit, asyncReady) 
             text_ids: multitextSelections.map(item => item.object_id),
           }
       })
+      .catch(data => data.response)
       .then(response => {
+        console.log('multitext response: ', response);
         let searchID = [];
 
         if (response.headers.location !== undefined) {
-          searchID = response.headers.location.match(/multitexts[/]([\w\d+])/);
+          searchID = response.headers.location.match(/multitexts[/]([\w\d]+)/);
         }
         else if (response.request.responseURL !== undefined) {
-          searchID = response.request.responseURL.match(/multitexts[/]([\w\d+])/);
+          searchID = response.request.responseURL.match(/multitexts[/]([\w\d]+)/);
         }
+
+        console.log(searchID);
         
         batch(() => {
           dispatch(clearAsync());
 
           if (searchID.length > 1 && searchID[1] !== '') {
             dispatch(updateSearchID(searchID[1]));
-          }
-
-          if (response.data.multiresults !== undefined) {
-            dispatch(updateResults(response.data.multiresults, response.data.max_score));
-            dispatch(updateMultitextInProgress(false));
           }
         });
         
@@ -117,15 +116,14 @@ export function getSearchStatus(searchID, asyncReady) {
       })
       .then(response => {
         // On success, update the global state and return the status.
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(clearAsync());
 
-        if (response.data.status !== undefined) {
-          dispatch(updateStatus(response.data.status, response.data.progress, response.data.message));
-          
-          if (response.data.status.toLowerCase() === 'done') {
-            dispatch(updateMultitextInProgress(false));
+          if (response.data.status !== undefined) {
+            dispatch(updateStatus(response.data.status, response.data.progress, response.data.message));
           }
-        }
+        });
+
         return response.data.status;
       })
       .catch(error => {
@@ -180,7 +178,10 @@ export function fetchResults(searchID, asyncReady, currentPage = 0,
         // On success, update the global state and return the results.
         // Because of strange design constraints and group consensus, normalize
         // all scores to be in range [0, 10].
-        dispatch(updateResults(response.data.multiresults, response.data.max_score));
+        batch(() => {
+          dispatch(clearAsync());
+          dispatch(updateResults(response.data.multiresults, response.data.max_score));
+        });
         return response.data.multiresults;
       })
       .catch(error => {
