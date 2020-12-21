@@ -25,6 +25,7 @@ import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { fetchLanguages, fetchTexts } from '../../api/corpus';
 import LoadingScreen from './LoadingScreen';
 import NavBar from './NavBar';
+import NewVersionDialog from './NewVersionDialog';
 import createTesseraeTheme from '../../theme';
 
 
@@ -78,6 +79,7 @@ function PageContainer(props) {
               updateTheme={updateTheme}
             /> 
             {children}
+            <NewVersionDialog />
           </div>
         : <LoadingScreen />
       }

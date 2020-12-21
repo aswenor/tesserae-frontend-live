@@ -56,6 +56,9 @@ function App(props) {
     );
   });
 
+  const storage = window.localStorage;
+  storage.setItem('v5_new_first_view', 'true');
+
   // Automatically fetch available languages on app load.
   if (store.getState().corpus.availableLanguages.length === 0) {
     fetchLanguages(true)(store.dispatch);
