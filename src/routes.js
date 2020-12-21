@@ -10,6 +10,7 @@
  */
 import React from 'react'
 
+import About from './components/about';
 import CorpusManager from './components/corpus_manager';
 import Multitext from './components/multitext';
 import ReaderRouter from './components/reader';
@@ -27,6 +28,7 @@ const routes = [
    * @field {string} name The name of the page being linked.
    * @field {React.Component} component The component to render.
    */
+  {link: '/about', name: 'About', component: About, display: true},
   {link: '/corpus', name: 'Corpus', component: CorpusManager, display: true},
   {link: "/", name: "Search", component: Search, display: true},
   {link: "/multitext", name: "Multitext", component: Multitext, display: true},
