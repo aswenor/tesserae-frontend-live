@@ -6,6 +6,7 @@ import { differenceBy, isObject, sortBy } from 'lodash';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
+import DataGrid from '@material-ui/data-grid';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -31,8 +32,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     maxHeight: '80vh',
-    overflowX: 'hidden',
-    overflowY: 'overlay',
     paddingTop: props => props.rowsPerPage > 10 ? theme.spacing(3) : 0,
     [theme.breakpoints.only('xl')]: {
       width: '50vw'
@@ -48,32 +47,33 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     height: '100%',
     margin: 0,
-    maxHeight:'95vh',
-    overflowX: 'hidden',
-    overflowY: "overlay",
     padding: 0,
     width: '100%',
   },
   table: {
-    display: 'flex',
+    // display: 'flex',
     height: '100%',
-    margin: 0,
-    overflowX: 'hidden',
-    overflowY: "overlay",
-    padding: 0,
-    [theme.breakpoints.up('lg')]: {
-      width: '100%',
-    },
-    [theme.breakpoints.down('md')]: {
-      width: '95%'
-    }
+    overflow: 'hidden',
+    // margin: 0,
+    // padding: 0,
+    // [theme.breakpoints.up('lg')]: {
+    //   width: '100%',
+    // },
+    // [theme.breakpoints.down('md')]: {
+    //   width: '95%'
+    // }
   },
   body: {
-    height: '90%',
-    maxHeight: '80%',
+    overflow: 'overlay'
   },
   pagination: {
-    overflow: "hidden",
+    backgroundColor: theme.palette.secondary.main,
+    bottom: 0,
+    minHeight: '52px',
+    overflow: 'hidden',
+    position: 'sticky',
+    top: 'auto',
+    zIndex: theme.zIndex.drawer,
     [theme.breakpoints.up('lg')]: {
       width: '100%',
     },
@@ -226,45 +226,54 @@ function MultitextSelectionTable(props) {
               alignItems="flex-start"
               className={classes.tableBox}
               justifyContent="flex-start"
-              justifyItems="flewx-start"
+              justifyItems="flex-start"
               display="flex"
               flexDirection="column"
               m={0}
               p={0}
-              width={.66}
+              width={1.0}
             >
-              <TableContainer
-                className={classes.table}
+              <Box
+                height={'100%'}
+                width={1}
               >
-                <Table
-                  size={matches ? 'small' : 'medium'}
-                  stickyHeader
+                <TableContainer
+                  className={classes.table}
                 >
-                  <TableHead>
-                    <MultitextSelectionTableHeader
-                      setPagination={setPagination}
-                      sortHeader={pagination.sortHeader}
-                      sortOrder={pagination.sortOrder}
-                      textList={bodyRows}
-                    />
-                  </TableHead>
-                  <TableBody
-                    className={classes.body}
+                  <Table
+                    size={matches ? 'small' : 'medium'}
+                    stickyHeader
                   >
-                    {bodyRows}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                ActionsComponent={TablePaginationActions}
+                    <TableHead>
+                      <MultitextSelectionTableHeader
+                        setPagination={setPagination}
+                        sortHeader={pagination.sortHeader}
+                        sortOrder={pagination.sortOrder}
+                        textList={bodyRows}
+                      />
+                    </TableHead>
+                    <TableBody
+                      className={classes.body}
+                    >
+                      {bodyRows}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+              <Box
                 className={classes.pagination}
-                count={textList.length}
-                labelRowsPerPage="Rows per page:"
-                onChangePage={onChangePage}
-                page={pagination.currentPage}
-                rowsPerPage={pagination.rowsPerPage}
-                rowsPerPageOptions={[10]}
-              />
+                width={1.0}
+              >
+                <TablePagination
+                  ActionsComponent={TablePaginationActions}
+                  count={textList.length}
+                  labelRowsPerPage="Rows per page:"
+                  onChangePage={onChangePage}
+                  page={pagination.currentPage}
+                  rowsPerPage={pagination.rowsPerPage}
+                  rowsPerPageOptions={[10]}
+                />
+              </Box>
             </Box>
           </Grid>
         </Grid>

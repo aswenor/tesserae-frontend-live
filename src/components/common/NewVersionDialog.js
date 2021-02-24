@@ -11,6 +11,7 @@
  * @requires ./ThemedDialog
  */
 import React, { useState } from 'react';
+import isElectron from 'is-electron';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
  *   const storage = window.localStorage();
  *   storage.setItem('v5_new_first_view', 'true');
  *   
- *   return (<NewVersionDialog>);
+ *   return (<NewVersionDialog />);
  */
 function NewVersionDialog(props) {
   const classes = useStyles();

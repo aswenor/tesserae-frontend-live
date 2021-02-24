@@ -11,12 +11,18 @@
  * @requires ../state/corpus
  */
 import axios from 'axios';
+import { batch } from 'react-redux';
+import { find, isUndefined, sortBy } from 'lodash';
 
-import { initiateAsync, clearAsync,
+import { initiateAsync,
+         clearAsync,
          registerError } from '../state/async';
-import { updateAvailableLanguages, updateAvailableTexts,
+import { updateAvailableLanguages,
+         updateAvailableTexts,
          updateSelectedLanguage } from '../state/corpus';
-import { resetSearch } from '../state/search';
+import { resetSearch,
+         updateSourceText,
+         updateTargetText } from '../state/search';
 import { addFullText } from '../state/texts';
 
 
@@ -63,14 +69,19 @@ export function fetchLanguages(asyncReady) {
           language = languages.length > 0 ? languages[0] : '';
         }
 
-        dispatch(updateAvailableLanguages(languages, language));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(updateAvailableLanguages(languages, language));
+          dispatch(clearAsync());
+        });
+
         return languages;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(registerError(error));
+          dispatch(clearAsync());
+        });
       });
     }
   };
@@ -85,8 +96,10 @@ export function fetchLanguages(asyncReady) {
  */
 export function updateLanguage(language) {
   return dispatch => {
-      dispatch(updateSelectedLanguage(language));
-      dispatch(resetSearch());
+      batch(() => {
+        dispatch(updateSelectedLanguage(language));
+        dispatch(resetSearch());
+      });
   }
 }
 
@@ -113,7 +126,7 @@ export function fetchTexts(language, shouldFetch) {
         crossDomain: true,
         responseType: 'json',
         params: {
-          language: language
+          language: language.toLowerCase()
         }
       })
       .then(response => {
@@ -121,14 +134,35 @@ export function fetchTexts(language, shouldFetch) {
         const texts = response.data.texts.sort((a, b) => {
           return a.author > b.author || (a.author === b.author && a.title > b.title);
         });
-        dispatch(updateAvailableTexts(texts));
-        dispatch(clearAsync());
-        return response.data.texts;
+
+        batch(() => {
+          dispatch(updateAvailableTexts(texts));
+
+          let source = undefined;
+          let target = undefined;
+
+          if (language.toLowerCase() === 'latin') {
+            source = find(texts, {author: 'vergil', title: 'aeneid'});
+            target = find(texts, {author: 'lucan', title: 'bellum civile'});
+          }
+          else if (language.toLowerCase() === 'greek') {
+
+          }
+
+          dispatch(updateSourceText(!isUndefined(source) ? source : texts[0]));
+          dispatch(updateTargetText(!isUndefined(target) ? target : texts[-1]));
+
+          dispatch(clearAsync())
+        });
+
+        return texts;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(registerError(error));
+          dispatch(clearAsync());
+        });
       });
     }
   };
@@ -147,20 +181,25 @@ export function fetchFullText(textID, unit, asyncReady) {
         crossDomain: true,
         responseType: 'json',
         params: {
-          unitType: unit,
+          unit_type: unit,
           works: textID,
         }
       })
       .then(response => {
         console.log('response', response)
-        dispatch(addFullText(textID, response.data.units));
-        dispatch(clearAsync());
+        batch(() => {
+          const units = sortBy(response.data.units, 'index');
+          dispatch(addFullText(textID, units));
+          dispatch(clearAsync());
+        });
         return response.data.units;
       })
       .catch(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(registerError(error));
+          dispatch(clearAsync());
+        });
       });
     }
   };
@@ -188,8 +227,10 @@ export function ingestText(tessFile, metadata) {
 
     }).error(error => {
       // On error, update the error log.
-      dispatch(registerError(error));
-      dispatch(clearAsync());
+      batch(() => {
+        dispatch(registerError(error));
+        dispatch(clearAsync());
+      });
     });
   };
 }
@@ -207,8 +248,10 @@ export function updateTextMetadata(textID, metadata) {
 
     }).error(error => {
       // On error, update the error log.
-      dispatch(registerError(error));
-      dispatch(clearAsync());
+      batch(() => {
+        dispatch(registerError(error));
+        dispatch(clearAsync());
+      });
     });
   };
 }
@@ -226,8 +269,10 @@ export function deleteTexts(textIDs) {
         
       }).error(error => {
         // On error, update the error log.
-        dispatch(registerError(error));
-        dispatch(clearAsync());
+        batch(() => {
+          dispatch(registerError(error));
+          dispatch(clearAsync());
+        });
       })
     );
   };

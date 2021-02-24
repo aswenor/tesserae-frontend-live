@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+// import DataGrid from '@material-ui/data-grid';
+import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody'
 import TableContainer from '@material-ui/core/TableContainer';
@@ -16,12 +18,28 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     height: '100%',
     margin: 0,
-    overflow: "overlay",
+    // overflow: "overlay",
     padding: 0,
     width: '100%',
   },
+  container: {
+    height: '100%',
+    // overflow: 'overlay'
+  },
   body: {
-    height: '100%'
+    marginBottom: '300px',
+    // height: '98%',
+    overflow: 'overlay'
+  },
+  pagination: {
+    backgroundColor: 'white',
+    borderTop: '1px solid #dedede',
+    bottom: 0,
+    minHeight: '52px',
+    position: 'fixed',
+    top: 'auto',
+    width: '100%',
+    zIndex: theme.zIndex.drawer
   }
 }));
 
@@ -38,36 +56,44 @@ function BodyScrollTable(props) {
       alignItems="flex-start"
       className={classes.root}
       justifyContent="flex-start"
-      justifyItems="flewx-start"
+      justifyItems="flex-start"
       display="flex"
       flexDirection="column"
       m={0}
       p={0}
       width={1}
     >
-      <TableContainer
-        className={classes.root}
+      <Box
+        height={'100%'}
+        width={1}
       >
-        <Table
-          stickyHeader
-        >
-          <TableHead>
-            {headerRow}
-          </TableHead>
-          <TableBody
-            className={classes.body}
+        <TableContainer className={classes.container}>
+          <Table
+            stickyHeader
           >
-            {bodyRows}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TesseraeTablePagination
-        count={bodyCount}
-        initialRowsPerPage={initialRowsPerPage}
-        onPageChange={onPageChange}
-        rowsPerPageLabel={rowsPerPageLabel}
-        rowsPerPageOptions={rowsPerPageOptions}
-      />
+            <TableHead>
+              {headerRow}
+            </TableHead>
+            <TableBody
+              className={classes.body}
+            >
+              {bodyRows}
+            </TableBody>
+
+          </Table>
+        </TableContainer>
+      </Box>
+      <Box
+        className={classes.pagination}
+      >
+        <TesseraeTablePagination
+          count={bodyCount}
+          initialRowsPerPage={initialRowsPerPage}
+          onPageChange={onPageChange}
+          rowsPerPageLabel={rowsPerPageLabel}
+          rowsPerPageOptions={rowsPerPageOptions}
+        />
+      </Box>
     </Box>
   );
 }

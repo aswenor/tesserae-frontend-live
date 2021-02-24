@@ -24,6 +24,7 @@ import { highlightMatches } from '../../utils';
 const useStyles = makeStyles(theme => ({
   root: {
     borderBottom: '1px solid #dedede',
+    display: 'flex',
     paddingBottom: theme.spacing(2),
     paddingTop: theme.spacing(2),
   }
@@ -46,6 +47,7 @@ const useStyles = makeStyles(theme => ({
  */
 function UnitDisplay(props) {
   const { highlight, snippet, tag } = props;
+  console.log(props);
 
   const classes = useStyles();
 
@@ -61,7 +63,7 @@ function UnitDisplay(props) {
       alignContent="center"
       alignItems="center"
       className={classes.root}
-      justify="flow-start"
+      justify="flex-start"
       key={tag}
       spacing={2}
     >

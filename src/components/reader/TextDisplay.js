@@ -11,8 +11,9 @@ import UnitDisplay from './UnitDisplay';
 
 const useStyles = makeStyles(theme => ({
   root: {
+    height: '100%',
     // overflowX: 'hidden',
-    overflowY: 'auto'
+    overflow: 'scroll'
   }
 }));
 

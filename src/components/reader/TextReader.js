@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { find } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -17,11 +18,14 @@ import TextDisplay from './TextDisplay';
 
 const useStyles = makeStyles(theme => ({
   root: {
+    display: 'flex',
     height: '100%',
     maxHeight: '100%',
   },
   paper: {
     backgroundColor: theme.palette.secondary.main,
+    display: 'block',
+    height: '100%',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
     [theme.breakpoints.up('md')]: {
@@ -48,7 +52,7 @@ function TextReader(props) {
   if (needFetch) {
     setNeedFetch(false);
     (async () => {
-      await fetchFullText(textID, textMetadata.is_prose ? 'phrase' : 'line', asyncReady);
+      await fetchFullText(textID, 'line', asyncReady);
     })();
   }
 
@@ -61,14 +65,21 @@ function TextReader(props) {
       { textData.length === 0
         ? <LoadingText />
         : <Paper className={classes.paper} component="div">
-            <Toolbar
-              className={classes.toolbar}
+            <Box>
+              <Toolbar
+                className={classes.toolbar}
+              >
+                <Typography variant="h4" align="center">
+                  {textMetadata.author} - {textMetadata.title}
+                </Typography>
+              </Toolbar>
+            </Box>
+            <Box
+              height={'100%'}
+              width={1}
             >
-              <Typography variant="h4" align="center">
-                {textMetadata.author} - {textMetadata.title}
-              </Typography>
-            </Toolbar>
-            <TextDisplay units={textData} />
+              <TextDisplay units={textData} />
+            </Box>
           </Paper>
       }
     </div>
