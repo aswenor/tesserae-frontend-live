@@ -33,6 +33,7 @@ const routes = [
   {link: "/", name: "Search", component: Search, display: true},
   {link: "/multitext", name: "Multitext", component: Multitext, display: true},
   {link: "/reader", name: "Reader", component: ReaderRouter, display: false},
+  {link: "https://tesseraev3.caset.buffalo.edu/", name: "Version 3", component: null, display: true, external: true}
 ];
 
 

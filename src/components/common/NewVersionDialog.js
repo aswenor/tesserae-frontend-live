@@ -106,10 +106,10 @@ function NewVersionDialog(props) {
             We have updated Tesserae to a new version (Version 5). The update is meant to improve the user experience with a more modern interface. It also offers a corpus view that allows users to see all the texts in the Tesserae corpus and choose which ones to compare. It includes a web API that allows other online services to request the Tesserae server to run searches.
           </Typography>
           <Typography className={classes.spacer} variant="body1">
-            This update was also necessitated by the age of the original Tesserae (Version 3) system. Version 3 was written in Perl and with flat files for data storage, and is coming to the end of its functional life. The new version is written in Javascript and Python, and uses a MongoDB database. This new basis should allow for easier updates and improvements going forward.
+            This update was also necessitated by the age of <a href="https://tesseraev3.caset.buffalo.edu/">the original Tesserae (Version 3) system</a>. Version 3 was written in Perl and with flat files for data storage, and is coming to the end of its functional life. The new version is written in Javascript and Python, and uses a MongoDB database. This new basis should allow for easier updates and improvements going forward.
           </Typography>
           <Typography variant="body1">
-          Version 5 is a work in progress and we ask for your patience with any issues as we make fixes and improvements. The previous version of Tesserae (Version 3) will be updated to continue its functionality and a link to it will be made available in Version 5, so users can continue working with the Version 3 system for the time being.
+          Version 5 is a work in progress and we ask for your patience with any issues as we make fixes and improvements. The previous version of Tesserae (Version 3) will be updated to continue its functionality and a link to it will be made available in Version 5, so users can continue working with the <a href="https://tesseraev3.caset.buffalo.edu/">Version 3</a> system for the time being.
           </Typography>
         </div>
       }

@@ -15,12 +15,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link as InternalLink } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { Link as ExternalLink } from '@material-ui/core';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import Toolbar from '@material-ui/core/Toolbar';
 
@@ -88,17 +89,27 @@ function NavBar(props) {
   const classes = useStyles();
 
   const links = routes.filter(x => x.display).map((route, i) => {
-    return (
-      <Button
-        className={classes.button}
-        component={Link}
-        color="default"
-        key={route.link}
-        size="small"
-        to={route.link}
-      >
-        {route.name}
-      </Button>
+    return (!route.external
+      ? <Button
+          className={classes.button}
+          component={InternalLink}
+          color="default"
+          key={route.link}
+          size="small"
+          to={route.link}
+        >
+          {route.name}
+        </Button>
+      : <Button
+          className={classes.button}
+          component={ExternalLink}
+          color="default"
+          href={route.link}
+          key={route.link}
+          size="small"
+        >
+          {route.name}
+        </Button>
     );
   });
 
@@ -113,7 +124,7 @@ function NavBar(props) {
             flexGrow={.7}
             justifyContent="flex-start"
           >
-            <Link
+            <InternalLink
               to="/"
             >
               <img 
@@ -121,7 +132,7 @@ function NavBar(props) {
                 className={classes.logo}
                 src="Tesserae.png"
               />
-            </Link>
+            </InternalLink>
           </Box>
           <Box
             alignItems="center"
