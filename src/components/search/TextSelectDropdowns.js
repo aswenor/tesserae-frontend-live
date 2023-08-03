@@ -16,6 +16,8 @@ import { isFunction, isNull, uniqBy } from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -67,7 +69,7 @@ const useStyles = makeStyles(theme => ({
  *   )
  */
 function TextSelectDropdowns(props) {
-  const { handleAuthorChange, handleTitleChange, loading, loadingText,
+  const { division, handleAuthorChange, handleDivisionChange, handleTitleChange, loading, loadingText,
           onOpen, selection, textList, title } = props;
 
   /** CSS styles and global theme. */
@@ -78,6 +80,32 @@ function TextSelectDropdowns(props) {
 
   /** Text list to select title, filtered by author when an author is selected. */
   const textItems = textList.filter(t => selection.author === '' || t.author.toLowerCase() === selection.author).sort((a, b) => a.title > b.title);
+
+  let full = (
+    <MenuItem
+      key="Full Text"
+      onClick={() => { handleDivisionChange('0'); }}
+      selected={division === '0'}
+      value="0"
+    >
+      Full Text
+    </MenuItem>);
+  
+  let divisions = [];
+  if (Boolean(selection.divisions)) {
+    divisions = selection.divisions.map(item => {
+      return (
+        <MenuItem
+          key={item}
+          onClick={() => { handleDivisionChange(item); }}
+          selected={division === item}
+          value={item}
+        >
+         Book {item}
+        </MenuItem>
+      );
+    });
+  }
 
   return (
     <div>
@@ -128,12 +156,35 @@ function TextSelectDropdowns(props) {
         )}
         value={selection}
       />
+      <Select
+        align="left"
+        className={classes.select}
+        value={division}
+        variant="outlined"
+      >
+        {[full, ...divisions]}
+      </Select>
     </div>
   );
 }
 
 
 TextSelectDropdowns.propTypes = {
+  /**
+   * The text subsection to use in the search.
+   */
+  division: PropTypes.string,
+
+  /**
+   * Callback to handle selecting an author.
+   */
+  handleAuthorChange: PropTypes.func,
+
+  /**
+   * Callback to handle changing the text subsection.
+   */
+  handleDivisionChange: PropTypes.func,
+
   /**
    * Callback to handle selecting a text in either dropdown.
    */

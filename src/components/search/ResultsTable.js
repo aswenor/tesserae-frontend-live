@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
  */
 function ResultsTable(props) {
   const { asyncReady, fetchResults, results, resultsCount, searchID,
-          searchStatus, startIdx } = props;
+          searchStatus, startIdx, sourceDivision, targetDivision } = props;
 
   const onPageChange = (pagination) => {
     fetchResults(searchID, asyncReady,
@@ -81,6 +81,8 @@ function ResultsTable(props) {
       <ResultsTableBody
         idx={startIdx + idx + 1}
         result={item}
+        sourceDivision={sourceDivision}
+        targetDivision={targetDivision}
       />
     );
   });
@@ -182,6 +184,8 @@ const mapStateToProps = state => ({
   searchID: state.search.searchID,
   searchStatus: state.search.searchStatus,
   startIdx: state.pagination.currentPage * state.pagination.rowsPerPage,
+  sourceDivision: state.search.sourceDivision,
+  targetDivision: state.search.sourceDivision
 });
 
 

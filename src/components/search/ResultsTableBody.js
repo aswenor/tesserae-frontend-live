@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
  * @component
  */
 function ResultsTableBody(props) {
-  const { idx, result } = props;
+  const { idx, result, sourceDivision, targetDivision } = props;
 
   /** CSS styles and global theme. */
   const classes = useStyles();
@@ -64,63 +64,112 @@ function ResultsTableBody(props) {
   const sourceSnippet = highlightMatches(result.source_snippet, result.source_tag, sourceIndices);
   const targetSnippet = highlightMatches(result.target_snippet, result.target_tag, targetIndices);
 
-  return (
-    <TableRow
-      className={classes.row}
-      hover
-      tabIndex={-1}
-      key={result.object_id}
-    >
-      <TableCell
-        className={classes.numberCell}
-        variant="body"
+
+  // Get the source divisions and parse out the given integer value of each division (no integer value means use full text)
+  let sourceDiv = undefined;
+  let targetDiv = undefined;
+
+  if (sourceDivision === '0') {
+    sourceDiv = NaN;
+  }
+  else {
+    sourceDiv = parseInt(sourceDivision);
+  }
+  if (targetDivision === '0') {
+    targetDiv = NaN;
+  }
+  else {
+    targetDiv = parseInt(targetDivision);
+  }
+
+  // Parse out the subsection from the text tags
+  const parseSourceTag = result.source_tag.split(" ");
+  const parseTargetTag = result.target_tag.split(" ");
+  let sourceSection = undefined;
+  let targetSection = undefined;
+  let i = 0;
+  let parseCheck = parseSourceTag[i];
+
+  while(isNaN(parseCheck)) {
+    i = i + 1;
+    parseCheck = parseSourceTag[i];
+  }
+
+  sourceSection = Math.floor(parseCheck);
+
+  let j = 0;
+  let parseCheck1 = parseTargetTag[j];
+  while(isNaN(parseCheck1)) {
+    j = j + 1;
+    parseCheck1 = parseTargetTag[j];
+  }
+  targetSection = Math.floor(parseCheck1);
+
+  // Chek for subsection tags and if they match (or if its a full text search) return the corresponding TableRow object
+  if( (isNaN(sourceDiv) && isNaN(targetDiv)) || ((sourceDiv === sourceSection) && isNaN(targetDiv)) || (isNaN(sourceDiv) && (targetDiv === targetSection)) || ((sourceDiv === sourceSection) && (targetDiv === targetSection))) {
+    return (
+      <TableRow
+        className={classes.row}
+        hover
+        tabIndex={-1}
+        key={result.object_id}
       >
-        <Typography
-          align="left"
+        <TableCell
+          className={classes.numberCell}
+          variant="body"
         >
-          {idx}
-        </Typography>
-      </TableCell>
-      <TableCell
-        align="left"
-        className={classes.snippetCell}
-        variant="body"
-      >
-        <Typography><b>{result.source_tag}</b>:</Typography>
-          {sourceSnippet}
-      </TableCell>
-      <TableCell
-        align="left"
-        className={classes.snippetCell}
-        size="small"
-        style={{maxWidth: '10px'}}
-        variant="body"
-      >
-        <Typography><b>{result.target_tag}</b>:</Typography>
-          {targetSnippet}
-      </TableCell>
-      <TableCell
-        align="center"
-        className={classes.matchesCell}
-        size="small"
-        style={{maxWidth: '1px'}}
-        variant="body"
-      >
-        <Typography>
-          {result.matched_features.join(', ')}
+          <Typography
+            align="left"
+          >
+            {idx}
           </Typography>
-      </TableCell>
-      <TableCell
-        align="center"
-        className={classes.numberCell}
-        variant="body"
-      >
-        <Typography>
-          <b>{Math.floor(result.score)}</b>
-        </Typography>
-      </TableCell>
-    </TableRow>
-  );
+        </TableCell>
+        <TableCell
+          align="left"
+          className={classes.snippetCell}
+          variant="body"
+        >
+          <Typography><b>{result.source_tag}</b>:</Typography>
+            {sourceSnippet}
+        </TableCell>
+        <TableCell
+          align="left"
+          className={classes.snippetCell}
+          size="small"
+          style={{maxWidth: '10px'}}
+          variant="body"
+        >
+          <Typography><b>{result.target_tag}</b>:</Typography>
+            {targetSnippet}
+        </TableCell>
+        <TableCell
+          align="center"
+          className={classes.matchesCell}
+          size="small"
+          style={{maxWidth: '1px'}}
+          variant="body"
+        >
+          <Typography>
+            {result.matched_features.join(', ')}
+            </Typography>
+        </TableCell>
+        <TableCell
+          align="center"
+          className={classes.numberCell}
+          variant="body"
+        >
+          <Typography>
+            <b>{Math.floor(result.score)}</b>
+          </Typography>
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  else {
+    return false;
+  }
+
 }
 
 

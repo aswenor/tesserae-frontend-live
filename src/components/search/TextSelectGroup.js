@@ -6,9 +6,10 @@ import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 
 import { fetchTexts } from '../../api/corpus';
-import { clearSearchMetadata, updateSourceText, updateTargetText } from '../../state/search';
+import { clearSearchMetadata, updateSourceText, updateTargetText, updateSourceDivision, updateTargetDivision } from '../../state/search';
 
 import TextSelectDropdowns from './TextSelectDropdowns';
+
 
 
 /**
@@ -16,8 +17,8 @@ import TextSelectDropdowns from './TextSelectDropdowns';
  * @component 
  */
 function TextSelectGroup(props) {
-  const { asyncReady, availableTexts, fetchTexts, language, sourceText, targetText,
-          updateSource, updateTarget } = props
+  const { asyncReady, availableTexts, fetchTexts, language, sourceDivision, sourceText, targetDivision, targetText,
+          updateSource, updateTarget, updateSourceDivision, updateTargetDivision } = props
 
   const handleTextChange = (text, updateFunc) => {
     clearSearchMetadata();
@@ -41,7 +42,9 @@ function TextSelectGroup(props) {
         xs={12}
       >
         <TextSelectDropdowns
+          division={sourceDivision}
           handleAuthorChange={(value) => handleTextChange(value, updateSource)}
+          handleDivisionChange={updateSourceDivision}
           handleTitleChange={(value) => handleTextChange(value, updateSource)}
           loading={availableTexts.length === 0}
           loadingText={`Loading ${language} corpus`}
@@ -56,7 +59,9 @@ function TextSelectGroup(props) {
         xs={12}
       >
         <TextSelectDropdowns
+          division={targetDivision}
           handleAuthorChange={(value) => handleTextChange(value, updateTarget)}
+          handleDivisionChange={updateTargetDivision}
           handleTitleChange={(value) => handleTextChange(value, updateTarget)}
           loading={availableTexts.length === 0}
           loadingText={`Loading ${language} corpus`}
@@ -98,9 +103,19 @@ TextSelectGroup.propTypes = {
   language: PropTypes.string,
 
   /**
+   * The currently selected source text subsection.
+   */
+  sourceDivision: PropTypes.string,
+
+  /**
    * The currently selected source text.
    */
   sourceText: PropTypes.object,
+
+  /**
+   * The currently selected target text subsection.
+   */
+  targetDivision: PropTypes.string,
   
   /**
    * The currently selected target text.
@@ -115,7 +130,17 @@ TextSelectGroup.propTypes = {
   /**
    * Function to select a new target text from the dropdown menu.
    */
-  updateTarget: PropTypes.func
+  updateTarget: PropTypes.func,
+
+  /**
+   * Function to select a source text subsection.
+   */
+  updateSourceDivision: PropTypes.func,
+
+  /**
+   * Function to select a target text subsection.
+   */
+  updateTargetDivision: PropTypes.func
 };
 
 
@@ -131,7 +156,9 @@ const mapStateToProps = (state) => {
     availableTexts: state.corpus.availableTexts,
     language: state.corpus.language,
     searchParameters: state.search.searchParameters,
+    sourceDivision: state.search.sourceDivision,
     sourceText: state.search.sourceText,
+    targetDivision: state.search.targetDivision,
     targetText: state.search.targetText,
   };
 };
@@ -146,7 +173,9 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     fetchTexts: fetchTexts,
     updateSource: updateSourceText,
-    updateTarget: updateTargetText
+    updateTarget: updateTargetText,
+    updateSourceDivision: updateSourceDivision,
+    updateTargetDivision: updateTargetDivision
   }, dispatch);
 }
 

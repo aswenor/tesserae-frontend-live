@@ -9,8 +9,10 @@
  * @exports updateSearchID
  * @exports updateSearchParameters
  * @exports updateSearchStatus
+ * @exports updateSourceDivision
  * @exports updateSourceText
  * @exports updateStopwords
+ * @exports updateTargetDivision
  * @exports updateTargetText
  * @exports corpusReducer
  */
@@ -36,8 +38,10 @@ export const DEFAULT_STATE = {
   },
   searchProgress: [],
   searchStatus: '',
+  sourceDivision: '0',
   sourceText: {author: '', title: ''},
   stopwords: [],
+  targetDivision: '0',
   targetText: {author: '', title: ''}
 };
 
@@ -55,8 +59,10 @@ const UPDATE_RESULTS = 'UPDATE_RESULTS';
 const UPDATE_SEARCH_ID = 'UPDATE_SEARCH_ID';
 const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
 const UPDATE_SEARCH_STATUS = 'UPDATE_SEARCH_STATUS';
+const UPDATE_SOURCE_DIVISION = 'UPDATE_SOURCE_DIVISION';
 const UPDATE_SOURCE_TEXT = 'UPDATE_SOURCE_TEXT';
 const UPDATE_STOPWORDS = 'UPDATE_STOPWORDS';
+const UPDATE_TARGET_DIVISION = 'UPDATE_TARGET_DIVISION';
 const UPDATE_TARGET_TEXT = 'UPDATE_TARGET_TEXT';
 
 
@@ -233,9 +239,24 @@ export function updateSearchStatus(searchStatus = DEFAULT_STATE.searchStatus,
   };
 }
 
+/**
+ * Update the subsection of the source text to search.
+ * 
+ * @param {String} division Text subdivision to use in the search.
+ * @returns {Object} A redux-style action.
+ */
+export function updateSourceDivision(division = DEFAULT_STATE.sourceDivision) {
+  return {
+    type: UPDATE_SOURCE_DIVISION,
+    payload: {
+      sourceDivision: division
+    }
+  };
+}
+
 
 /**
-*  Update the search source text.
+*  Update the search source text. Resets selected division to full text.
 *
 * @param {Object} sourceText - the new source text to search
 * @returns {Object} A redux-style action.
@@ -245,6 +266,7 @@ export function updateSourceText(sourceText = DEFAULT_STATE.sourceText) {
   return {
     type: UPDATE_SOURCE_TEXT,
     payload: {
+      sourceDivision: DEFAULT_STATE.sourceDivision,
       sourceText: sourceText
     }
   };
@@ -252,7 +274,7 @@ export function updateSourceText(sourceText = DEFAULT_STATE.sourceText) {
 
 
 /**
-*  Update the search source text.
+*  Update the search stopwords list.
 *
 * @param {Object} stopwords The list of words to exclude from the search.
 * @returns {Object} A redux-style action.
@@ -266,9 +288,24 @@ export function updateStopwords(stopwords = DEFAULT_STATE.stopwords) {
   };
 }
 
+/** 
+ * Update the subsection of the target text to search.
+ * 
+ * @param {String} division Text subdivision to use in the search.
+ * @returns {Object} A redux-style action.
+ */
+export function updateTargetDivision(division = DEFAULT_STATE.targetDivision) {
+  return {
+    type: UPDATE_TARGET_DIVISION,
+    payload: {
+      targetDivision: division
+    }
+  };
+}
+
 
 /**
-*  Update the search target text.
+*  Update the search target text. Resets the subsection to the full text.
 *
 * @param {Object} targetText - the new target text to search
 * @returns {Object} A redux-style action.
@@ -278,6 +315,7 @@ export function updateTargetText(targetText = DEFAULT_STATE.targetText) {
   return {
     type: UPDATE_TARGET_TEXT,
     payload: {
+      targetDivision: DEFAULT_STATE.targetDivision,
       targetText: targetText
     }
   };
@@ -309,8 +347,10 @@ export function searchReducer(state = DEFAULT_STATE, action = {}) {
     case UPDATE_RESULTS:
     case UPDATE_SEARCH_ID:
     case UPDATE_SEARCH_STATUS:
+    case UPDATE_SOURCE_DIVISION:
     case UPDATE_SOURCE_TEXT:
     case UPDATE_STOPWORDS:
+    case UPDATE_TARGET_DIVISION:
     case UPDATE_TARGET_TEXT:
       return {
         ...state,
